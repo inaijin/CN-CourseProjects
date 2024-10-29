@@ -23,9 +23,13 @@ LIBS += -lssp -lssp_nonshared
 
 SOURCES += \
     webrtc.cpp \
+    AudioOutput.cpp \
+    AudioInput.cpp
 
 HEADERS += \
     webrtc.h \
+    AudioOutput.h \
+    AudioInput.h
 
 INCLUDEPATH += "PATHTOFILE"/include
 LIBS += -L"PATHTOFILE"/Windows/Mingw64 -ldatachannel.dll
