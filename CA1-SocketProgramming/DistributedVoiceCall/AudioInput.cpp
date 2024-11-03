@@ -91,7 +91,9 @@ void AudioInput::processAudioBuffer()
         return;
     }
 
-    write(data.constData(), data.size());
+    qDebug() << "Read" << data.size() << "bytes from audio input.";
+
+    writeData(data.constData(), data.size());
 }
 
 qint64 AudioInput::readData(char *data, qint64 maxlen)

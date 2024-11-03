@@ -35,6 +35,8 @@ AudioOutput::AudioOutput(QObject *parent)
         qCritical() << "Failed to start audio output device.";
         return;
     }
+
+    connect(this, &AudioOutput::newPacket, this, &AudioOutput::play);
 }
 
 AudioOutput::~AudioOutput()
@@ -57,8 +59,7 @@ void AudioOutput::addData(const QByteArray &data)
     dataQueue.enqueue(data);
     locker.unlock();
 
-    // Process the data immediately
-    play();
+    emit newPacket();
 }
 
 void AudioOutput::play()

@@ -23,16 +23,17 @@ LIBS += -lssp -lssp_nonshared
 
 SOURCES += \
     webrtc.cpp \
-    AudioOutput.cpp \
+    main.cpp \
     AudioInput.cpp \
+    AudioOutput.cpp \
     SignalingServer.cpp \
     SignalingClient.cpp \
     CallManager.cpp
 
 HEADERS += \
     webrtc.h \
-    AudioOutput.h \
     AudioInput.h \
+    AudioOutput.h \
     SignalingServer.h \
     SignalingClient.h \
     CallManager.h
@@ -41,13 +42,13 @@ QML += Main.qml
 
 RESOURCES += qml.qrc
 
-INCLUDEPATH += "PATHTOFILE"/include
-LIBS += -L"PATHTOFILE"/Windows/Mingw64 -ldatachannel.dll
+INCLUDEPATH += D:/VsCodePython/QT/Projects/libdatachannel/include
+LIBS += -LD:/VsCodePython/QT/Projects/libdatachannel/Windows/Mingw64 -ldatachannel.dll
 LIBS += -LC:/Qt/Tools/OpenSSLv3/Win_x64/bin -lcrypto-3-x64 -lssl-3-x64
 LIBS += -lws2_32
 
-INCLUDEPATH += "PATHTOFILE"/opus/include
-LIBS += -L"PATHTOFILE"/opus/Windows/Mingw64 -lopus
+INCLUDEPATH += D:/VsCodePython/QT/Projects/opus/include
+LIBS += -LD:/VsCodePython/QT/Projects/opus/Windows/Mingw64 -lopus
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

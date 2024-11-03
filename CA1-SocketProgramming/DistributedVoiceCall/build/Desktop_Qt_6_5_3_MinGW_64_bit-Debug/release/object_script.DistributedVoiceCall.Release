@@ -1,0 +1,14 @@
+release/webrtc.o
+release/main.o
+release/AudioInput.o
+release/AudioOutput.o
+release/SignalingServer.o
+release/SignalingClient.o
+release/CallManager.o
+release/qrc_qml.o
+release/moc_webrtc.o
+release/moc_AudioInput.o
+release/moc_AudioOutput.o
+release/moc_SignalingServer.o
+release/moc_SignalingClient.o
+release/moc_CallManager.o

@@ -1,11 +1,11 @@
 #ifndef AUDIOINPUT_H
 #define AUDIOINPUT_H
 
-#include <QAudioFormat>
-#include <QAudioSource>
 #include <QIODevice>
+#include <QAudioSource>
+#include <QAudioFormat>
+#include <QByteArray>
 #include <QObject>
-
 #include <opus.h>
 
 class AudioInput : public QIODevice
@@ -19,22 +19,19 @@ public:
     void start();
     void stop();
 
-signals:
-    void encodedDataReady(const QByteArray &data);
-
-protected:
     qint64 readData(char *data, qint64 maxlen) override;
     qint64 writeData(const char *data, qint64 len) override;
 
-private slots:
-    void processAudioBuffer();
+signals:
+    void encodedDataReady(const QByteArray &data);
 
 private:
     void initializeOpusEncoder();
+    void processAudioBuffer();
 
-    QAudioFormat audioFormat;
     QAudioSource *audioSource;
     QIODevice *inputDevice;
+    QAudioFormat audioFormat;
 
     OpusEncoder *opusEncoder;
     int opusFrameSize;
