@@ -1,10 +1,4 @@
-QT       += core gui
-QT       += quick qml
-QT       += core multimedia
-QT       += core multimedia multimediawidgets
-QT       += network
-QT       += quickcontrols2
-
+QT       += core gui quick qml multimedia multimediawidgets network quickcontrols2
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,39 +12,44 @@ QMAKE_LFLAGS += -fstack-protector
 LIBS += -lssp -lssp_nonshared
 
 # You can make your code fail to compile if it uses deprecated APIs.
-# In order to do so, uncomment the following line.
-#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+# Uncomment the following line to disable deprecated APIs before Qt 6.0.0
+# DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000
 
+# Organized sources
 SOURCES += \
-    webrtc.cpp \
-    main.cpp \
-    AudioInput.cpp \
-    AudioOutput.cpp \
-    SignalingServer.cpp \
-    SignalingClient.cpp \
-    CallManager.cpp
+    src/main.cpp \
+    src/Audio/AudioInput.cpp \
+    src/Audio/AudioOutput.cpp \
+    src/Network/WebRTC.cpp \
+    src/Network/SignalingServer.cpp \
+    src/Network/SignalingClient.cpp \
+    src/Network/CallManager.cpp
 
+# Organized headers
 HEADERS += \
-    webrtc.h \
-    AudioInput.h \
-    AudioOutput.h \
-    SignalingServer.h \
-    SignalingClient.h \
-    CallManager.h
+    src/Audio/AudioInput.h \
+    src/Audio/AudioOutput.h \
+    src/Network/WebRTC.h \
+    src/Network/SignalingServer.h \
+    src/Network/SignalingClient.h \
+    src/Network/CallManager.h
 
-QML += Main.qml
+# QML file
+QML += src/UI/Main.qml
 
+# Resources
 RESOURCES += qml.qrc
 
-INCLUDEPATH += D:/VsCodePython/QT/Projects/libdatachannel/include
-LIBS += -LD:/VsCodePython/QT/Projects/libdatachannel/Windows/Mingw64 -ldatachannel.dll
+# Library and include paths
+INCLUDEPATH += D:/UNIVERSITY/4031/CN/CAs/libdatachannel/include
+LIBS += -LD:/UNIVERSITY/4031/CN/CAs/libdatachannel/Windows/Mingw64 -ldatachannel.dll
 LIBS += -LC:/Qt/Tools/OpenSSLv3/Win_x64/bin -lcrypto-3-x64 -lssl-3-x64
 LIBS += -lws2_32
 
-INCLUDEPATH += D:/VsCodePython/QT/Projects/opus/include
-LIBS += -LD:/VsCodePython/QT/Projects/opus/Windows/Mingw64 -lopus
+INCLUDEPATH += D:/UNIVERSITY/4031/CN/CAs/opus/include
+LIBS += -LD:/UNIVERSITY/4031/CN/CAs/opus/Windows/Mingw64 -lopus
 
-# Default rules for deployment.
+# Default rules for deployment
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target

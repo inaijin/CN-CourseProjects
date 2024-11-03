@@ -16,10 +16,10 @@ CXX           = g++
 DEFINES       = -DUNICODE -D_UNICODE -DWIN32 -DMINGW_HAS_SECURE_API=1 -DQT_QML_DEBUG -DQT_NO_DEBUG -DQT_QUICKCONTROLS2_LIB -DQT_QUICK_LIB -DQT_OPENGL_LIB -DQT_MULTIMEDIAWIDGETS_LIB -DQT_MULTIMEDIA_LIB -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_QMLMODELS_LIB -DQT_QML_LIB -DQT_QMLINTEGRATION_LIB -DQT_NETWORK_LIB -DQT_CORE_LIB -DQT_NEEDS_QMAIN
 CFLAGS        = -fno-keep-inline-dllexport -O2 -Wall -Wextra -Wextra $(DEFINES)
 CXXFLAGS      = -fno-keep-inline-dllexport -O2 -std=gnu++1z -Wall -Wextra -Wextra -fexceptions -mthreads $(DEFINES)
-INCPATH       = -I../../../DistributedVoiceCall -I. -I../../../libdatachannel/include -I../../../opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -Irelease -I/include -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ 
+INCPATH       = -I../../../DistributedVoiceCall -I. -I../../../../libdatachannel/include -I../../../../opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -Irelease -I/include -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ 
 LINKER      =        g++
 LFLAGS        =        -fstack-protector -Wl,-s -Wl,-subsystem,windows -mthreads
-LIBS        =        -lssp -lssp_nonshared -LD:\VsCodePython\QT\Projects\libdatachannel\Windows\Mingw64 -ldatachannel.dll -LC:\Qt\Tools\OpenSSLv3\Win_x64\bin -lcrypto-3-x64 -lssl-3-x64 -lws2_32 -LD:\VsCodePython\QT\Projects\opus\Windows\Mingw64 -lopus C:\Qt\6.5.3\mingw_64\lib\libQt6QuickControls2.a C:\Qt\6.5.3\mingw_64\lib\libQt6Quick.a C:\Qt\6.5.3\mingw_64\lib\libQt6OpenGL.a C:\Qt\6.5.3\mingw_64\lib\libQt6MultimediaWidgets.a C:\Qt\6.5.3\mingw_64\lib\libQt6Multimedia.a C:\Qt\6.5.3\mingw_64\lib\libQt6Widgets.a C:\Qt\6.5.3\mingw_64\lib\libQt6Gui.a C:\Qt\6.5.3\mingw_64\lib\libQt6QmlModels.a C:\Qt\6.5.3\mingw_64\lib\libQt6Qml.a C:\Qt\6.5.3\mingw_64\lib\libQt6Network.a C:\Qt\6.5.3\mingw_64\lib\libQt6Core.a -lmingw32 C:\Qt\6.5.3\mingw_64\lib\libQt6EntryPoint.a -lshell32  
+LIBS        =        -lssp -lssp_nonshared -LD:\UNIVERSITY\4031\CN\CAs\libdatachannel\Windows\Mingw64 -ldatachannel.dll -LC:\Qt\Tools\OpenSSLv3\Win_x64\bin -lcrypto-3-x64 -lssl-3-x64 -lws2_32 -LD:\UNIVERSITY\4031\CN\CAs\opus\Windows\Mingw64 -lopus C:\Qt\6.5.3\mingw_64\lib\libQt6QuickControls2.a C:\Qt\6.5.3\mingw_64\lib\libQt6Quick.a C:\Qt\6.5.3\mingw_64\lib\libQt6OpenGL.a C:\Qt\6.5.3\mingw_64\lib\libQt6MultimediaWidgets.a C:\Qt\6.5.3\mingw_64\lib\libQt6Multimedia.a C:\Qt\6.5.3\mingw_64\lib\libQt6Widgets.a C:\Qt\6.5.3\mingw_64\lib\libQt6Gui.a C:\Qt\6.5.3\mingw_64\lib\libQt6QmlModels.a C:\Qt\6.5.3\mingw_64\lib\libQt6Qml.a C:\Qt\6.5.3\mingw_64\lib\libQt6Network.a C:\Qt\6.5.3\mingw_64\lib\libQt6Core.a -lmingw32 C:\Qt\6.5.3\mingw_64\lib\libQt6EntryPoint.a -lshell32  
 QMAKE         = C:\Qt\6.5.3\mingw_64\bin\qmake.exe
 DEL_FILE      = del
 CHK_DIR_EXISTS= if not exist
@@ -50,46 +50,46 @@ OBJECTS_DIR   = release
 
 ####### Files
 
-SOURCES       = ..\..\webrtc.cpp \
-		..\..\main.cpp \
-		..\..\AudioInput.cpp \
-		..\..\AudioOutput.cpp \
-		..\..\SignalingServer.cpp \
-		..\..\SignalingClient.cpp \
-		..\..\CallManager.cpp release\qrc_qml.cpp \
-		release\moc_webrtc.cpp \
+SOURCES       = ..\..\src\main.cpp \
+		..\..\src\Audio\AudioInput.cpp \
+		..\..\src\Audio\AudioOutput.cpp \
+		..\..\src\Network\WebRTC.cpp \
+		..\..\src\Network\SignalingServer.cpp \
+		..\..\src\Network\SignalingClient.cpp \
+		..\..\src\Network\CallManager.cpp release\qrc_qml.cpp \
 		release\moc_AudioInput.cpp \
 		release\moc_AudioOutput.cpp \
+		release\moc_WebRTC.cpp \
 		release\moc_SignalingServer.cpp \
 		release\moc_SignalingClient.cpp \
 		release\moc_CallManager.cpp
-OBJECTS       = release/webrtc.o \
-		release/main.o \
+OBJECTS       = release/main.o \
 		release/AudioInput.o \
 		release/AudioOutput.o \
+		release/WebRTC.o \
 		release/SignalingServer.o \
 		release/SignalingClient.o \
 		release/CallManager.o \
 		release/qrc_qml.o \
-		release/moc_webrtc.o \
 		release/moc_AudioInput.o \
 		release/moc_AudioOutput.o \
+		release/moc_WebRTC.o \
 		release/moc_SignalingServer.o \
 		release/moc_SignalingClient.o \
 		release/moc_CallManager.o
 
-DIST          =  ..\..\webrtc.h \
-		..\..\AudioInput.h \
-		..\..\AudioOutput.h \
-		..\..\SignalingServer.h \
-		..\..\SignalingClient.h \
-		..\..\CallManager.h ..\..\webrtc.cpp \
-		..\..\main.cpp \
-		..\..\AudioInput.cpp \
-		..\..\AudioOutput.cpp \
-		..\..\SignalingServer.cpp \
-		..\..\SignalingClient.cpp \
-		..\..\CallManager.cpp
+DIST          =  ..\..\src\Audio\AudioInput.h \
+		..\..\src\Audio\AudioOutput.h \
+		..\..\src\Network\WebRTC.h \
+		..\..\src\Network\SignalingServer.h \
+		..\..\src\Network\SignalingClient.h \
+		..\..\src\Network\CallManager.h ..\..\src\main.cpp \
+		..\..\src\Audio\AudioInput.cpp \
+		..\..\src\Audio\AudioOutput.cpp \
+		..\..\src\Network\WebRTC.cpp \
+		..\..\src\Network\SignalingServer.cpp \
+		..\..\src\Network\SignalingClient.cpp \
+		..\..\src\Network\CallManager.cpp
 QMAKE_TARGET  = DistributedVoiceCall
 DESTDIR        = release\ #avoid trailing-slash linebreak
 TARGET         = DistributedVoiceCall.exe
@@ -109,10 +109,10 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) DistributedVoiceCall.zip $(SOURCES) $(DIST) ..\..\DistributedVoiceCall.pro C:\Qt\6.5.3\mingw_64\mkspecs\features\spec_pre.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\device_config.prf C:\Qt\6.5.3\mingw_64\mkspecs\common\sanitize.conf C:\Qt\6.5.3\mingw_64\mkspecs\common\gcc-base.conf C:\Qt\6.5.3\mingw_64\mkspecs\common\g++-base.conf C:\Qt\6.5.3\mingw_64\mkspecs\features\win32\windows_vulkan_sdk.prf C:\Qt\6.5.3\mingw_64\mkspecs\common\windows-vulkan.conf C:\Qt\6.5.3\mingw_64\mkspecs\common\g++-win32.conf C:\Qt\6.5.3\mingw_64\mkspecs\common\windows-desktop.conf C:\Qt\6.5.3\mingw_64\mkspecs\qconfig.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_ext_freetype.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_ext_libjpeg.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_ext_libpng.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3danimation.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3danimation_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dextras.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dextras_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dlogic.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dlogic_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickanimation.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickextras.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickextras_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickinput.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickinput_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickrender.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickrender_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickscene2d.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3drender.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3drender_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_activeqt.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_activeqt_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axserver.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_bodymovin_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_charts.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_charts_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_chartsqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_chartsqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_core.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_core_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_datavisualization.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_datavisualization_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_datavisualizationqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_datavisualizationqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_dbus.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_designer.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_entrypoint_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_example_icons_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_fb_support_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_freetype_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_grpc.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_grpc_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_gui.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_harfbuzz_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_help.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_help_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_httpserver.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_httpserver_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_insighttracker.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_insighttracker_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_insighttrackerqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_insighttrackerqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_jpeg_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_jsonrpc_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsanimation.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsanimation_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsfolderlistmodel.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsfolderlistmodel_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsqmlmodels.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsqmlmodels_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labssettings.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labssettings_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labssharedimage.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labssharedimage_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labswavefrontmesh.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labswavefrontmesh_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_languageserver_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_linguist.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_linguist_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_location.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_location_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimediaquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_network.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_network_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_networkauth.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_networkauth_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_nfc.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_opengl.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_openglwidgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_openglwidgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_png_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_positioning.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_positioningquick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_positioningquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_protobuf.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_protobuf_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlcompiler_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlcore.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlcore_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmldebug_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmldom_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlintegration.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlintegration_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmllocalstorage.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmllocalstorage_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlmodels.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlmodels_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmltyperegistrar_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlworkerscript.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlworkerscript_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlxmllistmodel.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlxmllistmodel_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3d.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3d_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dassetimport.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dassetimport_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dassetutils.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dassetutils_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3deffects.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3deffects_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dglslparser_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dhelpers.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dhelpers_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dhelpersimpl.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dhelpersimpl_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3diblbaker.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3diblbaker_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dparticleeffects.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dparticleeffects_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dparticles.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dparticles_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dphysics.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dphysics_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dphysicshelpers.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dphysicshelpers_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3druntimerender.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3druntimerender_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dspatialaudio_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dutils.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dutils_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrols2.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrols2impl.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrols2impl_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrolstestutilsprivate_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2utils.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2utils_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickeffects_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicklayouts.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicklayouts_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickshapes_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktemplates2.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktestutilsprivate_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktimeline.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktimeline_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_remoteobjects.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_remoteobjects_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_remoteobjectsqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_remoteobjectsqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_repparser.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_repparser_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_scxml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_scxml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_scxmlqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_scxmlqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sensors.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sensorsquick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sensorsquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_serialbus.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_serialbus_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_serialport.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_shadertools.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_shadertools_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_spatialaudio.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_spatialaudio_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sql.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_statemachine.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_statemachine_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_statemachineqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_statemachineqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_svg.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_svgwidgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_svgwidgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_testlib.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_texttospeech.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_texttospeech_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_tools_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_uitools.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_virtualkeyboard.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_virtualkeyboard_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_websockets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webview.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webview_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webviewquick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webviewquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_widgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_xml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_zlib_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\features\qt_functions.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\qt_config.prf C:\Qt\6.5.3\mingw_64\mkspecs\win32-g++\qmake.conf C:\Qt\6.5.3\mingw_64\mkspecs\features\spec_post.prf .qmake.stash C:\Qt\6.5.3\mingw_64\mkspecs\features\exclusive_builds.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\toolchain.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\default_pre.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\win32\default_pre.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\resolve_config.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\exclusive_builds_post.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\default_post.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\build_pass.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\qml_debug.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\entrypoint.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\precompile_header.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\warn_on.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\qt.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\resources_functions.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\resources.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\moc.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\win32\opengl.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\uic.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\qmake_use.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\file_copies.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\win32\windows.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\testcase_targets.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\exceptions.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\yacc.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\lex.prf ..\..\DistributedVoiceCall.pro ..\..\qml.qrc C:\Qt\6.5.3\mingw_64\lib\Qt6QuickControls2.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Quick.prl C:\Qt\6.5.3\mingw_64\lib\Qt6OpenGL.prl C:\Qt\6.5.3\mingw_64\lib\Qt6MultimediaWidgets.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Multimedia.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Widgets.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Gui.prl C:\Qt\6.5.3\mingw_64\lib\Qt6QmlModels.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Qml.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Network.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Core.prl C:\Qt\6.5.3\mingw_64\lib\Qt6EntryPoint.prl   ..\..\qml.qrc C:\Qt\6.5.3\mingw_64\mkspecs\features\data\dummy.cpp ..\..\webrtc.h ..\..\AudioInput.h ..\..\AudioOutput.h ..\..\SignalingServer.h ..\..\SignalingClient.h ..\..\CallManager.h  ..\..\webrtc.cpp ..\..\main.cpp ..\..\AudioInput.cpp ..\..\AudioOutput.cpp ..\..\SignalingServer.cpp ..\..\SignalingClient.cpp ..\..\CallManager.cpp     
+	$(ZIP) DistributedVoiceCall.zip $(SOURCES) $(DIST) ..\..\DistributedVoiceCall.pro C:\Qt\6.5.3\mingw_64\mkspecs\features\spec_pre.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\device_config.prf C:\Qt\6.5.3\mingw_64\mkspecs\common\sanitize.conf C:\Qt\6.5.3\mingw_64\mkspecs\common\gcc-base.conf C:\Qt\6.5.3\mingw_64\mkspecs\common\g++-base.conf C:\Qt\6.5.3\mingw_64\mkspecs\features\win32\windows_vulkan_sdk.prf C:\Qt\6.5.3\mingw_64\mkspecs\common\windows-vulkan.conf C:\Qt\6.5.3\mingw_64\mkspecs\common\g++-win32.conf C:\Qt\6.5.3\mingw_64\mkspecs\common\windows-desktop.conf C:\Qt\6.5.3\mingw_64\mkspecs\qconfig.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_ext_freetype.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_ext_libjpeg.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_ext_libpng.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3danimation.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3danimation_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dcore.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dcore_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dextras.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dextras_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dinput.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dinput_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dlogic.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dlogic_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickanimation.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickextras.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickextras_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickinput.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickinput_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickrender.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickrender_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickscene2d.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3drender.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_3drender_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_activeqt.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_activeqt_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axbase_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axcontainer.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axcontainer_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axserver.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_axserver_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_bluetooth.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_bluetooth_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_bodymovin_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_charts.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_charts_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_chartsqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_chartsqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_concurrent.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_concurrent_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_core.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_core_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_datavisualization.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_datavisualization_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_datavisualizationqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_datavisualizationqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_dbus.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_dbus_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_designer.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_designer_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_designercomponents_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_entrypoint_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_example_icons_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_fb_support_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_freetype_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_grpc.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_grpc_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_gui.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_gui_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_harfbuzz_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_help.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_help_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_httpserver.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_httpserver_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_insighttracker.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_insighttracker_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_insighttrackerqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_insighttrackerqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_jpeg_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_jsonrpc_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsanimation.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsanimation_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsfolderlistmodel.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsfolderlistmodel_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsqmlmodels.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labsqmlmodels_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labssettings.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labssettings_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labssharedimage.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labssharedimage_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labswavefrontmesh.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_labswavefrontmesh_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_languageserver_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_linguist.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_linguist_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_location.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_location_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimedia.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimedia_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimediaquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimediawidgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_network.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_network_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_networkauth.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_networkauth_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_nfc.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_nfc_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_opengl.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_opengl_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_openglwidgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_openglwidgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_packetprotocol_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_png_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_positioning.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_positioning_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_positioningquick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_positioningquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_printsupport.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_printsupport_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_protobuf.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_protobuf_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlcompiler_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlcore.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlcore_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmldebug_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmldom_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlintegration.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlintegration_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmllocalstorage.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmllocalstorage_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlmodels.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlmodels_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmltest.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmltest_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmltyperegistrar_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlworkerscript.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlworkerscript_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlxmllistmodel.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_qmlxmllistmodel_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3d.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3d_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dassetimport.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dassetimport_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dassetutils.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dassetutils_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3deffects.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3deffects_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dglslparser_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dhelpers.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dhelpers_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dhelpersimpl.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dhelpersimpl_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3diblbaker.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3diblbaker_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dparticleeffects.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dparticleeffects_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dparticles.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dparticles_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dphysics.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dphysics_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dphysicshelpers.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dphysicshelpers_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3druntimerender.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3druntimerender_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dspatialaudio_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dutils.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick3dutils_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrols2.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrols2impl.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrols2impl_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickcontrolstestutilsprivate_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2quickimpl_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2utils.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickdialogs2utils_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickeffects_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicklayouts.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicklayouts_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickparticles_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickshapes_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktemplates2.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktestutilsprivate_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktimeline.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quicktimeline_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickwidgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_quickwidgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_remoteobjects.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_remoteobjects_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_remoteobjectsqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_remoteobjectsqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_repparser.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_repparser_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_scxml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_scxml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_scxmlqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_scxmlqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sensors.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sensors_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sensorsquick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sensorsquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_serialbus.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_serialbus_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_serialport.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_serialport_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_shadertools.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_shadertools_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_spatialaudio.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_spatialaudio_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sql.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_sql_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_statemachine.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_statemachine_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_statemachineqml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_statemachineqml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_svg.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_svg_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_svgwidgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_svgwidgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_testlib.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_testlib_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_texttospeech.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_texttospeech_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_tools_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_uiplugin.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_uitools.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_uitools_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_virtualkeyboard.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_virtualkeyboard_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webchannel.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webchannel_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_websockets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_websockets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webview.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webview_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webviewquick.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_webviewquick_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_widgets.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_widgets_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_xml.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_xml_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\modules\qt_lib_zlib_private.pri C:\Qt\6.5.3\mingw_64\mkspecs\features\qt_functions.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\qt_config.prf C:\Qt\6.5.3\mingw_64\mkspecs\win32-g++\qmake.conf C:\Qt\6.5.3\mingw_64\mkspecs\features\spec_post.prf .qmake.stash C:\Qt\6.5.3\mingw_64\mkspecs\features\exclusive_builds.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\toolchain.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\default_pre.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\win32\default_pre.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\resolve_config.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\exclusive_builds_post.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\default_post.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\build_pass.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\qml_debug.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\entrypoint.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\precompile_header.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\warn_on.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\qt.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\resources_functions.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\resources.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\moc.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\win32\opengl.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\uic.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\qmake_use.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\file_copies.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\win32\windows.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\testcase_targets.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\exceptions.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\yacc.prf C:\Qt\6.5.3\mingw_64\mkspecs\features\lex.prf ..\..\DistributedVoiceCall.pro ..\..\qml.qrc C:\Qt\6.5.3\mingw_64\lib\Qt6QuickControls2.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Quick.prl C:\Qt\6.5.3\mingw_64\lib\Qt6OpenGL.prl C:\Qt\6.5.3\mingw_64\lib\Qt6MultimediaWidgets.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Multimedia.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Widgets.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Gui.prl C:\Qt\6.5.3\mingw_64\lib\Qt6QmlModels.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Qml.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Network.prl C:\Qt\6.5.3\mingw_64\lib\Qt6Core.prl C:\Qt\6.5.3\mingw_64\lib\Qt6EntryPoint.prl   ..\..\qml.qrc C:\Qt\6.5.3\mingw_64\mkspecs\features\data\dummy.cpp ..\..\src\Audio\AudioInput.h ..\..\src\Audio\AudioOutput.h ..\..\src\Network\WebRTC.h ..\..\src\Network\SignalingServer.h ..\..\src\Network\SignalingClient.h ..\..\src\Network\CallManager.h  ..\..\src\main.cpp ..\..\src\Audio\AudioInput.cpp ..\..\src\Audio\AudioOutput.cpp ..\..\src\Network\WebRTC.cpp ..\..\src\Network\SignalingServer.cpp ..\..\src\Network\SignalingClient.cpp ..\..\src\Network\CallManager.cpp     
 
 clean: compiler_clean 
-	-$(DEL_FILE) release\webrtc.o release\main.o release\AudioInput.o release\AudioOutput.o release\SignalingServer.o release\SignalingClient.o release\CallManager.o release\qrc_qml.o release\moc_webrtc.o release\moc_AudioInput.o release\moc_AudioOutput.o release\moc_SignalingServer.o release\moc_SignalingClient.o release\moc_CallManager.o
+	-$(DEL_FILE) release\main.o release\AudioInput.o release\AudioOutput.o release\WebRTC.o release\SignalingServer.o release\SignalingClient.o release\CallManager.o release\qrc_qml.o release\moc_AudioInput.o release\moc_AudioOutput.o release\moc_WebRTC.o release\moc_SignalingServer.o release\moc_SignalingClient.o release\moc_CallManager.o
 
 distclean: clean 
 	-$(DEL_FILE) .qmake.stash
@@ -143,10 +143,242 @@ compiler_moc_predefs_clean:
 release/moc_predefs.h: C:/Qt/6.5.3/mingw_64/mkspecs/features/data/dummy.cpp
 	g++ -fno-keep-inline-dllexport -O2 -std=gnu++1z -Wall -Wextra -Wextra -dM -E -o release\moc_predefs.h C:\Qt\6.5.3\mingw_64\mkspecs\features\data\dummy.cpp
 
-compiler_moc_header_make_all: release/moc_webrtc.cpp release/moc_AudioInput.cpp release/moc_AudioOutput.cpp release/moc_SignalingServer.cpp release/moc_SignalingClient.cpp release/moc_CallManager.cpp
+compiler_moc_header_make_all: release/moc_AudioInput.cpp release/moc_AudioOutput.cpp release/moc_WebRTC.cpp release/moc_SignalingServer.cpp release/moc_SignalingClient.cpp release/moc_CallManager.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) release\moc_webrtc.cpp release\moc_AudioInput.cpp release\moc_AudioOutput.cpp release\moc_SignalingServer.cpp release\moc_SignalingClient.cpp release\moc_CallManager.cpp
-release/moc_webrtc.cpp: ../../webrtc.h \
+	-$(DEL_FILE) release\moc_AudioInput.cpp release\moc_AudioOutput.cpp release\moc_WebRTC.cpp release\moc_SignalingServer.cpp release\moc_SignalingClient.cpp release\moc_CallManager.cpp
+release/moc_AudioInput.cpp: ../../src/Audio/AudioInput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversionchecks.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qconfig.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcore-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtconfigmacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcoreexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtpreprocessorsupport.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtnoop.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qsystemdetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qprocessordetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompilerdetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qassert.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypes.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtclasshelpermacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversion.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypeinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerfwd.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qsysinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qlogging.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qflags.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbasicatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic_cxx11.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qgenericatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qconstructormacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qdarwinhelpers.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qexceptionhandling.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qforeach.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtdeprecationmarkers.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qttypetraits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qfunctionpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobalstatic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmalloc.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qminmax.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qnumeric.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qoverload.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qswap.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtenvironmentvariables.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtresource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qttranslation.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qversiontagging.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtmetamacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstring.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qchar.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearray.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qrefcount.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydata.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qpair.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydatapointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydataops.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainertools_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qxptype_traits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringfwd.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/q20type_traits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringliteral.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qanystringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qutf8stringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringtokenizer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringbuilder.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qlist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qhashfunctions.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterator.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearraylist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringlist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringmatcher.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcoreevent.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopedpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetatype.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatastream.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevicebase.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qfloat16.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmath.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterable.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetacontainer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtaggedpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
+		../../../../opus/include/opus.h \
+		../../../../opus/include/opus_types.h \
+		../../../../opus/include/opus_defines.h \
+		release/moc_predefs.h \
+		C:/Qt/6.5.3/mingw_64/bin/moc.exe
+	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall -ID:/UNIVERSITY/4031/CN/CAs/libdatachannel/include -ID:/UNIVERSITY/4031/CN/CAs/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\src\Audio\AudioInput.h -o release\moc_AudioInput.cpp
+
+release/moc_AudioOutput.cpp: ../../src/Audio/AudioOutput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversionchecks.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qconfig.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcore-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtconfigmacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcoreexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtpreprocessorsupport.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtnoop.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qsystemdetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qprocessordetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompilerdetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qassert.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypes.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtclasshelpermacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversion.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypeinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerfwd.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qsysinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qlogging.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qflags.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbasicatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic_cxx11.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qgenericatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qconstructormacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qdarwinhelpers.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qexceptionhandling.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qforeach.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtdeprecationmarkers.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qttypetraits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qfunctionpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobalstatic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmalloc.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qminmax.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qnumeric.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qoverload.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qswap.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtenvironmentvariables.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtresource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qttranslation.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qversiontagging.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtmetamacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstring.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qchar.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearray.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qrefcount.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydata.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qpair.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydatapointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydataops.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainertools_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qxptype_traits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringfwd.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/q20type_traits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringliteral.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qanystringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qutf8stringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringtokenizer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringbuilder.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qlist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qhashfunctions.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterator.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearraylist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringlist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringmatcher.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcoreevent.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopedpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetatype.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatastream.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevicebase.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qfloat16.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmath.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterable.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetacontainer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtaggedpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmutex.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtsan_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h \
+		../../../../opus/include/opus.h \
+		../../../../opus/include/opus_types.h \
+		../../../../opus/include/opus_defines.h \
+		release/moc_predefs.h \
+		C:/Qt/6.5.3/mingw_64/bin/moc.exe
+	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall -ID:/UNIVERSITY/4031/CN/CAs/libdatachannel/include -ID:/UNIVERSITY/4031/CN/CAs/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\src\Audio\AudioOutput.h -o release\moc_AudioOutput.cpp
+
+release/moc_WebRTC.cpp: ../../src/Network/WebRTC.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qmap.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterator.h \
@@ -242,281 +474,46 @@ release/moc_webrtc.cpp: ../../webrtc.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
-		../../../libdatachannel/include/rtc/rtc.hpp \
-		../../../libdatachannel/include/rtc/rtc.h \
-		../../../libdatachannel/include/rtc/version.h \
-		../../../libdatachannel/include/rtc/common.hpp \
-		../../../libdatachannel/include/rtc/utils.hpp \
-		../../../libdatachannel/include/rtc/global.hpp \
-		../../../libdatachannel/include/rtc/datachannel.hpp \
-		../../../libdatachannel/include/rtc/channel.hpp \
-		../../../libdatachannel/include/rtc/reliability.hpp \
-		../../../libdatachannel/include/rtc/peerconnection.hpp \
-		../../../libdatachannel/include/rtc/candidate.hpp \
-		../../../libdatachannel/include/rtc/configuration.hpp \
-		../../../libdatachannel/include/rtc/description.hpp \
-		../../../libdatachannel/include/rtc/track.hpp \
-		../../../libdatachannel/include/rtc/mediahandler.hpp \
-		../../../libdatachannel/include/rtc/message.hpp \
-		../../../libdatachannel/include/rtc/frameinfo.hpp \
-		../../../libdatachannel/include/rtc/websocket.hpp \
-		../../../libdatachannel/include/rtc/websocketserver.hpp \
-		../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/nalunit.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
-		../../../libdatachannel/include/rtc/rtp.hpp \
-		../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265nalunit.hpp \
-		../../../libdatachannel/include/rtc/plihandler.hpp \
-		../../../libdatachannel/include/rtc/rembhandler.hpp \
-		../../../libdatachannel/include/rtc/pacinghandler.hpp \
-		../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
-		../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
-		../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
-		../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
+		../../../../libdatachannel/include/rtc/rtc.hpp \
+		../../../../libdatachannel/include/rtc/rtc.h \
+		../../../../libdatachannel/include/rtc/version.h \
+		../../../../libdatachannel/include/rtc/common.hpp \
+		../../../../libdatachannel/include/rtc/utils.hpp \
+		../../../../libdatachannel/include/rtc/global.hpp \
+		../../../../libdatachannel/include/rtc/datachannel.hpp \
+		../../../../libdatachannel/include/rtc/channel.hpp \
+		../../../../libdatachannel/include/rtc/reliability.hpp \
+		../../../../libdatachannel/include/rtc/peerconnection.hpp \
+		../../../../libdatachannel/include/rtc/candidate.hpp \
+		../../../../libdatachannel/include/rtc/configuration.hpp \
+		../../../../libdatachannel/include/rtc/description.hpp \
+		../../../../libdatachannel/include/rtc/track.hpp \
+		../../../../libdatachannel/include/rtc/mediahandler.hpp \
+		../../../../libdatachannel/include/rtc/message.hpp \
+		../../../../libdatachannel/include/rtc/frameinfo.hpp \
+		../../../../libdatachannel/include/rtc/websocket.hpp \
+		../../../../libdatachannel/include/rtc/websocketserver.hpp \
+		../../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/nalunit.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
+		../../../../libdatachannel/include/rtc/rtp.hpp \
+		../../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265nalunit.hpp \
+		../../../../libdatachannel/include/rtc/plihandler.hpp \
+		../../../../libdatachannel/include/rtc/rembhandler.hpp \
+		../../../../libdatachannel/include/rtc/pacinghandler.hpp \
+		../../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
+		../../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
+		../../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
+		../../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
 		release/moc_predefs.h \
 		C:/Qt/6.5.3/mingw_64/bin/moc.exe
-	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/VsCodePython/QT/Projects/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/VsCodePython/QT/Projects/DistributedVoiceCall -ID:/VsCodePython/QT/Projects/libdatachannel/include -ID:/VsCodePython/QT/Projects/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\webrtc.h -o release\moc_webrtc.cpp
+	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall -ID:/UNIVERSITY/4031/CN/CAs/libdatachannel/include -ID:/UNIVERSITY/4031/CN/CAs/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\src\Network\WebRTC.h -o release\moc_WebRTC.cpp
 
-release/moc_AudioInput.cpp: ../../AudioInput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversionchecks.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qconfig.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcore-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtconfigmacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcoreexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtpreprocessorsupport.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtnoop.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qsystemdetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qprocessordetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompilerdetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qassert.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypes.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtclasshelpermacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversion.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypeinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerfwd.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qsysinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qlogging.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qflags.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbasicatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic_cxx11.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qgenericatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qconstructormacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qdarwinhelpers.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qexceptionhandling.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qforeach.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtdeprecationmarkers.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qttypetraits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qfunctionpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobalstatic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmalloc.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qminmax.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qnumeric.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qoverload.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qswap.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtenvironmentvariables.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtresource.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qttranslation.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qversiontagging.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevicebase.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtmetamacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstring.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qchar.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearray.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qrefcount.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydata.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qpair.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydatapointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydataops.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainertools_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qxptype_traits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringfwd.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/q20type_traits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringliteral.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qanystringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qutf8stringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringtokenizer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringbuilder.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qlist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qhashfunctions.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterator.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearraylist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringlist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringmatcher.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcoreevent.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopedpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetatype.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatastream.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qfloat16.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmath.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterable.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetacontainer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtaggedpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QByteArray \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
-		../../../opus/include/opus.h \
-		../../../opus/include/opus_types.h \
-		../../../opus/include/opus_defines.h \
-		release/moc_predefs.h \
-		C:/Qt/6.5.3/mingw_64/bin/moc.exe
-	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/VsCodePython/QT/Projects/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/VsCodePython/QT/Projects/DistributedVoiceCall -ID:/VsCodePython/QT/Projects/libdatachannel/include -ID:/VsCodePython/QT/Projects/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\AudioInput.h -o release\moc_AudioInput.cpp
-
-release/moc_AudioOutput.cpp: ../../AudioOutput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversionchecks.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qconfig.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcore-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtconfigmacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcoreexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtpreprocessorsupport.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtnoop.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qsystemdetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qprocessordetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompilerdetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qassert.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypes.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtclasshelpermacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversion.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypeinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerfwd.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qsysinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qlogging.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qflags.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbasicatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic_cxx11.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qgenericatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qconstructormacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qdarwinhelpers.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qexceptionhandling.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qforeach.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtdeprecationmarkers.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qttypetraits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qfunctionpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobalstatic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmalloc.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qminmax.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qnumeric.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qoverload.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qswap.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtenvironmentvariables.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtresource.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qttranslation.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qversiontagging.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtmetamacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstring.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qchar.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearray.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qrefcount.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydata.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qpair.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydatapointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydataops.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainertools_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qxptype_traits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringfwd.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/q20type_traits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringliteral.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qanystringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qutf8stringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringtokenizer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringbuilder.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qlist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qhashfunctions.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterator.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearraylist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringlist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringmatcher.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcoreevent.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopedpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetatype.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatastream.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevicebase.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qfloat16.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmath.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterable.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetacontainer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtaggedpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmutex.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtsan_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QByteArray \
-		../../../opus/include/opus.h \
-		../../../opus/include/opus_types.h \
-		../../../opus/include/opus_defines.h \
-		release/moc_predefs.h \
-		C:/Qt/6.5.3/mingw_64/bin/moc.exe
-	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/VsCodePython/QT/Projects/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/VsCodePython/QT/Projects/DistributedVoiceCall -ID:/VsCodePython/QT/Projects/libdatachannel/include -ID:/VsCodePython/QT/Projects/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\AudioOutput.h -o release\moc_AudioOutput.cpp
-
-release/moc_SignalingServer.cpp: ../../SignalingServer.h \
+release/moc_SignalingServer.cpp: ../../src/Network/SignalingServer.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
@@ -647,9 +644,9 @@ release/moc_SignalingServer.cpp: ../../SignalingServer.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h \
 		release/moc_predefs.h \
 		C:/Qt/6.5.3/mingw_64/bin/moc.exe
-	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/VsCodePython/QT/Projects/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/VsCodePython/QT/Projects/DistributedVoiceCall -ID:/VsCodePython/QT/Projects/libdatachannel/include -ID:/VsCodePython/QT/Projects/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\SignalingServer.h -o release\moc_SignalingServer.cpp
+	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall -ID:/UNIVERSITY/4031/CN/CAs/libdatachannel/include -ID:/UNIVERSITY/4031/CN/CAs/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\src\Network\SignalingServer.h -o release\moc_SignalingServer.cpp
 
-release/moc_SignalingClient.cpp: ../../SignalingClient.h \
+release/moc_SignalingClient.cpp: ../../src/Network/SignalingClient.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
@@ -778,9 +775,9 @@ release/moc_SignalingClient.cpp: ../../SignalingClient.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h \
 		release/moc_predefs.h \
 		C:/Qt/6.5.3/mingw_64/bin/moc.exe
-	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/VsCodePython/QT/Projects/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/VsCodePython/QT/Projects/DistributedVoiceCall -ID:/VsCodePython/QT/Projects/libdatachannel/include -ID:/VsCodePython/QT/Projects/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\SignalingClient.h -o release\moc_SignalingClient.cpp
+	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall -ID:/UNIVERSITY/4031/CN/CAs/libdatachannel/include -ID:/UNIVERSITY/4031/CN/CAs/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\src\Network\SignalingClient.h -o release\moc_SignalingClient.cpp
 
-release/moc_CallManager.cpp: ../../CallManager.h \
+release/moc_CallManager.cpp: ../../src/Network/CallManager.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
@@ -873,93 +870,28 @@ release/moc_CallManager.cpp: ../../CallManager.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QString \
-		../../webrtc.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmap.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata_impl.h \
-		../../../libdatachannel/include/rtc/rtc.hpp \
-		../../../libdatachannel/include/rtc/rtc.h \
-		../../../libdatachannel/include/rtc/version.h \
-		../../../libdatachannel/include/rtc/common.hpp \
-		../../../libdatachannel/include/rtc/utils.hpp \
-		../../../libdatachannel/include/rtc/global.hpp \
-		../../../libdatachannel/include/rtc/datachannel.hpp \
-		../../../libdatachannel/include/rtc/channel.hpp \
-		../../../libdatachannel/include/rtc/reliability.hpp \
-		../../../libdatachannel/include/rtc/peerconnection.hpp \
-		../../../libdatachannel/include/rtc/candidate.hpp \
-		../../../libdatachannel/include/rtc/configuration.hpp \
-		../../../libdatachannel/include/rtc/description.hpp \
-		../../../libdatachannel/include/rtc/track.hpp \
-		../../../libdatachannel/include/rtc/mediahandler.hpp \
-		../../../libdatachannel/include/rtc/message.hpp \
-		../../../libdatachannel/include/rtc/frameinfo.hpp \
-		../../../libdatachannel/include/rtc/websocket.hpp \
-		../../../libdatachannel/include/rtc/websocketserver.hpp \
-		../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/nalunit.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
-		../../../libdatachannel/include/rtc/rtp.hpp \
-		../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265nalunit.hpp \
-		../../../libdatachannel/include/rtc/plihandler.hpp \
-		../../../libdatachannel/include/rtc/rembhandler.hpp \
-		../../../libdatachannel/include/rtc/pacinghandler.hpp \
-		../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
-		../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
-		../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
-		../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
-		../../AudioInput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QByteArray \
-		../../../opus/include/opus.h \
-		../../../opus/include/opus_types.h \
-		../../../opus/include/opus_defines.h \
-		../../AudioOutput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmutex.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtsan_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h \
-		../../SignalingServer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpServer \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpserver.h \
+		../../src/Network/SignalingClient.h \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpsocket.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtnetworkglobal.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtnetwork-config.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtnetworkexports.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qhostaddress.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qdebug.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qtextstream.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringconverter_base.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontiguouscache.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qsharedpointer.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmap.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qset.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qhash.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qvarlengtharray.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/q20memory.h \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpsocket.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qvariant.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonDocument \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsondocument.h \
@@ -974,10 +906,74 @@ release/moc_CallManager.cpp: ../../CallManager.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/quuid.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h \
-		../../SignalingClient.h \
+		../../src/Network/SignalingServer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpServer \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpserver.h \
+		../../src/Network/WebRTC.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
+		../../../../libdatachannel/include/rtc/rtc.hpp \
+		../../../../libdatachannel/include/rtc/rtc.h \
+		../../../../libdatachannel/include/rtc/version.h \
+		../../../../libdatachannel/include/rtc/common.hpp \
+		../../../../libdatachannel/include/rtc/utils.hpp \
+		../../../../libdatachannel/include/rtc/global.hpp \
+		../../../../libdatachannel/include/rtc/datachannel.hpp \
+		../../../../libdatachannel/include/rtc/channel.hpp \
+		../../../../libdatachannel/include/rtc/reliability.hpp \
+		../../../../libdatachannel/include/rtc/peerconnection.hpp \
+		../../../../libdatachannel/include/rtc/candidate.hpp \
+		../../../../libdatachannel/include/rtc/configuration.hpp \
+		../../../../libdatachannel/include/rtc/description.hpp \
+		../../../../libdatachannel/include/rtc/track.hpp \
+		../../../../libdatachannel/include/rtc/mediahandler.hpp \
+		../../../../libdatachannel/include/rtc/message.hpp \
+		../../../../libdatachannel/include/rtc/frameinfo.hpp \
+		../../../../libdatachannel/include/rtc/websocket.hpp \
+		../../../../libdatachannel/include/rtc/websocketserver.hpp \
+		../../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/nalunit.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
+		../../../../libdatachannel/include/rtc/rtp.hpp \
+		../../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265nalunit.hpp \
+		../../../../libdatachannel/include/rtc/plihandler.hpp \
+		../../../../libdatachannel/include/rtc/rembhandler.hpp \
+		../../../../libdatachannel/include/rtc/pacinghandler.hpp \
+		../../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
+		../../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
+		../../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
+		../../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
+		../../src/Audio/AudioInput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
+		../../../../opus/include/opus.h \
+		../../../../opus/include/opus_types.h \
+		../../../../opus/include/opus_defines.h \
+		../../src/Audio/AudioOutput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmutex.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtsan_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h \
 		release/moc_predefs.h \
 		C:/Qt/6.5.3/mingw_64/bin/moc.exe
-	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/VsCodePython/QT/Projects/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/VsCodePython/QT/Projects/DistributedVoiceCall -ID:/VsCodePython/QT/Projects/libdatachannel/include -ID:/VsCodePython/QT/Projects/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\CallManager.h -o release\moc_CallManager.cpp
+	C:\Qt\6.5.3\mingw_64\bin\moc.exe $(DEFINES) --include D:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall/build/Desktop_Qt_6_5_3_MinGW_64_bit-Debug/release/moc_predefs.h -IC:/Qt/6.5.3/mingw_64/mkspecs/win32-g++ -ID:/UNIVERSITY/4031/CN/CAs/FINALUWU/DistributedVoiceCall -ID:/UNIVERSITY/4031/CN/CAs/libdatachannel/include -ID:/UNIVERSITY/4031/CN/CAs/opus/include -IC:/Qt/6.5.3/mingw_64/include -IC:/Qt/6.5.3/mingw_64/include/QtQuickControls2 -IC:/Qt/6.5.3/mingw_64/include/QtQuick -IC:/Qt/6.5.3/mingw_64/include/QtOpenGL -IC:/Qt/6.5.3/mingw_64/include/QtMultimediaWidgets -IC:/Qt/6.5.3/mingw_64/include/QtMultimedia -IC:/Qt/6.5.3/mingw_64/include/QtWidgets -IC:/Qt/6.5.3/mingw_64/include/QtGui -IC:/Qt/6.5.3/mingw_64/include/QtQmlModels -IC:/Qt/6.5.3/mingw_64/include/QtQml -IC:/Qt/6.5.3/mingw_64/include/QtQmlIntegration -IC:/Qt/6.5.3/mingw_64/include/QtNetwork -IC:/Qt/6.5.3/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++ -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include/c++/backward -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include -IC:/Qt/Tools/mingw1120_64/lib/gcc/x86_64-w64-mingw32/11.2.0/include-fixed -IC:/Qt/Tools/mingw1120_64/x86_64-w64-mingw32/include ..\..\src\Network\CallManager.h -o release\moc_CallManager.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -997,165 +993,7 @@ compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_heade
 
 ####### Compile
 
-release/webrtc.o: ../../webrtc.cpp C:/Qt/6.5.3/mingw_64/include/QtCore/QDebug \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qdebug.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerfwd.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversionchecks.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qconfig.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcore-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtconfigmacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcoreexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtpreprocessorsupport.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtnoop.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qsystemdetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qprocessordetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompilerdetection.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qassert.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypes.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtclasshelpermacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversion.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypeinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qsysinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qlogging.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qflags.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbasicatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic_cxx11.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qgenericatomic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qconstructormacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qdarwinhelpers.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qexceptionhandling.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qforeach.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtdeprecationmarkers.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qttypetraits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qfunctionpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobalstatic.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmalloc.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qminmax.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qnumeric.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qoverload.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qswap.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtenvironmentvariables.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtresource.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qttranslation.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qversiontagging.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtextstream.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevicebase.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qchar.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearray.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qrefcount.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtmetamacros.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydata.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qpair.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydatapointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydataops.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainertools_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qxptype_traits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringfwd.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/q20type_traits.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringliteral.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopedpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringconverter_base.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstring.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qanystringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qutf8stringview.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringtokenizer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringbuilder.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontiguouscache.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qsharedpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qhashfunctions.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetatype.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatastream.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qfloat16.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmath.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qalgorithms.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterable.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetacontainer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerinfo.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtaggedpointer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qlist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterator.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearraylist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringlist.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringmatcher.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmap.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qset.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qhash.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qvarlengtharray.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/q20memory.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonObject \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonvalue.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcborvalue.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatetime.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcalendar.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qlocale.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qvariant.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcoreevent.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qcborcommon.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qregularexpression.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qurl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/quuid.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonDocument \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsondocument.h \
-		../../webrtc.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
-		../../../libdatachannel/include/rtc/rtc.hpp \
-		../../../libdatachannel/include/rtc/rtc.h \
-		../../../libdatachannel/include/rtc/version.h \
-		../../../libdatachannel/include/rtc/common.hpp \
-		../../../libdatachannel/include/rtc/utils.hpp \
-		../../../libdatachannel/include/rtc/global.hpp \
-		../../../libdatachannel/include/rtc/datachannel.hpp \
-		../../../libdatachannel/include/rtc/channel.hpp \
-		../../../libdatachannel/include/rtc/reliability.hpp \
-		../../../libdatachannel/include/rtc/peerconnection.hpp \
-		../../../libdatachannel/include/rtc/candidate.hpp \
-		../../../libdatachannel/include/rtc/configuration.hpp \
-		../../../libdatachannel/include/rtc/description.hpp \
-		../../../libdatachannel/include/rtc/track.hpp \
-		../../../libdatachannel/include/rtc/mediahandler.hpp \
-		../../../libdatachannel/include/rtc/message.hpp \
-		../../../libdatachannel/include/rtc/frameinfo.hpp \
-		../../../libdatachannel/include/rtc/websocket.hpp \
-		../../../libdatachannel/include/rtc/websocketserver.hpp \
-		../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/nalunit.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
-		../../../libdatachannel/include/rtc/rtp.hpp \
-		../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265nalunit.hpp \
-		../../../libdatachannel/include/rtc/plihandler.hpp \
-		../../../libdatachannel/include/rtc/rembhandler.hpp \
-		../../../libdatachannel/include/rtc/pacinghandler.hpp \
-		../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
-		../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
-		../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
-		../../../libdatachannel/include/rtc/rtpdepacketizer.hpp
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\webrtc.o ..\..\webrtc.cpp
-
-release/main.o: ../../main.cpp C:/Qt/6.5.3/mingw_64/include/QtGui/QGuiApplication \
+release/main.o: ../../src/main.cpp C:/Qt/6.5.3/mingw_64/include/QtGui/QGuiApplication \
 		C:/Qt/6.5.3/mingw_64/include/QtGui/qguiapplication.h \
 		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobal.h \
@@ -1327,75 +1165,15 @@ release/main.o: ../../main.cpp C:/Qt/6.5.3/mingw_64/include/QtGui/QGuiApplicatio
 		C:/Qt/6.5.3/mingw_64/include/QtQml/qqmlabstracturlinterceptor.h \
 		C:/Qt/6.5.3/mingw_64/include/QtQml/QQmlContext \
 		C:/Qt/6.5.3/mingw_64/include/QtQml/qqmlcontext.h \
-		../../CallManager.h \
+		../../src/Network/CallManager.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QString \
-		../../webrtc.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
-		../../../libdatachannel/include/rtc/rtc.hpp \
-		../../../libdatachannel/include/rtc/rtc.h \
-		../../../libdatachannel/include/rtc/version.h \
-		../../../libdatachannel/include/rtc/common.hpp \
-		../../../libdatachannel/include/rtc/utils.hpp \
-		../../../libdatachannel/include/rtc/global.hpp \
-		../../../libdatachannel/include/rtc/datachannel.hpp \
-		../../../libdatachannel/include/rtc/channel.hpp \
-		../../../libdatachannel/include/rtc/reliability.hpp \
-		../../../libdatachannel/include/rtc/peerconnection.hpp \
-		../../../libdatachannel/include/rtc/candidate.hpp \
-		../../../libdatachannel/include/rtc/configuration.hpp \
-		../../../libdatachannel/include/rtc/description.hpp \
-		../../../libdatachannel/include/rtc/track.hpp \
-		../../../libdatachannel/include/rtc/mediahandler.hpp \
-		../../../libdatachannel/include/rtc/message.hpp \
-		../../../libdatachannel/include/rtc/frameinfo.hpp \
-		../../../libdatachannel/include/rtc/websocket.hpp \
-		../../../libdatachannel/include/rtc/websocketserver.hpp \
-		../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/nalunit.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
-		../../../libdatachannel/include/rtc/rtp.hpp \
-		../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265nalunit.hpp \
-		../../../libdatachannel/include/rtc/plihandler.hpp \
-		../../../libdatachannel/include/rtc/rembhandler.hpp \
-		../../../libdatachannel/include/rtc/pacinghandler.hpp \
-		../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
-		../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
-		../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
-		../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
-		../../AudioInput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QByteArray \
-		../../../opus/include/opus.h \
-		../../../opus/include/opus_types.h \
-		../../../opus/include/opus_defines.h \
-		../../AudioOutput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h \
-		../../SignalingServer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpServer \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpserver.h \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qabstractsocket.h \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qhostaddress.h \
+		../../src/Network/SignalingClient.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpSocket \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpsocket.h \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qabstractsocket.h \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qhostaddress.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonDocument \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsondocument.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonvalue.h \
@@ -1405,12 +1183,74 @@ release/main.o: ../../main.cpp C:/Qt/6.5.3/mingw_64/include/QtGui/QGuiApplicatio
 		C:/Qt/6.5.3/mingw_64/include/QtCore/quuid.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h \
-		../../SignalingClient.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o ..\..\main.cpp
-
-release/AudioInput.o: ../../AudioInput.cpp ../../AudioInput.h \
+		../../src/Network/SignalingServer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpServer \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpserver.h \
+		../../src/Network/WebRTC.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
+		../../../../libdatachannel/include/rtc/rtc.hpp \
+		../../../../libdatachannel/include/rtc/rtc.h \
+		../../../../libdatachannel/include/rtc/version.h \
+		../../../../libdatachannel/include/rtc/common.hpp \
+		../../../../libdatachannel/include/rtc/utils.hpp \
+		../../../../libdatachannel/include/rtc/global.hpp \
+		../../../../libdatachannel/include/rtc/datachannel.hpp \
+		../../../../libdatachannel/include/rtc/channel.hpp \
+		../../../../libdatachannel/include/rtc/reliability.hpp \
+		../../../../libdatachannel/include/rtc/peerconnection.hpp \
+		../../../../libdatachannel/include/rtc/candidate.hpp \
+		../../../../libdatachannel/include/rtc/configuration.hpp \
+		../../../../libdatachannel/include/rtc/description.hpp \
+		../../../../libdatachannel/include/rtc/track.hpp \
+		../../../../libdatachannel/include/rtc/mediahandler.hpp \
+		../../../../libdatachannel/include/rtc/message.hpp \
+		../../../../libdatachannel/include/rtc/frameinfo.hpp \
+		../../../../libdatachannel/include/rtc/websocket.hpp \
+		../../../../libdatachannel/include/rtc/websocketserver.hpp \
+		../../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/nalunit.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
+		../../../../libdatachannel/include/rtc/rtp.hpp \
+		../../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265nalunit.hpp \
+		../../../../libdatachannel/include/rtc/plihandler.hpp \
+		../../../../libdatachannel/include/rtc/rembhandler.hpp \
+		../../../../libdatachannel/include/rtc/pacinghandler.hpp \
+		../../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
+		../../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
+		../../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
+		../../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
+		../../src/Audio/AudioInput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
+		../../../../opus/include/opus.h \
+		../../../../opus/include/opus_types.h \
+		../../../../opus/include/opus_defines.h \
+		../../src/Audio/AudioOutput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\main.o ..\..\src\main.cpp
+
+release/AudioInput.o: ../../src/Audio/AudioInput.cpp ../../src/Audio/AudioInput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobal.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversionchecks.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qconfig.h \
@@ -1453,10 +1293,6 @@ release/AudioInput.o: ../../AudioInput.cpp ../../AudioInput.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qtresource.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qttranslation.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qversiontagging.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevicebase.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qtmetamacros.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qstring.h \
@@ -1492,6 +1328,7 @@ release/AudioInput.o: ../../AudioInput.cpp ../../AudioInput.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetatype.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatastream.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevicebase.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qfloat16.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qmath.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterable.h \
@@ -1501,24 +1338,23 @@ release/AudioInput.o: ../../AudioInput.cpp ../../AudioInput.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
 		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
 		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
 		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QByteArray \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
-		../../../opus/include/opus.h \
-		../../../opus/include/opus_types.h \
-		../../../opus/include/opus_defines.h \
+		../../../../opus/include/opus.h \
+		../../../../opus/include/opus_types.h \
+		../../../../opus/include/opus_defines.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QDebug \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qdebug.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qtextstream.h \
@@ -1532,10 +1368,11 @@ release/AudioInput.o: ../../AudioInput.cpp ../../AudioInput.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qhash.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qvarlengtharray.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/q20memory.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\AudioInput.o ..\..\AudioInput.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\AudioInput.o ..\..\src\Audio\AudioInput.cpp
 
-release/AudioOutput.o: ../../AudioOutput.cpp ../../AudioOutput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
+release/AudioOutput.o: ../../src/Audio/AudioOutput.cpp ../../src/Audio/AudioOutput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
@@ -1626,30 +1463,27 @@ release/AudioOutput.o: ../../AudioOutput.cpp ../../AudioOutput.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
 		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
 		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
 		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
 		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qmutex.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qtsan_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QByteArray \
-		../../../opus/include/opus.h \
-		../../../opus/include/opus_types.h \
-		../../../opus/include/opus_defines.h \
+		../../../../opus/include/opus.h \
+		../../../../opus/include/opus_types.h \
+		../../../../opus/include/opus_defines.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QDebug \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qdebug.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qtextstream.h \
@@ -1663,9 +1497,167 @@ release/AudioOutput.o: ../../AudioOutput.cpp ../../AudioOutput.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qhash.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qvarlengtharray.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/q20memory.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\AudioOutput.o ..\..\AudioOutput.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\AudioOutput.o ..\..\src\Audio\AudioOutput.cpp
 
-release/SignalingServer.o: ../../SignalingServer.cpp ../../SignalingServer.h \
+release/WebRTC.o: ../../src/Network/WebRTC.cpp ../../src/Network/webrtc.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmap.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterator.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversionchecks.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qconfig.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcore-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtconfigmacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtcoreexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtpreprocessorsupport.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtnoop.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qsystemdetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qprocessordetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompilerdetection.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qassert.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypes.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtclasshelpermacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtversion.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtypeinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerfwd.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qsysinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qlogging.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qflags.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbasicatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qatomic_cxx11.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qgenericatomic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qconstructormacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qdarwinhelpers.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qexceptionhandling.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qforeach.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtdeprecationmarkers.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qttypetraits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qfunctionpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qglobalstatic.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmalloc.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qminmax.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qnumeric.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qoverload.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qswap.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtenvironmentvariables.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtresource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qttranslation.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qversiontagging.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qlist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydatapointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydataops.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qarraydata.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qpair.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainertools_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qxptype_traits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qnamespace.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtmetamacros.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qhashfunctions.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstring.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qchar.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearray.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qrefcount.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearrayview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringfwd.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/q20type_traits.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringliteral.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qanystringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qutf8stringview.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringtokenizer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringbuilder.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbytearraylist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringlist.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qalgorithms.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringmatcher.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcoreevent.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopedpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetatype.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcompare.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatastream.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevicebase.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qfloat16.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmath.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiterable.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmetacontainer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontainerinfo.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtaggedpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qscopeguard.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
+		../../../../libdatachannel/include/rtc/rtc.hpp \
+		../../../../libdatachannel/include/rtc/rtc.h \
+		../../../../libdatachannel/include/rtc/version.h \
+		../../../../libdatachannel/include/rtc/common.hpp \
+		../../../../libdatachannel/include/rtc/utils.hpp \
+		../../../../libdatachannel/include/rtc/global.hpp \
+		../../../../libdatachannel/include/rtc/datachannel.hpp \
+		../../../../libdatachannel/include/rtc/channel.hpp \
+		../../../../libdatachannel/include/rtc/reliability.hpp \
+		../../../../libdatachannel/include/rtc/peerconnection.hpp \
+		../../../../libdatachannel/include/rtc/candidate.hpp \
+		../../../../libdatachannel/include/rtc/configuration.hpp \
+		../../../../libdatachannel/include/rtc/description.hpp \
+		../../../../libdatachannel/include/rtc/track.hpp \
+		../../../../libdatachannel/include/rtc/mediahandler.hpp \
+		../../../../libdatachannel/include/rtc/message.hpp \
+		../../../../libdatachannel/include/rtc/frameinfo.hpp \
+		../../../../libdatachannel/include/rtc/websocket.hpp \
+		../../../../libdatachannel/include/rtc/websocketserver.hpp \
+		../../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/nalunit.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
+		../../../../libdatachannel/include/rtc/rtp.hpp \
+		../../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265nalunit.hpp \
+		../../../../libdatachannel/include/rtc/plihandler.hpp \
+		../../../../libdatachannel/include/rtc/rembhandler.hpp \
+		../../../../libdatachannel/include/rtc/pacinghandler.hpp \
+		../../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
+		../../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
+		../../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
+		../../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QDebug \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qdebug.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtextstream.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringconverter_base.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontiguouscache.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qsharedpointer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qset.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qhash.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qvarlengtharray.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/q20memory.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonDocument \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsondocument.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonvalue.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcborvalue.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qdatetime.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcalendar.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qlocale.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qvariant.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qcborcommon.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qregularexpression.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qurl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/quuid.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonObject \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\WebRTC.o ..\..\src\Network\WebRTC.cpp
+
+release/SignalingServer.o: ../../src/Network/SignalingServer.cpp ../../src/Network/SignalingServer.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
@@ -1795,9 +1787,9 @@ release/SignalingServer.o: ../../SignalingServer.cpp ../../SignalingServer.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QDebug
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\SignalingServer.o ..\..\SignalingServer.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\SignalingServer.o ..\..\src\Network\SignalingServer.cpp
 
-release/SignalingClient.o: ../../SignalingClient.cpp ../../SignalingClient.h \
+release/SignalingClient.o: ../../src/Network/SignalingClient.cpp ../../src/Network/SignalingClient.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
@@ -1925,9 +1917,9 @@ release/SignalingClient.o: ../../SignalingClient.cpp ../../SignalingClient.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QDebug
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\SignalingClient.o ..\..\SignalingClient.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\SignalingClient.o ..\..\src\Network\SignalingClient.cpp
 
-release/CallManager.o: ../../CallManager.cpp ../../CallManager.h \
+release/CallManager.o: ../../src/Network/CallManager.cpp ../../src/Network/CallManager.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobjectdefs.h \
@@ -2020,93 +2012,28 @@ release/CallManager.o: ../../CallManager.cpp ../../CallManager.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qobject_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qbindingstorage.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QString \
-		../../webrtc.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmap.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata_impl.h \
-		../../../libdatachannel/include/rtc/rtc.hpp \
-		../../../libdatachannel/include/rtc/rtc.h \
-		../../../libdatachannel/include/rtc/version.h \
-		../../../libdatachannel/include/rtc/common.hpp \
-		../../../libdatachannel/include/rtc/utils.hpp \
-		../../../libdatachannel/include/rtc/global.hpp \
-		../../../libdatachannel/include/rtc/datachannel.hpp \
-		../../../libdatachannel/include/rtc/channel.hpp \
-		../../../libdatachannel/include/rtc/reliability.hpp \
-		../../../libdatachannel/include/rtc/peerconnection.hpp \
-		../../../libdatachannel/include/rtc/candidate.hpp \
-		../../../libdatachannel/include/rtc/configuration.hpp \
-		../../../libdatachannel/include/rtc/description.hpp \
-		../../../libdatachannel/include/rtc/track.hpp \
-		../../../libdatachannel/include/rtc/mediahandler.hpp \
-		../../../libdatachannel/include/rtc/message.hpp \
-		../../../libdatachannel/include/rtc/frameinfo.hpp \
-		../../../libdatachannel/include/rtc/websocket.hpp \
-		../../../libdatachannel/include/rtc/websocketserver.hpp \
-		../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/nalunit.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
-		../../../libdatachannel/include/rtc/rtp.hpp \
-		../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
-		../../../libdatachannel/include/rtc/h265nalunit.hpp \
-		../../../libdatachannel/include/rtc/plihandler.hpp \
-		../../../libdatachannel/include/rtc/rembhandler.hpp \
-		../../../libdatachannel/include/rtc/pacinghandler.hpp \
-		../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
-		../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
-		../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
-		../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
-		../../AudioInput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QByteArray \
-		../../../opus/include/opus.h \
-		../../../opus/include/opus_types.h \
-		../../../opus/include/opus_defines.h \
-		../../AudioOutput.h \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
-		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qmutex.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtsan_impl.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h \
-		../../SignalingServer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpServer \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpserver.h \
+		../../src/Network/SignalingClient.h \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpSocket \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpsocket.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtnetworkglobal.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtnetwork-config.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtnetworkexports.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qabstractsocket.h \
 		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qhostaddress.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qiodevice.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qdebug.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qtextstream.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qstringconverter_base.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qcontiguouscache.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qsharedpointer.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qsharedpointer_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmap.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qshareddata_impl.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qset.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qhash.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qvarlengtharray.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/q20memory.h \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpSocket \
-		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpsocket.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qvariant.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonDocument \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsondocument.h \
@@ -2121,24 +2048,85 @@ release/CallManager.o: ../../CallManager.cpp ../../CallManager.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/quuid.h \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/QJsonObject \
 		C:/Qt/6.5.3/mingw_64/include/QtCore/qjsonobject.h \
-		../../SignalingClient.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QDebug \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/QTimer \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qtimer.h \
-		C:/Qt/6.5.3/mingw_64/include/QtCore/qbasictimer.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\CallManager.o ..\..\CallManager.cpp
+		../../src/Network/SignalingServer.h \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/QTcpServer \
+		C:/Qt/6.5.3/mingw_64/include/QtNetwork/qtcpserver.h \
+		../../src/Network/WebRTC.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QMap \
+		../../../../libdatachannel/include/rtc/rtc.hpp \
+		../../../../libdatachannel/include/rtc/rtc.h \
+		../../../../libdatachannel/include/rtc/version.h \
+		../../../../libdatachannel/include/rtc/common.hpp \
+		../../../../libdatachannel/include/rtc/utils.hpp \
+		../../../../libdatachannel/include/rtc/global.hpp \
+		../../../../libdatachannel/include/rtc/datachannel.hpp \
+		../../../../libdatachannel/include/rtc/channel.hpp \
+		../../../../libdatachannel/include/rtc/reliability.hpp \
+		../../../../libdatachannel/include/rtc/peerconnection.hpp \
+		../../../../libdatachannel/include/rtc/candidate.hpp \
+		../../../../libdatachannel/include/rtc/configuration.hpp \
+		../../../../libdatachannel/include/rtc/description.hpp \
+		../../../../libdatachannel/include/rtc/track.hpp \
+		../../../../libdatachannel/include/rtc/mediahandler.hpp \
+		../../../../libdatachannel/include/rtc/message.hpp \
+		../../../../libdatachannel/include/rtc/frameinfo.hpp \
+		../../../../libdatachannel/include/rtc/websocket.hpp \
+		../../../../libdatachannel/include/rtc/websocketserver.hpp \
+		../../../../libdatachannel/include/rtc/av1rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/nalunit.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/rtppacketizationconfig.hpp \
+		../../../../libdatachannel/include/rtc/rtp.hpp \
+		../../../../libdatachannel/include/rtc/h264rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h264rtpdepacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265rtppacketizer.hpp \
+		../../../../libdatachannel/include/rtc/h265nalunit.hpp \
+		../../../../libdatachannel/include/rtc/plihandler.hpp \
+		../../../../libdatachannel/include/rtc/rembhandler.hpp \
+		../../../../libdatachannel/include/rtc/pacinghandler.hpp \
+		../../../../libdatachannel/include/rtc/rtcpnackresponder.hpp \
+		../../../../libdatachannel/include/rtc/rtcpreceivingsession.hpp \
+		../../../../libdatachannel/include/rtc/rtcpsrreporter.hpp \
+		../../../../libdatachannel/include/rtc/rtpdepacketizer.hpp \
+		../../src/Audio/AudioInput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioFormat \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudioformat.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiglobal.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtgui-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtGui/qtguiexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimedia-config.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qtmultimediaexports.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSource \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosource.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudio.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiodevice.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QIODevice \
+		../../../../opus/include/opus.h \
+		../../../../opus/include/opus_types.h \
+		../../../../opus/include/opus_defines.h \
+		../../src/Audio/AudioOutput.h \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/QAudioSink \
+		C:/Qt/6.5.3/mingw_64/include/QtMultimedia/qaudiosink.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QMutex \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qmutex.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qtsan_impl.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QQueue \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/qqueue.h \
+		C:/Qt/6.5.3/mingw_64/include/QtCore/QDebug
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\CallManager.o ..\..\src\Network\CallManager.cpp
 
 release/qrc_qml.o: release/qrc_qml.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\qrc_qml.o release\qrc_qml.cpp
-
-release/moc_webrtc.o: release/moc_webrtc.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\moc_webrtc.o release\moc_webrtc.cpp
 
 release/moc_AudioInput.o: release/moc_AudioInput.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\moc_AudioInput.o release\moc_AudioInput.cpp
 
 release/moc_AudioOutput.o: release/moc_AudioOutput.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\moc_AudioOutput.o release\moc_AudioOutput.cpp
+
+release/moc_WebRTC.o: release/moc_WebRTC.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\moc_WebRTC.o release\moc_WebRTC.cpp
 
 release/moc_SignalingServer.o: release/moc_SignalingServer.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\moc_SignalingServer.o release\moc_SignalingServer.cpp

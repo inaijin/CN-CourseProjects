@@ -6,7 +6,7 @@
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
 
-#include "../../../CallManager.h"
+#include "../../../src/Network/CallManager.h"
 #include <QtCore/qmetatype.h>
 
 #if __has_include(<QtCore/qtmochelpers.h>)
@@ -120,9 +120,9 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSCallManagerENDCLASS[] = {
        4,    0,   52,    2, 0x06,    7 /* Public */,
        5,    0,   53,    2, 0x06,    8 /* Public */,
 
- // methods: name, argc, parameters, tag, flags, initial metatype offsets
-       6,    0,   54,    2, 0x02,    9 /* Public */,
-       7,    0,   55,    2, 0x02,   10 /* Public */,
+ // slots: name, argc, parameters, tag, flags, initial metatype offsets
+       6,    0,   54,    2, 0x0a,    9 /* Public */,
+       7,    0,   55,    2, 0x0a,   10 /* Public */,
 
  // signals: parameters
     QMetaType::Void,
@@ -130,7 +130,7 @@ Q_CONSTINIT static const uint qt_meta_data_CLASSCallManagerENDCLASS[] = {
     QMetaType::Void,
     QMetaType::Void,
 
- // methods: parameters
+ // slots: parameters
     QMetaType::Void,
     QMetaType::Void,
 
