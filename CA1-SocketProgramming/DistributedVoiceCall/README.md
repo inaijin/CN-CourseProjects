@@ -328,43 +328,42 @@ The `Main.qml` file defines the user interface for the voice call application. T
 
 ## WebRTC and Coturn Overview for Voice Calling Applications
 
-WebRTC (Web Real-Time Communication) is a powerful protocol for creating peer-to-peer connections, primarily used for real-time voice and video communication. In this project, we leveraged WebRTC for building a voice call application using a custom signaling mechanism and included Coturn to handle NAT traversal challenges. The following sections provide an in-depth look at the various aspects of WebRTC technology, including its benefits, limitations, and the roles of STUN, TURN, and signaling servers.
+WebRTC (Web Real-Time Communication) enables peer-to-peer connections, primarily for real-time voice and video communication. For our project, we leveraged WebRTC to build a voice call application with a custom signaling mechanism and used Coturn to address NAT traversal challenges effectively. The following sections cover key components of WebRTC technology, including the roles of STUN, TURN, Coturn, and signaling servers, along with the advantages and limitations.
 
 ### Core Components of WebRTC
 
 1. **Signaling Server**
-    - The signaling server is responsible for establishing initial communication between peers. It handles the exchange of session information, including Session Description Protocol (SDP) messages and ICE (Interactive Connectivity Establishment) candidates. This is crucial because WebRTC itself does not define how signaling should be implemented, which allows us to choose a custom approach tailored to our application.
-    - In our project, we created a custom signaling server component that exchanges offers, answers, and ICE candidates between the caller and callee. This part of WebRTC doesn’t handle media or data, only control messages that enable a peer-to-peer connection.
+    - The signaling server establishes initial communication between peers, handling the exchange of Session Description Protocol (SDP) messages and ICE (Interactive Connectivity Establishment) candidates. As WebRTC does not specify a signaling protocol, we implemented a custom signaling server tailored to our application’s needs, which manages offers, answers, and ICE candidates between the caller and callee. This component exclusively manages control messages, setting up the peer-to-peer connection but not media or data itself.
 
 2. **STUN and TURN Servers**
-    - **STUN (Session Traversal Utilities for NAT):** A STUN server allows clients to discover their public IP address when they are behind a NAT (Network Address Translator). This step is essential for most WebRTC connections since many users are behind NATs, which obscure their direct IP addresses.
-    - **TURN (Traversal Using Relays around NAT):** When a direct connection cannot be established, even with a STUN server, a TURN server is used to relay the media traffic between peers. TURN servers handle media data and can bypass restrictive firewalls but are more resource-intensive.
-    - In our application, Coturn is configured to act as a STUN and TURN server. This setup ensures that our voice calls remain stable even when direct connections are blocked by strict NATs or firewalls.
+    - **STUN (Session Traversal Utilities for NAT):** The STUN server enables clients to discover their public IP address, essential for WebRTC connections since many users are behind NATs, which mask their direct IP addresses.
+    - **TURN (Traversal Using Relays around NAT):** When direct connection through STUN is impossible, a TURN server relays media traffic between peers. TURN servers are essential in overcoming restrictive NATs or firewalls but are more resource-intensive due to the relayed media load.
+    - **Coturn as STUN/TURN Solution:** In our project, we configured Coturn to handle both STUN and TURN functionality, providing a dual-layer solution for NAT traversal and firewalls. Coturn, an open-source STUN and TURN server, is highly reliable and compatible with WebRTC, making it a robust option for managing network complexities. Coturn enables consistent call quality by switching to relayed connections as needed, ensuring connectivity even in restrictive network environments.
 
 3. **ICE (Interactive Connectivity Establishment)**
-    - ICE is the protocol used by WebRTC to find the best path to establish a peer-to-peer connection between clients. It works by trying various connection candidates—such as direct connections, STUN-assisted connections, and TURN-relayed connections—and selecting the most efficient one.
-    - ICE candidate handling is integrated into our application, where we manage and send ICE candidates through the signaling channel to ensure connectivity, regardless of network complexity.
+    - ICE is the protocol WebRTC uses to find the best path for a peer-to-peer connection. It evaluates multiple connection candidates—direct, STUN-assisted, or TURN-relayed—and selects the most efficient path. Our application handles ICE candidates by sending them through the signaling server, allowing connectivity even in complex network conditions. Coturn plays a vital role here by providing TURN relays when no direct route is available.
 
-### Advantages of WebRTC
+### Advantages of WebRTC and Coturn
 
-- **Low Latency and Real-Time Communication:** WebRTC’s peer-to-peer nature enables near-instantaneous communication, which is ideal for voice and video calls. By reducing the need for a central server to relay media, we achieve lower latency, enhancing user experience during calls.
-- **Cross-Platform Support:** WebRTC is supported across multiple browsers and platforms, which broadens the accessibility of applications. It also integrates well with native mobile and desktop applications.
-- **Encryption by Default:** Security is a key feature in WebRTC, with all media and data channels encrypted using SRTP (Secure Real-Time Protocol). This built-in encryption ensures that communication remains private and secure.
-- **Scalability for Small Groups:** For applications targeting one-to-one or small-group calls, WebRTC can be more efficient and cost-effective compared to centralized server-based solutions, thanks to its direct peer-to-peer architecture.
+- **Low Latency and Real-Time Communication:** WebRTC’s peer-to-peer approach allows for low latency, ideal for voice and video calls. This minimizes central server reliance, reducing delay and improving the user experience.
+- **Cross-Platform Support:** WebRTC is compatible across browsers and platforms, supporting both native mobile and desktop applications. Coturn is also compatible with these platforms, expanding deployment options.
+- **Encryption by Default:** Security is a core feature, with WebRTC encrypting media and data channels using SRTP (Secure Real-Time Protocol). Coturn supports these security standards, making it a reliable choice for secure media relay.
+- **Reliability and Flexibility with Coturn:** Coturn adds reliability by offering fallback relay options. It’s ideal for small to medium-scale setups where network conditions vary widely. This flexibility ensures that calls remain stable, especially in enterprise environments with strict firewalls.
 
-### Challenges and Limitations of WebRTC
+### Challenges and Limitations of WebRTC and Coturn
 
-- **NAT Traversal Issues:** Establishing connections when users are behind NATs or restrictive firewalls can be challenging. The STUN and TURN mechanisms help, but when a TURN relay is necessary, it can add latency and increase server costs.
-- **Bandwidth and Network Reliability:** WebRTC performs best on stable networks with sufficient bandwidth. In cases of unstable or limited networks, voice quality can degrade, which we handle in our app by closely monitoring peer connection states and dynamically managing audio input and output.
-- **Complexity in Managing Signaling:** Unlike other real-time protocols, WebRTC leaves the signaling protocol implementation to developers, which adds complexity. Our implementation involved designing custom signaling components to exchange SDPs and ICE candidates, which required handling nuances in state management and network transitions.
-- **Resource Intensity for TURN:** TURN servers relay all media data when direct paths are unavailable, resulting in higher server loads. This resource demand makes TURN less suitable for large-scale deployments unless sufficient infrastructure is allocated.
+- **NAT Traversal Issues:** Establishing connections behind NATs or firewalls is challenging. STUN and TURN mechanisms help, but relying on TURN can increase latency and server costs. Coturn mitigates this by efficiently relaying data when direct connections fail, but it still requires significant resources for high traffic.
+- **Bandwidth and Network Reliability:** WebRTC performs best with stable, high-bandwidth networks. On low-quality networks, Coturn can help by ensuring media passes through the best possible relay, though quality may still be impacted.
+- **Signaling Complexity:** Unlike some protocols, WebRTC requires custom signaling for SDP and ICE candidate exchange, adding implementation complexity. Coturn’s functionality simplifies some NAT traversal aspects, but signaling remains a developer task.
+- **Resource Demands for TURN Relays:** TURN servers like Coturn must handle all media data when relays are needed, creating higher server loads. This makes Coturn better suited for smaller, controlled deployments unless sufficient infrastructure is available to scale.
 
 ### Implementation Insights from Our Project
 
-The integration of WebRTC and Coturn required overcoming several challenges, such as handling peer connection states and managing signaling events for SDPs and candidates. Specific techniques we implemented include:
+The integration of WebRTC and Coturn posed specific challenges in handling peer connection states and managing signaling for SDP and ICE candidates. Some key techniques we used include:
 
-- **Dynamic Role Switching:** Our application distinguishes between 'caller' and 'callee' roles, with different initialization paths for each. This approach simplifies the connection flow and ensures that each peer is correctly configured for its role.
-- **State-Based Audio Control:** We implemented audio controls that depend on the peer connection state, automatically starting or stopping audio input based on connection stability. This helps optimize resource usage and enhances the user experience.
-- **Error Handling and Status Reporting:** By emitting signals to update the application status, users receive real-time feedback on the connection process, aiding in diagnosing network or configuration issues.
+- **Role-Based Connection Management:** Differentiating roles of 'caller' and 'callee' helped streamline the connection flow, ensuring each peer is configured according to its role. This approach aids in maintaining a stable call setup.
+- **State-Based Audio Control:** We implemented audio controls that adjust based on the connection state, optimizing resource use and enhancing user experience.
+- **Coturn for Fallback Connectivity:** Coturn’s dual STUN/TURN setup provided reliable connectivity, especially when users were behind strict NATs. By using Coturn, we ensured consistent call stability, regardless of network conditions.
+- **Error Handling and Status Reporting:** Real-time feedback on connection status helps users troubleshoot network or configuration issues, an essential feature in applications using both WebRTC and Coturn.
 
-In conclusion, WebRTC, combined with Coturn, offers a robust solution for real-time voice and video calls, though it presents challenges in complex network scenarios. Through hands-on experience with the protocol, we’ve gained a deeper understanding of its components, signaling flows, and how to manage peer-to-peer connectivity effectively. Our project demonstrates that while WebRTC has limitations, careful implementation can yield high-quality, scalable communication applications suitable for diverse platforms.
+In summary, WebRTC, paired with Coturn, offers a powerful solution for real-time voice and video communication. Despite some challenges in handling complex network scenarios, Coturn adds significant reliability and flexibility to WebRTC, ensuring connectivity across varied network conditions. Our project demonstrated that, with the right implementation, WebRTC and Coturn can deliver high-quality, scalable communication for diverse platforms and environments.
