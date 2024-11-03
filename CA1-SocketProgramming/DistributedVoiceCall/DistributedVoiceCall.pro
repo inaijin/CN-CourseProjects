@@ -26,14 +26,20 @@ SOURCES += \
     AudioOutput.cpp \
     AudioInput.cpp \
     SignalingServer.cpp \
-    SignalingClient.h
+    SignalingClient.cpp \
+    CallManager.cpp
 
 HEADERS += \
     webrtc.h \
     AudioOutput.h \
     AudioInput.h \
     SignalingServer.h \
-    SignalingClient.h
+    SignalingClient.h \
+    CallManager.h
+
+QML += Main.qml
+
+RESOURCES += qml.qrc
 
 INCLUDEPATH += "PATHTOFILE"/include
 LIBS += -L"PATHTOFILE"/Windows/Mingw64 -ldatachannel.dll
