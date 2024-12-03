@@ -1,11 +1,11 @@
-QT     += core
-CONFIG += lrelease
-CONFIG += no_keywords
-CONFIG += c++20
-CONFIG += no_keywords c++20 staticlib
 TEMPLATE = lib
+TARGET = cnca3lib
+CONFIG += staticlib c++20
+QT += core
 
-INCLUDEPATH += $$PWD\Globals
+DESTDIR = $$PWD/../lib
+
+INCLUDEPATH += $$PWD/Globals
 
 SOURCES += \
     $$PWD/DHCPServer/DHCPServer.cpp \
@@ -14,8 +14,7 @@ SOURCES += \
     $$PWD/PortBindingManager/PortBindingManager.cpp \
     $$PWD/Port/Port.cpp \
     $$PWD/MACAddress/MACAddress.cpp \
-    $$PWD/MACAddress/MACAddressGenerator.cpp \
-    $$PWD/main.cpp
+    $$PWD/MACAddress/MACAddressGenerator.cpp
 
 HEADERS += \
     $$PWD/DHCPServer/DHCPServer.h \
@@ -26,5 +25,3 @@ HEADERS += \
     $$PWD/Port/Port.h \
     $$PWD/MACAddress/MACAddress.h \
     $$PWD/MACAddress/MACAddressGenerator.h
-
-TARGET = cnca3lib
