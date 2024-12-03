@@ -2,6 +2,8 @@ QT     += core
 CONFIG += lrelease
 CONFIG += no_keywords
 CONFIG += c++20
+CONFIG += no_keywords c++20 staticlib
+TEMPLATE = lib
 
 INCLUDEPATH += $$PWD\Globals
 
@@ -11,6 +13,8 @@ SOURCES += \
     $$PWD/IP/IP.cpp \
     $$PWD/PortBindingManager/PortBindingManager.cpp \
     $$PWD/Port/Port.cpp \
+    $$PWD/MACAddress/MACAddress.cpp \
+    $$PWD/MACAddress/MACAddressGenerator.cpp \
     $$PWD/main.cpp
 
 HEADERS += \
@@ -20,3 +24,7 @@ HEADERS += \
     $$PWD/IP/IP.h \
     $$PWD/PortBindingManager/PortBindingManager.h \
     $$PWD/Port/Port.h \
+    $$PWD/MACAddress/MACAddress.h \
+    $$PWD/MACAddress/MACAddressGenerator.h
+
+TARGET = cnca3lib

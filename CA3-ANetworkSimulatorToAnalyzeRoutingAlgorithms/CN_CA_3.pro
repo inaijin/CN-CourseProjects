@@ -3,11 +3,10 @@ APPNAME = cnca3
 VERSION = 1.0.0
 BUNDLE_VERSION = 6
 
-# Default rules for deployment.
+# Default rules for deployment
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
 
 DISTFILES += \
     .clang-format \
@@ -15,5 +14,6 @@ DISTFILES += \
     .gitignore \
     assets/config.json
 
-
+# Include src and tests configurations
 include($$PWD/src/src.pri)
+include($$PWD/tests/tests.pri)
