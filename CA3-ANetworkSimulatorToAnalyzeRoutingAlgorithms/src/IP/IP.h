@@ -1,106 +1,93 @@
-// #ifndef IP_H
-// #define IP_H
+#ifndef IP_H
+#define IP_H
 
-// #include "Globals.h"
+#include "Globals.h"
 
-// #include <QObject>
-// #include <QSharedPointer>
-// #include <QString>
-// #include <QTextStream>
+#include <QObject>
+#include <QSharedPointer>
+#include <QString>
+#include <QTextStream>
+#include <limits>
+#include <cmath>
 
-// template <UT::IPVersion version>
-// class IP;
+// Template Definitions
+template <UT::IPVersion version>
+class IP;
 
-// typedef IP<UT::IPVersion::IPv4> IPv4_t;
-// typedef IP<UT::IPVersion::IPv6> IPv6_t;
-// typedef QSharedPointer<IPv4_t>  IPv4Ptr_t;
-// typedef QSharedPointer<IPv6_t>  IPv6Ptr_t;
+typedef IP<UT::IPVersion::IPv4> IPv4_t;
+typedef IP<UT::IPVersion::IPv6> IPv6_t;
+typedef QSharedPointer<IPv4_t> IPv4Ptr_t;
+typedef QSharedPointer<IPv6_t> IPv6Ptr_t;
 
-// class AbstractIP : public QObject
-// {
-//     Q_OBJECT
+// Abstract Base Class
+class AbstractIP : public QObject
+{
+    Q_OBJECT
 
-// public:
-//     explicit AbstractIP(QObject *parent = nullptr);
+public:
+    explicit AbstractIP(QObject *parent = nullptr);
 
-// Q_SIGNALS:
+    virtual QString toString() const = 0;
+    virtual uint64_t toValue() const = 0;
+    virtual void fromString(const QString &ipString) = 0;
+    virtual void fromValue(uint64_t ipValue) = 0;
 
-// protected:
-// };
+protected:
+    uint64_t m_ipValue;
+};
 
-// /**
-//  * ===========================================
-//  * ===========================================
-//  * ===========================================
-//  * @brief The IP class for IPv4.
-//  * ===========================================
-//  * ===========================================
-//  * ===========================================
-//  */
-// template <>
-// class IP<UT::IPVersion::IPv4> : public AbstractIP
-// {
-//     // removed Q_OBJECT macro to avoid moc error
-//     // https://doc.qt.io/qt-6/moc.html
-//     // Q_OBJECT
+/**
+ * Specialization of IP class for IPv4.
+ */
+template <>
+class IP<UT::IPVersion::IPv4> : public AbstractIP
+{
+public:
+    explicit IP(QObject *parent = nullptr);
+    explicit IP(const QString &ipString, QObject *parent = nullptr);
+    explicit IP(uint64_t ipValue, QObject *parent = nullptr);
+    ~IP() override;
 
-// public:    // constructors
-//     explicit IP(QObject *parent = nullptr);
-//     explicit IP(const QString &ipString, QObject *parent = nullptr);
-//     explicit IP(uint64_t ipValue, QObject *parent = nullptr);
-//     ~IP() override;
+    QString toString() const override;
+    uint64_t toValue() const override;
+    void fromString(const QString &ipString) override;
+    void fromValue(uint64_t ipValue) override;
 
-// public:    // methods
+    bool operator==(const IP<UT::IPVersion::IPv4> &other) const
+    {
+        return toValue() == other.toValue();
+    }
 
+private:
+    QString toStringImpl() const;
+    void fromStringImpl(const QString &ipString);
+};
 
-// public:    // operators
-//     bool
-//     operator==(const IP<UT::IPVersion::IPv4> &other) const
-//     {
-//         return toValue() == other.toValue();
-//     }
+/**
+ * Specialization of IP class for IPv6.
+ */
+template <>
+class IP<UT::IPVersion::IPv6> : public AbstractIP
+{
+public:
+    explicit IP(QObject *parent = nullptr);
+    explicit IP(const QString &ipString, QObject *parent = nullptr);
+    explicit IP(uint64_t ipValue, QObject *parent = nullptr);
+    ~IP() override;
 
-// private:    // methods
+    QString toString() const override;
+    uint64_t toValue() const override;
+    void fromString(const QString &ipString) override;
+    void fromValue(uint64_t ipValue) override;
 
+    bool operator==(const IP<UT::IPVersion::IPv6> &other) const
+    {
+        return toValue() == other.toValue();
+    }
 
-// private:
-// };
+private:
+    QString toStringImpl() const;
+    void fromStringImpl(const QString &ipString);
+};
 
-// /**
-//  * ===========================================
-//  * ===========================================
-//  * ===========================================
-//  * @brief The IP class for IPv6.
-//  * ===========================================
-//  * ===========================================
-//  * ===========================================
-//  */
-// template <>
-// class IP<UT::IPVersion::IPv6> : public AbstractIP
-// {
-//     // removed Q_OBJECT macro to avoid moc error
-//     // https://doc.qt.io/qt-6/moc.html
-//     // Q_OBJECT
-
-// public:    // constructors
-//     explicit IP(QObject *parent = nullptr);
-//     explicit IP(const QString &ipString, QObject *parent = nullptr);
-//     explicit IP(uint64_t ipValue, QObject *parent = nullptr);
-//     ~IP() override;
-
-// public:    // methods
-
-
-// public:    // operators
-//     bool
-//     operator==(const IP<UT::IPVersion::IPv6> &other) const
-//     {
-//         return toValue() == other.toValue();
-//     }
-
-// private:    // methods
-
-// private:
-// };
-
-// #endif    // IP_H
+#endif // IP_H
