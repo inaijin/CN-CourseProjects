@@ -52,13 +52,12 @@ uint32_t IP<UT::IPVersion::IPv4>::toValue() const
     return m_ipValue;
 }
 
-void IP<UT::IPVersion::IPv4>::fromString(const QString &ipString)
-{
+void IP<UT::IPVersion::IPv4>::fromString(const QString &ipString) {
     QHostAddress address(ipString);
     if (address.protocol() == QAbstractSocket::IPv4Protocol) {
         m_ipValue = address.toIPv4Address();
     } else {
-        m_ipValue = 0;
+        throw std::invalid_argument("Invalid IPv4 address: " + ipString.toStdString());
     }
 }
 
@@ -107,13 +106,12 @@ Q_IPV6ADDR IP<UT::IPVersion::IPv6>::toValue() const
     return m_ipValue;
 }
 
-void IP<UT::IPVersion::IPv6>::fromString(const QString &ipString)
-{
+void IP<UT::IPVersion::IPv6>::fromString(const QString &ipString) {
     QHostAddress address(ipString);
     if (address.protocol() == QAbstractSocket::IPv6Protocol) {
         m_ipValue = address.toIPv6Address();
     } else {
-        memset(&m_ipValue, 0, sizeof(Q_IPV6ADDR));
+        throw std::invalid_argument("Invalid IPv6 address: " + ipString.toStdString());
     }
 }
 
