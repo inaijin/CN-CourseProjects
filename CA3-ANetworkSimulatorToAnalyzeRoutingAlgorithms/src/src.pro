@@ -2,6 +2,7 @@ TEMPLATE = lib
 TARGET = cnca3lib
 CONFIG += staticlib c++20
 QT += core
+QT += network
 
 DESTDIR = $$PWD/../lib
 

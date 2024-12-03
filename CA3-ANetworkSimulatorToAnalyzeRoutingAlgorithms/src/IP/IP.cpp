@@ -1,30 +1,35 @@
 #include "IP.h"
 
-/**
- * Implementation of AbstractIP
- */
 AbstractIP::AbstractIP(QObject *parent) :
-    QObject(parent),
-    m_ipValue(std::numeric_limits<uint64_t>::max())
+    QObject(parent)
 {
 }
 
-/**
- * Implementation of IPv4
- */
+// IPv4 Implementation
 IP<UT::IPVersion::IPv4>::IP(QObject *parent) :
-    AbstractIP(parent)
+    AbstractIP(parent),
+    m_versionHeaderLength(0),
+    m_typeOfService(0),
+    m_totalLength(0),
+    m_identification(0),
+    m_flagsFragmentOffset(0),
+    m_ttl(0),
+    m_protocol(0),
+    m_headerChecksum(0),
+    m_ipValue(0)
 {
+    m_sourceIp = nullptr;
+    m_destIp = nullptr;
 }
 
 IP<UT::IPVersion::IPv4>::IP(const QString &ipString, QObject *parent) :
-    AbstractIP(parent)
+    IP(parent)
 {
     fromString(ipString);
 }
 
-IP<UT::IPVersion::IPv4>::IP(uint64_t ipValue, QObject *parent) :
-    AbstractIP(parent)
+IP<UT::IPVersion::IPv4>::IP(uint32_t ipValue, QObject *parent) :
+    IP(parent)
 {
     fromValue(ipValue);
 }
@@ -35,62 +40,54 @@ IP<UT::IPVersion::IPv4>::~IP()
 
 QString IP<UT::IPVersion::IPv4>::toString() const
 {
-    return toStringImpl();
+    return QString("%1.%2.%3.%4")
+    .arg((m_ipValue >> 24) & 0xFF)
+      .arg((m_ipValue >> 16) & 0xFF)
+      .arg((m_ipValue >> 8) & 0xFF)
+      .arg(m_ipValue & 0xFF);
 }
 
-uint64_t IP<UT::IPVersion::IPv4>::toValue() const
+uint32_t IP<UT::IPVersion::IPv4>::toValue() const
 {
     return m_ipValue;
 }
 
 void IP<UT::IPVersion::IPv4>::fromString(const QString &ipString)
 {
-    fromStringImpl(ipString);
+    QHostAddress address(ipString);
+    if (address.protocol() == QAbstractSocket::IPv4Protocol) {
+        m_ipValue = address.toIPv4Address();
+    } else {
+        m_ipValue = 0;
+    }
 }
 
-void IP<UT::IPVersion::IPv4>::fromValue(uint64_t ipValue)
+void IP<UT::IPVersion::IPv4>::fromValue(uint32_t ipValue)
 {
     m_ipValue = ipValue;
 }
 
-QString IP<UT::IPVersion::IPv4>::toStringImpl() const
-{
-    // Convert IPv4 value to dotted string format
-    return QString("%1.%2.%3.%4")
-      .arg((m_ipValue >> 24) & 0xFF)
-      .arg((m_ipValue >> 16) & 0xFF)
-      .arg((m_ipValue >> 8) & 0xFF)
-      .arg(m_ipValue & 0xFF);
-}
-
-void IP<UT::IPVersion::IPv4>::fromStringImpl(const QString &ipString)
-{
-    QStringList octets = ipString.split(".");
-    if (octets.size() == 4)
-    {
-        m_ipValue = (octets[0].toUInt() << 24) |
-                    (octets[1].toUInt() << 16) |
-                    (octets[2].toUInt() << 8) |
-                    octets[3].toUInt();
-    }
-}
-
-/**
- * Implementation of IPv6
- */
+// IPv6 Implementation
 IP<UT::IPVersion::IPv6>::IP(QObject *parent) :
-    AbstractIP(parent)
+    AbstractIP(parent),
+    m_versionTrafficClassFlowLabel(0),
+    m_payloadLength(0),
+    m_nextHeader(0),
+    m_hopLimit(0)
 {
+    m_sourceIp = nullptr;
+    m_destIp = nullptr;
+    memset(&m_ipValue, 0, sizeof(Q_IPV6ADDR));
 }
 
 IP<UT::IPVersion::IPv6>::IP(const QString &ipString, QObject *parent) :
-    AbstractIP(parent)
+    IP(parent)
 {
     fromString(ipString);
 }
 
-IP<UT::IPVersion::IPv6>::IP(uint64_t ipValue, QObject *parent) :
-    AbstractIP(parent)
+IP<UT::IPVersion::IPv6>::IP(const Q_IPV6ADDR &ipValue, QObject *parent) :
+    IP(parent)
 {
     fromValue(ipValue);
 }
@@ -101,32 +98,31 @@ IP<UT::IPVersion::IPv6>::~IP()
 
 QString IP<UT::IPVersion::IPv6>::toString() const
 {
-    return toStringImpl();
+    QHostAddress address(m_ipValue);
+    return address.toString();
 }
 
-uint64_t IP<UT::IPVersion::IPv6>::toValue() const
+Q_IPV6ADDR IP<UT::IPVersion::IPv6>::toValue() const
 {
     return m_ipValue;
 }
 
 void IP<UT::IPVersion::IPv6>::fromString(const QString &ipString)
 {
-    fromStringImpl(ipString);
+    QHostAddress address(ipString);
+    if (address.protocol() == QAbstractSocket::IPv6Protocol) {
+        m_ipValue = address.toIPv6Address();
+    } else {
+        memset(&m_ipValue, 0, sizeof(Q_IPV6ADDR));
+    }
 }
 
-void IP<UT::IPVersion::IPv6>::fromValue(uint64_t ipValue)
+void IP<UT::IPVersion::IPv6>::fromValue(const Q_IPV6ADDR &ipValue)
 {
     m_ipValue = ipValue;
 }
 
-QString IP<UT::IPVersion::IPv6>::toStringImpl() const
+bool IP<UT::IPVersion::IPv6>::operator==(const IP<UT::IPVersion::IPv6> &other) const
 {
-    // Convert IPv6 value to string (placeholder implementation)
-    return QString("IPv6 representation");
-}
-
-void IP<UT::IPVersion::IPv6>::fromStringImpl(const QString &ipString)
-{
-    // Convert string to IPv6 value (placeholder implementation)
-    m_ipValue = 0; // Replace with actual conversion logic
+    return memcmp(&m_ipValue, &other.m_ipValue, sizeof(Q_IPV6ADDR)) == 0;
 }
