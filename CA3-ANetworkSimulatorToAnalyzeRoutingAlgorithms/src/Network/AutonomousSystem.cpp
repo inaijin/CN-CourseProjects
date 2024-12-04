@@ -144,37 +144,62 @@ void AutonomousSystem::setupTopology()
     if (m_topologyType == "Mesh")
     {
         // Implement the mesh topology
-        for (const auto &routerA : qAsConst(m_routers))
+        for (size_t i = 0; i < m_routers.size(); ++i)
         {
-            for (const auto &routerB : qAsConst(m_routers))
+            auto routerA = m_routers[i];
+            for (size_t j = i + 1; j < m_routers.size(); ++j)
             {
-                if (routerA != routerB)
-                {
-                    auto portA = routerA->getAvailablePort();
-                    auto portB = routerB->getAvailablePort();
+                auto routerB = m_routers[j];
 
-                    if (portA && portB)
-                    {
-                        PortBindingManager bindingManager;
-                        bindingManager.bind(portA, portB);
-                    }
-                    else
-                    {
-                        qWarning() << "No available ports to bind between Router"
-                                   << routerA->getIPAddress() << "and Router" << routerB->getIPAddress();
-                    }
+                auto portA = routerA->getAvailablePort();
+                auto portB = routerB->getAvailablePort();
+
+                if (portA && portB)
+                {
+                    PortBindingManager bindingManager;
+                    bindingManager.bind(portA, portB);
+                }
+                else
+                {
+                    qWarning() << "No available ports to bind between Router"
+                               << routerA->getIPAddress() << "and Router" << routerB->getIPAddress();
                 }
             }
         }
     }
     else if (m_topologyType == "RingStar")
     {
-        // Implement the ring-star topology
-        // Create a ring
-        for (size_t i = 0; i < m_routers.size(); ++i)
+        if (m_routers.size() < 2)
         {
-            auto routerA = m_routers[i];
-            auto routerB = m_routers[(i + 1) % m_routers.size()]; // Next router in the ring
+            qWarning() << "Not enough routers to form a ring-star topology.";
+            return;
+        }
+
+        // Identify the hub router (assuming the first router)
+        auto hubRouter = m_routers.front();
+
+        // Define the ring routers (excluding the hub)
+        QVector<QSharedPointer<Router>> ringRouters;
+
+        // Only include routers that are intended to be part of the ring
+        for (const auto &router : m_routers)
+        {
+            if (router != hubRouter)
+            {
+                QString ip = router->getIPAddress();
+                if (ip == "192.168.200.2" || ip == "192.168.200.3" ||
+                   ip == "192.168.200.4" || ip == "192.168.200.5")
+                {
+                    ringRouters.append(router);
+                }
+            }
+        }
+
+        // Form the ring connections
+        for (int i = 0; i < ringRouters.size(); ++i)
+        {
+            auto routerA = ringRouters[i];
+            auto routerB = ringRouters[(i + 1) % ringRouters.size()]; // Next router in the ring
 
             auto portA = routerA->getAvailablePort();
             auto portB = routerB->getAvailablePort();
@@ -191,22 +216,21 @@ void AutonomousSystem::setupTopology()
             }
         }
 
-        // Connect all routers to central hub (assuming first router is the hub)
-        auto hubRouter = m_routers.front();
-        for (size_t i = 1; i < m_routers.size(); ++i)
+        // Connect each ring router to the hub router
+        for (const auto &router : ringRouters)
         {
             auto portHub = hubRouter->getAvailablePort();
-            auto portNode = m_routers[i]->getAvailablePort();
+            auto portRouter = router->getAvailablePort();
 
-            if (portHub && portNode)
+            if (portHub && portRouter)
             {
                 PortBindingManager bindingManager;
-                bindingManager.bind(portHub, portNode);
+                bindingManager.bind(portHub, portRouter);
             }
             else
             {
                 qWarning() << "No available ports to bind between Hub Router"
-                           << hubRouter->getIPAddress() << "and Router" << m_routers[i]->getIPAddress();
+                           << hubRouter->getIPAddress() << "and Router" << router->getIPAddress();
             }
         }
     }

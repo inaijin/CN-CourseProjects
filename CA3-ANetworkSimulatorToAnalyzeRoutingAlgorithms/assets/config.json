@@ -5,7 +5,7 @@
     "packets_per_simulation": 500,
     "statistical_distribution": "Poisson",
     "router_buffer_size": 6,
-    "router_port_count": 12,
+    "router_port_count": 16,
     "routing_protocol": "RIP",
     "routing_table_update_interval": "30",
     "routing_per_port": true,
