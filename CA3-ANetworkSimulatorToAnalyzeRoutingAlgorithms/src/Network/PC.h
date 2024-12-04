@@ -1,12 +1,11 @@
 #ifndef PC_H
 #define PC_H
 
-#include <QObject>
+#include "Node.h"
 #include <QSharedPointer>
-
 #include "../Port/Port.h"
 
-class PC : public QObject
+class PC : public Node
 {
     Q_OBJECT
 
@@ -14,13 +13,12 @@ public:
     explicit PC(int id, const QString &ipAddress, QObject *parent = nullptr);
     ~PC();
 
-    int getId() const;
-    QString getIPAddress() const;
     PortPtr_t getPort();
 
+protected:
+    void run() override;
+
 private:
-    int m_id;
-    QString m_ipAddress;
     PortPtr_t m_port;
 };
 

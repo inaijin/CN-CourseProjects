@@ -46,3 +46,6 @@ void DataGenerator::generatePackets()
 
     qDebug() << numPackets << "packets generated and emitted.";
 }
+
+// yeki besazi ba poision bad inkaro bokonim
+// be khodesh nafrestim

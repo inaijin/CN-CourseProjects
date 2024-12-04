@@ -1,30 +1,26 @@
 #ifndef ROUTER_H
 #define ROUTER_H
 
-#include <QObject>
-#include <QThread>
-#include <QSharedPointer>
+#include "Node.h"
 #include <vector>
-
+#include <QSharedPointer>
 #include "../Port/Port.h"
 
-class Router : public QThread
+class Router : public Node
 {
     Q_OBJECT
 
 public:
-    explicit Router(int id, const QString &ipAddress, QObject *parent = nullptr);
+    explicit Router(int id, const QString &ipAddress, int portCount = 6, QObject *parent = nullptr);
     ~Router();
 
-    int getId() const;
-    QString getIPAddress() const;
     PortPtr_t getAvailablePort();
+    std::vector<PortPtr_t> getPorts();
 
+protected:
     void run() override;
 
 private:
-    int m_id;
-    QString m_ipAddress;
     std::vector<PortPtr_t> m_ports;
     int m_portCount;
 
