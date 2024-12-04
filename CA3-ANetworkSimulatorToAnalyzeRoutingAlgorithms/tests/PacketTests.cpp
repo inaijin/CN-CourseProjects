@@ -110,5 +110,5 @@ void PacketTests::testTCPHeaderIntegration() {
     QCOMPARE(retrievedHeader.getUrgentPointer(), static_cast<uint16_t>(123));
 }
 
-QTEST_MAIN(PacketTests)
+// QTEST_MAIN(PacketTests)
 #include "PacketTests.moc"

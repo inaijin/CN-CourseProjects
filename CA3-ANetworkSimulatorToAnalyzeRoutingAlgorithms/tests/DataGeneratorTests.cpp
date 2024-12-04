@@ -25,7 +25,6 @@ void DataGeneratorTests::testLambdaSetting() {
     QVERIFY(spy.count() > 0);
 }
 
-
 void DataGeneratorTests::testDestinationSetting() {
     DataGenerator generator;
 
@@ -57,11 +56,12 @@ void DataGeneratorTests::testPacketGeneration() {
     QVERIFY(spy.count() > 0);
     auto packets = qvariant_cast<std::vector<QSharedPointer<Packet>>>(spy.takeFirst().at(0));
 
+    QVERIFY(!packets.empty());
     for (const auto &packet : packets) {
         QVERIFY(!packet->getPath().isEmpty());
         QVERIFY(packet->getPayload() == "GeneratedPayload");
     }
 }
 
-// QTEST_MAIN(DataGeneratorTests)
+QTEST_MAIN(DataGeneratorTests)
 #include "DataGeneratorTests.moc"

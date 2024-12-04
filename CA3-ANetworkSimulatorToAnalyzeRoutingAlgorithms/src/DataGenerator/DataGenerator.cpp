@@ -19,20 +19,24 @@ void DataGenerator::setDestinations(const std::vector<QString> &destinations) {
     m_destinations = destinations;
 }
 
-std::vector<int> DataGenerator::calculateLoads(int durationInSeconds) {
-    std::vector<int> loads;
-    for (int i = 0; i < durationInSeconds; ++i) {
-        loads.push_back(m_distribution(m_generator));
+std::vector<int> DataGenerator::generatePoissonLoads(int numSamples, int timeScale) {
+    std::vector<int> loads(timeScale, 0);
+    for (int i = 0; i < numSamples; ++i) {
+        int value = m_distribution(m_generator);
+        if (value < timeScale) {
+            loads[value]++;
+        }
     }
     return loads;
 }
 
 void DataGenerator::generatePackets() {
-    const int durationInSeconds = 10;
-    std::vector<int> loads = calculateLoads(durationInSeconds);
+    const int numSamples = 150; // Number of packets to generate
+    const int timeScale = 100;  // Time scale for the distribution
+    std::vector<int> loads = generatePoissonLoads(numSamples, timeScale);
     std::vector<QSharedPointer<Packet>> packets;
 
-    for (int second = 0; second < durationInSeconds; ++second) {
+    for (int second = 0; second < timeScale; ++second) {
         int packetsForThisSecond = loads[second];
 
         for (int i = 0; i < packetsForThisSecond; ++i) {
@@ -52,5 +56,5 @@ void DataGenerator::generatePackets() {
 
     emit packetsGenerated(packets);
 
-    qDebug() << packets.size() << "packets generated and emitted over" << durationInSeconds << "seconds.";
+    qDebug() << packets.size() << "packets generated and emitted over a timescale of" << timeScale << "seconds.";
 }

@@ -29,7 +29,7 @@ private:
     std::poisson_distribution<int> m_distribution;
     std::vector<QString> m_destinations;
 
-    std::vector<int> calculateLoads(int durationInSeconds);
+    std::vector<int> generatePoissonLoads(int numSamples, int timeScale);
 };
 
 #endif // DATAGENERATOR_H
