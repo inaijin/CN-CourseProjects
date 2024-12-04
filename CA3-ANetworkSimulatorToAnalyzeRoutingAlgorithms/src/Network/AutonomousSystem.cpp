@@ -150,8 +150,19 @@ void AutonomousSystem::setupTopology()
             {
                 if (routerA != routerB)
                 {
-                    PortBindingManager bindingManager;
-                    bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort());
+                    auto portA = routerA->getAvailablePort();
+                    auto portB = routerB->getAvailablePort();
+
+                    if (portA && portB)
+                    {
+                        PortBindingManager bindingManager;
+                        bindingManager.bind(portA, portB);
+                    }
+                    else
+                    {
+                        qWarning() << "No available ports to bind between Router"
+                                   << routerA->getIPAddress() << "and Router" << routerB->getIPAddress();
+                    }
                 }
             }
         }
@@ -159,26 +170,45 @@ void AutonomousSystem::setupTopology()
     else if (m_topologyType == "RingStar")
     {
         // Implement the ring-star topology
-        // Example: Connect routers in a ring
+        // Create a ring
         for (size_t i = 0; i < m_routers.size(); ++i)
         {
             auto routerA = m_routers[i];
             auto routerB = m_routers[(i + 1) % m_routers.size()]; // Next router in the ring
-            PortBindingManager bindingManager;
-            bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort());
+
+            auto portA = routerA->getAvailablePort();
+            auto portB = routerB->getAvailablePort();
+
+            if (portA && portB)
+            {
+                PortBindingManager bindingManager;
+                bindingManager.bind(portA, portB);
+            }
+            else
+            {
+                qWarning() << "No available ports to bind between Router"
+                           << routerA->getIPAddress() << "and Router" << routerB->getIPAddress();
+            }
         }
 
         // Connect all routers to central hub (assuming first router is the hub)
         auto hubRouter = m_routers.front();
         for (size_t i = 1; i < m_routers.size(); ++i)
         {
-            PortBindingManager bindingManager;
-            bindingManager.bind(hubRouter->getAvailablePort(), m_routers[i]->getAvailablePort());
+            auto portHub = hubRouter->getAvailablePort();
+            auto portNode = m_routers[i]->getAvailablePort();
+
+            if (portHub && portNode)
+            {
+                PortBindingManager bindingManager;
+                bindingManager.bind(portHub, portNode);
+            }
+            else
+            {
+                qWarning() << "No available ports to bind between Hub Router"
+                           << hubRouter->getIPAddress() << "and Router" << m_routers[i]->getIPAddress();
+            }
         }
-    }
-    else if (m_topologyType == "Torus")
-    {
-        // Implement torus topology if needed
     }
     else
     {
