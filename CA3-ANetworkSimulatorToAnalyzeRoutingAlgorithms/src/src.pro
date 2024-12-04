@@ -16,7 +16,8 @@ SOURCES += \
     $$PWD/Port/Port.cpp \
     $$PWD/MACAddress/MACAddress.cpp \
     $$PWD/MACAddress/MACAddressGenerator.cpp \
-    $$PWD/DataGenerator/DataGenerator.cpp
+    $$PWD/DataGenerator/DataGenerator.cpp \
+    $$PWD/Packet/Packet.cpp
 
 HEADERS += \
     $$PWD/DHCPServer/DHCPServer.h \
@@ -27,4 +28,5 @@ HEADERS += \
     $$PWD/Port/Port.h \
     $$PWD/MACAddress/MACAddress.h \
     $$PWD/MACAddress/MACAddressGenerator.h \
-    $$PWD/DataGenerator/DataGenerator.h
+    $$PWD/DataGenerator/DataGenerator.h \
+    $$PWD/Packet/Packet.h
