@@ -28,6 +28,8 @@ private:
     std::default_random_engine m_generator;
     std::poisson_distribution<int> m_distribution;
     std::vector<QString> m_destinations;
+
+    std::vector<int> calculateLoads(int durationInSeconds);
 };
 
 #endif // DATAGENERATOR_H

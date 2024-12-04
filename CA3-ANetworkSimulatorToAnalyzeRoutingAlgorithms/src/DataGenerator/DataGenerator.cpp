@@ -10,42 +10,47 @@ DataGenerator::DataGenerator(QObject *parent) :
     m_generator.seed(rd());
 }
 
-void DataGenerator::setLambda(double lambda)
-{
+void DataGenerator::setLambda(double lambda) {
     m_lambda = lambda;
     m_distribution = std::poisson_distribution<int>(m_lambda);
 }
 
-void DataGenerator::setDestinations(const std::vector<QString> &destinations)
-{
+void DataGenerator::setDestinations(const std::vector<QString> &destinations) {
     m_destinations = destinations;
 }
 
-void DataGenerator::generatePackets()
-{
-    int numPackets = m_distribution(m_generator);
+std::vector<int> DataGenerator::calculateLoads(int durationInSeconds) {
+    std::vector<int> loads;
+    for (int i = 0; i < durationInSeconds; ++i) {
+        loads.push_back(m_distribution(m_generator));
+    }
+    return loads;
+}
+
+void DataGenerator::generatePackets() {
+    const int durationInSeconds = 10;
+    std::vector<int> loads = calculateLoads(durationInSeconds);
     std::vector<QSharedPointer<Packet>> packets;
 
-    for (int i = 0; i < numPackets; ++i)
-    {
-        if (m_destinations.empty())
-        {
-            qDebug() << "No destinations available for packet generation.";
-            return;
+    for (int second = 0; second < durationInSeconds; ++second) {
+        int packetsForThisSecond = loads[second];
+
+        for (int i = 0; i < packetsForThisSecond; ++i) {
+            if (m_destinations.empty()) {
+                qDebug() << "No destinations available for packet generation.";
+                return;
+            }
+
+            QString destination = m_destinations[std::rand() % m_destinations.size()];
+
+            auto packet = QSharedPointer<Packet>::create(PacketType::Data, "GeneratedPayload");
+            packet->addToPath(destination);
+
+            packets.push_back(packet);
         }
-
-        QString destination = m_destinations[std::rand() % m_destinations.size()];
-
-        auto packet = QSharedPointer<Packet>::create(PacketType::Data, "GeneratedPayload");
-        packet->addToPath(destination);
-
-        packets.push_back(packet);
     }
 
     emit packetsGenerated(packets);
 
-    qDebug() << numPackets << "packets generated and emitted.";
+    qDebug() << packets.size() << "packets generated and emitted over" << durationInSeconds << "seconds.";
 }
-
-// yeki besazi ba poision bad inkaro bokonim
-// be khodesh nafrestim
