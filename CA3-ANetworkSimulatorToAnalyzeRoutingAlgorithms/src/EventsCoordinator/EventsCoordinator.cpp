@@ -73,6 +73,7 @@ EventsCoordinator::setDataGenerator(DataGenerator *generator)
     if (m_dataGenerator)
     {
         connect(m_dataGenerator, &DataGenerator::packetsGenerated, this, &EventsCoordinator::onPacketsGenerated);
+        m_dataGenerator->generatePackets(); // Preload packets into the queue
     }
 }
 
@@ -82,19 +83,22 @@ EventsCoordinator::onTick()
     emit tick();
     qDebug() << "Tick emitted.";
 
-    if (!m_dataGenerator)
+    if (m_packetQueue.empty())
     {
-        qDebug() << "No DataGenerator set. Skipping packet generation.";
+        qDebug() << "No packets left to emit.";
         return;
     }
 
-    m_dataGenerator->generatePackets();
-    qDebug() << "DataGenerator triggered to generate packets.";
+    auto packet = m_packetQueue.front();
+    m_packetQueue.erase(m_packetQueue.begin());
+    emit packetGenerated(packet);
+
+    qDebug() << "Packet emitted from the queue.";
 }
 
 void
 EventsCoordinator::onPacketsGenerated(const std::vector<QSharedPointer<Packet>> &packets)
 {
-    emit dataGenerated(packets);
-    qDebug() << "Packets generated and forwarded. Count:" << packets.size();
+    m_packetQueue.insert(m_packetQueue.end(), packets.begin(), packets.end());
+    qDebug() << packets.size() << "packets added to the queue. Total queue size:" << m_packetQueue.size();
 }

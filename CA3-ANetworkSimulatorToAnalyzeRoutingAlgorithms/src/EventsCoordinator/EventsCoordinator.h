@@ -31,7 +31,7 @@ public:
 
 Q_SIGNALS:
     void tick();
-    void dataGenerated(const std::vector<QSharedPointer<Packet>> &packets);
+    void packetGenerated(QSharedPointer<Packet> packet);
 
 private Q_SLOTS:
     void onTick();
@@ -41,6 +41,8 @@ private:
     inline static EventsCoordinator *m_self = nullptr;
     QTimer *m_timer = nullptr;
     DataGenerator *m_dataGenerator = nullptr;
+
+    std::vector<QSharedPointer<Packet>> m_packetQueue;
 };
 
 #endif // EVENTSCOORDINATOR_H
