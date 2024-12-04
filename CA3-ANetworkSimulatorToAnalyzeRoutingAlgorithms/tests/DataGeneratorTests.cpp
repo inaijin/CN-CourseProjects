@@ -63,5 +63,5 @@ void DataGeneratorTests::testPacketGeneration() {
     }
 }
 
-QTEST_MAIN(DataGeneratorTests)
+// QTEST_MAIN(DataGeneratorTests)
 #include "DataGeneratorTests.moc"
