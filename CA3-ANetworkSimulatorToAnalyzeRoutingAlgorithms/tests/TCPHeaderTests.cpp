@@ -69,5 +69,5 @@ void TCPHeaderTests::testFieldManagement() {
     QCOMPARE(header.getUrgentPointer(), static_cast<uint16_t>(456));
 }
 
-QTEST_MAIN(TCPHeaderTests)
+// QTEST_MAIN(TCPHeaderTests)
 #include "TCPHeaderTests.moc"

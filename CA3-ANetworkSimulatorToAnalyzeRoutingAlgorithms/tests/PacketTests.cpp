@@ -1,5 +1,7 @@
 #include <QtTest/QtTest>
 #include "../src/Packet/Packet.h"
+#include "../src/Header/DataLinkHeader.h"
+#include "../src/Header/TCPHeader.h"
 
 class PacketTests : public QObject {
     Q_OBJECT
@@ -13,6 +15,8 @@ private Q_SLOTS:
     void testQueueWaitCyclesManagement();
     void testSequenceNumber();
     void testDroppedFlag();
+    void testDataLinkHeaderIntegration();
+    void testTCPHeaderIntegration();
 };
 
 void PacketTests::testDefaultConstructor() {
@@ -77,5 +81,34 @@ void PacketTests::testDroppedFlag() {
     QCOMPARE(packet.isDropped(), false);
 }
 
-// QTEST_MAIN(PacketTests)
+void PacketTests::testDataLinkHeaderIntegration() {
+    Packet packet;
+    DataLinkHeader header(MACAddress("12:34:56:78:9A:BC"), MACAddress("AB:CD:EF:01:23:45"), "0x0806", "FFFF");
+    packet.setDataLinkHeader(header);
+
+    DataLinkHeader retrievedHeader = packet.getDataLinkHeader();
+    QCOMPARE(retrievedHeader.getSourceMAC().toString(), QString("12:34:56:78:9A:BC"));
+    QCOMPARE(retrievedHeader.getDestinationMAC().toString(), QString("AB:CD:EF:01:23:45"));
+    QCOMPARE(retrievedHeader.getFrameType(), QString("0x0806"));
+    QCOMPARE(retrievedHeader.getErrorDetectionCode(), QString("FFFF"));
+}
+
+void PacketTests::testTCPHeaderIntegration() {
+    Packet packet;
+    TCPHeader header(8080, 8443, 12345, 67890, 5, 0b101010, 1024, 0xFFFF, 123);
+    packet.setTCPHeader(header);
+
+    TCPHeader retrievedHeader = packet.getTCPHeader();
+    QCOMPARE(retrievedHeader.getSourcePort(), static_cast<uint16_t>(8080));
+    QCOMPARE(retrievedHeader.getDestPort(), static_cast<uint16_t>(8443));
+    QCOMPARE(retrievedHeader.getSequenceNumber(), static_cast<uint32_t>(12345));
+    QCOMPARE(retrievedHeader.getAcknowledgmentNumber(), static_cast<uint32_t>(67890));
+    QCOMPARE(retrievedHeader.getDataOffset(), static_cast<uint8_t>(5));
+    QCOMPARE(retrievedHeader.getFlags(), static_cast<uint8_t>(0b101010));
+    QCOMPARE(retrievedHeader.getWindowSize(), static_cast<uint16_t>(1024));
+    QCOMPARE(retrievedHeader.getChecksum(), static_cast<uint16_t>(0xFFFF));
+    QCOMPARE(retrievedHeader.getUrgentPointer(), static_cast<uint16_t>(123));
+}
+
+QTEST_MAIN(PacketTests)
 #include "PacketTests.moc"
