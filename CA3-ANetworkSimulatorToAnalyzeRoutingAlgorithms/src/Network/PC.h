@@ -11,9 +11,11 @@ class PC : public Node
 
 public:
     explicit PC(int id, const QString &ipAddress, QObject *parent = nullptr);
-    ~PC();
+    ~PC() override;
 
     PortPtr_t getPort();
+
+    void startPC();
 
 protected:
     void run() override;

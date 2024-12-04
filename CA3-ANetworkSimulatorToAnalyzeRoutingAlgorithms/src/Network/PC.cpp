@@ -1,4 +1,5 @@
 #include "PC.h"
+#include <QDebug>
 
 PC::PC(int id, const QString &ipAddress, QObject *parent)
     : Node(id, ipAddress, parent)
@@ -6,11 +7,13 @@ PC::PC(int id, const QString &ipAddress, QObject *parent)
     m_port = PortPtr_t::create(this);
     m_port->setPortNumber(1);
     m_port->setRouterIP(m_ipAddress);
+
+    qDebug() << "PC initialized: ID =" << m_id << ", IP =" << m_ipAddress;
 }
 
 PC::~PC()
 {
-    // Cleanup if necessary
+    qDebug() << "PC destroyed: ID =" << m_id;
 }
 
 PortPtr_t PC::getPort()
@@ -20,7 +23,16 @@ PortPtr_t PC::getPort()
 
 void PC::run()
 {
-    // Thread execution starts here for the PC
-    // For Phase 1, PCs remain inactive
+    qDebug() << "PC" << m_id << "is in idle mode.";
     // Implement PC's main loop in later phases
+    exec();
+}
+
+void PC::startPC()
+{
+    qDebug() << "Starting PC" << m_id;
+    if (!isRunning())
+    {
+        start();
+    }
 }
