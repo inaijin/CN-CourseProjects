@@ -19,7 +19,9 @@ SOURCES += \
     $$PWD/DataGenerator/DataGenerator.cpp \
     $$PWD/Packet/Packet.cpp \
     $$PWD/Header/DataLinkHeader.cpp \
-    $$PWD/Header/TCPHeader.cpp
+    $$PWD/Header/TCPHeader.cpp \
+    $$PWD/NetworkSimulator/Simulator.cpp \
+    $$PWD/NetworkSimulator/Network.cpp
 
 HEADERS += \
     $$PWD/DHCPServer/DHCPServer.h \
@@ -33,4 +35,6 @@ HEADERS += \
     $$PWD/DataGenerator/DataGenerator.h \
     $$PWD/Packet/Packet.h \
     $$PWD/Header/DataLinkHeader.h \
-    $$PWD/Header/TCPHeader.h
+    $$PWD/Header/TCPHeader.h \
+    $$PWD/NetworkSimulator/Simulator.h \
+    $$PWD/NetworkSimulator/Network.h
