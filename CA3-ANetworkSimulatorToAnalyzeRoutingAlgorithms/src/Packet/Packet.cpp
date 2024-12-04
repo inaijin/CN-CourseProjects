@@ -6,7 +6,9 @@ Packet::Packet(PacketType type, const QString &payload) :
     m_waitCycles(0),
     m_queueWaitCycles(0),
     m_sequenceNumber(0),
-    m_isDropped(false)
+    m_isDropped(false),
+    m_dataLinkHeader(),
+    m_tcpHeader()
 {
 }
 
@@ -60,4 +62,22 @@ bool Packet::isDropped() const {
 
 PacketType Packet::getType() const {
     return m_type;
+}
+
+// DataLinkHeader Methods
+void Packet::setDataLinkHeader(const DataLinkHeader &header) {
+    m_dataLinkHeader = header;
+}
+
+DataLinkHeader Packet::getDataLinkHeader() const {
+    return m_dataLinkHeader;
+}
+
+// TCPHeader Methods
+void Packet::setTCPHeader(const TCPHeader &header) {
+    m_tcpHeader = header;
+}
+
+TCPHeader Packet::getTCPHeader() const {
+    return m_tcpHeader;
 }

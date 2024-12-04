@@ -4,6 +4,8 @@
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
+#include "../Header/DataLinkHeader.h"
+#include "../Header/TCPHeader.h"
 
 enum class PacketType {
     Data,
@@ -40,6 +42,14 @@ public:
 
     PacketType getType() const;
 
+    // DataLinkHeader Methods
+    void setDataLinkHeader(const DataLinkHeader &header);
+    DataLinkHeader getDataLinkHeader() const;
+
+    // TCPHeader Methods
+    void setTCPHeader(const TCPHeader &header);
+    TCPHeader getTCPHeader() const;
+
 private:
     PacketType m_type;                  // Type of the packet (data, control, etc.)
     QString m_payload;                  // The data or information the packet carries
@@ -48,6 +58,9 @@ private:
     int m_queueWaitCycles;              // Cycles spent in a queue
     int m_sequenceNumber;               // Sequence number for tracking
     bool m_isDropped;                   // Flag indicating if the packet was dropped
+
+    DataLinkHeader m_dataLinkHeader;    // DataLink layer header
+    TCPHeader m_tcpHeader;              // TCP layer header
 };
 
 #endif // PACKET_H
