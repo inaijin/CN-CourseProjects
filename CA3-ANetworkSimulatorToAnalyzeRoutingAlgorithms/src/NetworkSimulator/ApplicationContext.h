@@ -2,11 +2,12 @@
 #define APPLICATIONCONTEXT_H
 
 #include <QObject>
+#include <QReadWriteLock>
 #include <QMutex>
 #include <QSharedPointer>
 #include <QVariantMap>
 #include <QString>
-#include "../NetworkSimulator/Simulator.h" // Include your Simulator header
+#include "../NetworkSimulator/Simulator.h"
 
 class ApplicationContext : public QObject
 {
@@ -15,29 +16,26 @@ class ApplicationContext : public QObject
 public:
     static ApplicationContext& instance();
 
-    // Configuration management
     void setConfig(const QVariantMap& config);
     QVariantMap getConfig() const;
 
-    // Access to global resources
     void setSimulator(QSharedPointer<Simulator> simulator);
     QSharedPointer<Simulator> getSimulator() const;
 
-    // Add other global resources as needed
+    static void reset();
 
 private:
     explicit ApplicationContext(QObject *parent = nullptr);
     ~ApplicationContext();
 
-    // Disable copy constructor and assignment operator
     ApplicationContext(const ApplicationContext&) = delete;
     ApplicationContext& operator=(const ApplicationContext&) = delete;
 
-    // Member variables
     QVariantMap m_config;
     QSharedPointer<Simulator> m_simulator;
 
-    mutable QMutex m_mutex; // Mutex for thread safety
+    mutable QReadWriteLock m_configLock; // ReadWriteLock for config
+    mutable QMutex m_simulatorMutex;    // Mutex for simulator access
 };
 
 #endif // APPLICATIONCONTEXT_H
