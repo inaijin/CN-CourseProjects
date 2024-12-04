@@ -82,17 +82,14 @@ void AutonomousSystem::createPCs()
         for (const QJsonValue &userValue : qAsConst(userArray))
         {
             int userId = userValue.toInt();
-            // Generate PC IP addresses
             QString pcIP = QString("192.168.%1.%2").arg(m_id * 100).arg(userId);
             auto pc = QSharedPointer<PC>::create(userId, pcIP, this);
             m_pcs.push_back(pc);
 
-            // Find the corresponding router to connect
             auto routerIt = std::find_if(m_routers.begin(), m_routers.end(),
                                          [nodeId](const QSharedPointer<Router> &r) { return r->getId() == nodeId; });
             if (routerIt != m_routers.end())
             {
-                // Bind PC to Router
                 PortBindingManager bindingManager;
                 bindingManager.bind((*routerIt)->getAvailablePort(), pc->getPort());
             }
@@ -102,15 +99,12 @@ void AutonomousSystem::createPCs()
 
 void AutonomousSystem::connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS)
 {
-    // Implement the logic to connect to other Autonomous Systems based on m_connectToAs
-
     for (const QJsonValue &connectValue : qAsConst(m_connectToAs))
     {
         QJsonObject connectObj = connectValue.toObject();
         int targetASId = connectObj.value("id").toInt();
         QJsonArray gatewayPairs = connectObj.value("gateway_pairs").toArray();
 
-        // Find the target AS
         auto targetASIt = std::find_if(allAS.begin(), allAS.end(),
                                                 [targetASId](const QSharedPointer<AutonomousSystem> &as) { return as->getId() == targetASId; });
 
@@ -122,7 +116,6 @@ void AutonomousSystem::connectToOtherAS(const std::vector<QSharedPointer<Autonom
                 int gatewayId = pairObj.value("gateway").toInt();
                 int connectToId = pairObj.value("connect_to").toInt();
 
-                // Find routers in both AS
                 auto localRouterIt = std::find_if(m_routers.begin(), m_routers.end(),
                                                           [gatewayId](const QSharedPointer<Router> &r) { return r->getId() == gatewayId; });
                 auto remoteRouterIt = std::find_if((*targetASIt)->m_routers.begin(), (*targetASIt)->m_routers.end(),
@@ -130,7 +123,6 @@ void AutonomousSystem::connectToOtherAS(const std::vector<QSharedPointer<Autonom
 
                 if (localRouterIt != m_routers.end() && remoteRouterIt != (*targetASIt)->m_routers.end())
                 {
-                    // Bind routers between AS
                     PortBindingManager bindingManager;
                     bindingManager.bind((*localRouterIt)->getAvailablePort(), (*remoteRouterIt)->getAvailablePort());
                 }
@@ -143,7 +135,6 @@ void AutonomousSystem::setupTopology()
 {
     if (m_topologyType == "Mesh")
     {
-        // Implement the mesh topology
         for (size_t i = 0; i < m_routers.size(); ++i)
         {
             auto routerA = m_routers[i];
@@ -175,10 +166,8 @@ void AutonomousSystem::setupTopology()
             return;
         }
 
-        // Identify the hub router (assuming the first router)
         auto hubRouter = m_routers.front();
 
-        // Define the ring routers (excluding the hub)
         QVector<QSharedPointer<Router>> ringRouters;
 
         // Only include routers that are intended to be part of the ring
@@ -234,7 +223,7 @@ void AutonomousSystem::setupTopology()
             }
         }
     }
-    else
+    else // Can add more topologies as see fit
     {
         qWarning() << "Unknown topology type:" << m_topologyType;
     }
@@ -242,5 +231,5 @@ void AutonomousSystem::setupTopology()
 
 void AutonomousSystem::setupGateways()
 {
-    // Implement any additional setup for gateways if needed
+    // Implement any additional setup for gateways if needed, Might be added in next phases
 }
