@@ -6,8 +6,7 @@
 #include <random>
 #include <vector>
 #include <QString>
-
-// #include "Packet.h"
+#include "../Packet/Packet.h"
 
 class DataGenerator : public QObject
 {
@@ -22,13 +21,13 @@ public:
     void generatePackets();
 
 Q_SIGNALS:
-    // void packetsGenerated(const std::vector<QSharedPointer<Packet>> &packets);
+    void packetsGenerated(const std::vector<QSharedPointer<Packet>> &packets);
 
 private:
-    double m_lambda; // Poisson distribution parameter
+    double m_lambda;
     std::default_random_engine m_generator;
     std::poisson_distribution<int> m_distribution;
-    std::vector<QString> m_destinations; // Available destinations
+    std::vector<QString> m_destinations;
 };
 
 #endif // DATAGENERATOR_H

@@ -6,7 +6,6 @@ DataGenerator::DataGenerator(QObject *parent) :
     m_lambda(1.0),
     m_distribution(m_lambda)
 {
-    // Initialize random engine with a seed for reproducibility
     std::random_device rd;
     m_generator.seed(rd());
 }
@@ -25,27 +24,25 @@ void DataGenerator::setDestinations(const std::vector<QString> &destinations)
 void DataGenerator::generatePackets()
 {
     int numPackets = m_distribution(m_generator);
-    // std::vector<QSharedPointer<Packet>> packets;
+    std::vector<QSharedPointer<Packet>> packets;
 
     for (int i = 0; i < numPackets; ++i)
     {
-        // Randomly select a destination (ensuring it's not the source)
         if (m_destinations.empty())
         {
             qDebug() << "No destinations available for packet generation.";
             return;
         }
 
-        // QString destination = m_destinations[std::rand() % m_destinations.size()];
+        QString destination = m_destinations[std::rand() % m_destinations.size()];
 
-        // Create a new packet
-        // auto packet = QSharedPointer<Packet>::create();
-        // packet->setDestination(destination);
+        auto packet = QSharedPointer<Packet>::create(PacketType::Data, "GeneratedPayload");
+        packet->addToPath(destination);
 
-        // packets.push_back(packet);
+        packets.push_back(packet);
     }
 
-    // emit packetsGenerated(packets);
+    emit packetsGenerated(packets);
 
-    qDebug() << numPackets << "packets generated.";
+    qDebug() << numPackets << "packets generated and emitted.";
 }
