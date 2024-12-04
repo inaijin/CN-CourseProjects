@@ -1,3 +1,4 @@
+
 #include <QtTest/QtTest>
 #include "../src/EventsCoordinator/EventsCoordinator.h"
 #include "../src/DataGenerator/DataGenerator.h"
@@ -9,7 +10,7 @@ private Q_SLOTS:
     void testSingletonInstance();
     void testStartAndStopClock();
     void testTickSignalEmission();
-    void testPacketGenerationIntegration();
+    void testPacketQueueIntegration();
 };
 
 void EventsCoordinatorTests::testSingletonInstance() {
@@ -46,7 +47,7 @@ void EventsCoordinatorTests::testTickSignalEmission() {
     EventsCoordinator::release();
 }
 
-void EventsCoordinatorTests::testPacketGenerationIntegration() {
+void EventsCoordinatorTests::testPacketQueueIntegration() {
     EventsCoordinator *coordinator = EventsCoordinator::instance();
     DataGenerator generator;
 
@@ -55,9 +56,10 @@ void EventsCoordinatorTests::testPacketGenerationIntegration() {
     generator.setLambda(3.0);
 
     coordinator->setDataGenerator(&generator);
+    generator.generatePackets(); // Preload the packet queue
 
     QSignalSpy tickSpy(coordinator, &EventsCoordinator::tick);
-    QSignalSpy packetSpy(coordinator, &EventsCoordinator::dataGenerated);
+    QSignalSpy packetSpy(coordinator, &EventsCoordinator::packetGenerated);
 
     coordinator->startClock(std::chrono::milliseconds(100));
     QTest::qWait(350);
@@ -65,9 +67,11 @@ void EventsCoordinatorTests::testPacketGenerationIntegration() {
     QVERIFY(tickSpy.count() >= 3);
     QVERIFY(packetSpy.count() > 0);
 
+    QCOMPARE(packetSpy.count(), tickSpy.count());
+
     coordinator->stopClock();
     EventsCoordinator::release();
 }
 
-// QTEST_MAIN(EventsCoordinatorTests)
+QTEST_MAIN(EventsCoordinatorTests)
 #include "EventsCoordinatorTests.moc"
