@@ -11,13 +11,13 @@ class Node : public QThread
 
 public:
     explicit Node(int id, const QString &ipAddress, QObject *parent = nullptr);
-    virtual ~Node();
+    virtual ~Node() = 0;
 
     int getId() const;
     QString getIPAddress() const;
 
 protected:
-    void run() override = 0;
+    virtual void run() override = 0;
 
     int m_id;
     QString m_ipAddress;
