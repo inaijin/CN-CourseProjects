@@ -1,32 +1,42 @@
-// #ifndef PORT_H
-// #define PORT_H
+#ifndef PORT_H
+#define PORT_H
 
-// #include "../Packet/Packet.h"
+#include "../Packet/Packet.h"
 
-// #include <QObject>
+#include <QObject>
 
-// class Port : public QObject
-// {
-//     Q_OBJECT
+class Port : public QObject
+{
+    Q_OBJECT
 
-// public:
-//     explicit Port(QObject *parent = nullptr);
-//     ~Port() override;
+public:
+    explicit Port(QObject *parent = nullptr);
+    ~Port() override;
 
-// Q_SIGNALS:
-//     void packetSent(const PacketPtr_t &data);
-//     void packetReceived(const PacketPtr_t &data);
+    void setPortNumber(uint8_t number);
+    uint8_t getPortNumber() const;
 
-// public Q_SLOTS:
-//     void sendPacket(const PacketPtr_t &data);
-//     void receivePacket(const PacketPtr_t &data);
+    void setRouterIP(const QString &ip);
+    QString getRouterIP() const;
 
-// private:
-//     uint8_t  m_number;
-//     uint64_t m_numberOfPacketsSent;
-//     QString  m_routerIP;
-// };
+    bool isConnected() const;
+    void setConnected(bool connected);
 
-// typedef QSharedPointer<Port> PortPtr_t;
+Q_SIGNALS:
+    void packetSent(const PacketPtr_t &data);
+    void packetReceived(const PacketPtr_t &data);
 
-// #endif    // PORT_H
+public Q_SLOTS:
+    void sendPacket(const PacketPtr_t &data);
+    void receivePacket(const PacketPtr_t &data);
+
+private:
+    uint8_t  m_number = 0;
+    uint64_t m_numberOfPacketsSent = 0;
+    QString  m_routerIP;
+    bool     m_isConnected = false;
+};
+
+typedef QSharedPointer<Port> PortPtr_t;
+
+#endif    // PORT_H
