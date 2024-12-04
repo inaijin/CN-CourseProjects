@@ -12,10 +12,14 @@ class Router : public Node
 
 public:
     explicit Router(int id, const QString &ipAddress, int portCount = 6, QObject *parent = nullptr);
-    ~Router();
+    ~Router() override;
 
     PortPtr_t getAvailablePort();
     std::vector<PortPtr_t> getPorts();
+
+    void startRouter();
+
+    void logPortStatuses() const; // Logs the statuses of all ports
 
 protected:
     void run() override;

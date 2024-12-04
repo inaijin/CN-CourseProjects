@@ -1,14 +1,27 @@
 #include "Router.h"
+#include <QDebug>
 
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
     : Node(id, ipAddress, parent), m_portCount(portCount)
 {
+    if (m_portCount <= 0)
+    {
+        m_portCount = 6; // Default to 6 ports if invalid value provided
+    }
+
     initializePorts();
+    qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress << ", Ports =" << m_portCount;
 }
 
 Router::~Router()
 {
-    // Cleanup if necessary
+    if (isRunning())
+    {
+        quit();
+        wait();
+    }
+
+    qDebug() << "Router destroyed: ID =" << m_id;
 }
 
 void Router::initializePorts()
@@ -39,9 +52,26 @@ std::vector<PortPtr_t> Router::getPorts()
     return m_ports;
 }
 
+void Router::logPortStatuses() const
+{
+    for (const auto &port : m_ports)
+    {
+        qDebug() << "Port" << port->getPortNumber() << (port->isConnected() ? "Connected" : "Available");
+    }
+}
+
 void Router::run()
 {
-    // Thread execution starts here for the Router
-    // For Phase 1, routers remain inactive
+    qDebug() << "Router" << m_id << "is in idle mode.";
     // Implement the router's main loop in later phases
+    exec();
+}
+
+void Router::startRouter()
+{
+    qDebug() << "Starting Router" << m_id;
+    if (!isRunning())
+    {
+        start();
+    }
 }
