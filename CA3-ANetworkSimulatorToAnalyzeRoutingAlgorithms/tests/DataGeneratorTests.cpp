@@ -15,12 +15,16 @@ void DataGeneratorTests::testLambdaSetting() {
     DataGenerator generator;
     generator.setLambda(5.0);
 
+    std::vector<QString> destinations = {"192.168.1.1", "192.168.1.2"};
+    generator.setDestinations(destinations);
+
     QSignalSpy spy(&generator, &DataGenerator::packetsGenerated);
     generator.generatePackets();
 
     QTest::qWait(100);
     QVERIFY(spy.count() > 0);
 }
+
 
 void DataGeneratorTests::testDestinationSetting() {
     DataGenerator generator;
