@@ -63,4 +63,6 @@ private:
     TCPHeader m_tcpHeader;              // TCP layer header
 };
 
+typedef QSharedPointer<Packet> PacketPtr_t;
+
 #endif // PACKET_H
