@@ -9,19 +9,29 @@
 AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
     : QObject(parent)
 {
+    if (!config.contains("id") || !config.contains("topology_type") || !config.contains("node_count"))
+    {
+        qWarning() << "Invalid configuration for AutonomousSystem. Missing required fields.";
+        return;
+    }
+
     m_id = config.value("id").toInt();
     m_topologyType = config.value("topology_type").toString();
     m_nodeCount = config.value("node_count").toInt();
-    m_portCount = config.value("router_port_count").toInt();
+    m_portCount = config.value("router_port_count").toInt(6); // Default to 6 ports
 
-    // Convert "as_gateways" to std::vector<int>
+    if (m_id < 1 || m_nodeCount < 1 || m_portCount < 1)
+    {
+        qWarning() << "Invalid AutonomousSystem configuration values. ID, Node Count, and Port Count must be positive.";
+        return;
+    }
+
     QJsonArray asGatewaysArray = config.value("as_gateways").toArray();
     for (const QJsonValue &value : asGatewaysArray)
     {
         m_asGateways.push_back(value.toInt());
     }
 
-    // Convert "user_gateways" to std::vector<int>
     QJsonArray userGatewaysArray = config.value("user_gateways").toArray();
     for (const QJsonValue &value : userGatewaysArray)
     {
@@ -30,7 +40,6 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
 
     m_dhcpServerId = config.value("dhcp_server").toInt();
 
-    // Convert "broken_routers" to std::vector<int>
     QJsonArray brokenRoutersArray = config.value("broken_routers").toArray();
     for (const QJsonValue &value : brokenRoutersArray)
     {
@@ -44,6 +53,8 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
     createPCs();
     setupTopology();
     setupGateways();
+
+    qDebug() << "AutonomousSystem initialized with ID:" << m_id;
 }
 
 AutonomousSystem::~AutonomousSystem()
@@ -58,17 +69,26 @@ int AutonomousSystem::getId() const
 
 void AutonomousSystem::createRouters()
 {
-    QString baseIP = QString("192.168.%1.").arg(m_id * 100); // e.g., 192.168.100.x for AS1
+    QString baseIP = QString("192.168.%1.").arg(m_id * 100); // Example: 192.168.100.x for AS1
+
     for (int i = 1; i <= m_nodeCount; ++i)
     {
         if (std::find(m_brokenRouters.begin(), m_brokenRouters.end(), i) != m_brokenRouters.end())
         {
-            continue; // Skip broken routers
+            qWarning() << "Skipping broken router with ID:" << i;
+            continue;
         }
 
         QString routerIP = baseIP + QString::number(i);
         auto router = QSharedPointer<Router>::create(i, routerIP, m_portCount, this);
         m_routers.push_back(router);
+
+        qDebug() << "Router created with ID:" << i << "IP:" << routerIP;
+    }
+
+    if (m_routers.empty())
+    {
+        qWarning() << "No functional routers created for AutonomousSystem ID:" << m_id;
     }
 }
 
@@ -80,6 +100,15 @@ void AutonomousSystem::createPCs()
         int nodeId = gatewayObj.value("node").toInt();
         QJsonArray userArray = gatewayObj.value("users").toArray();
 
+        auto routerIt = std::find_if(m_routers.begin(), m_routers.end(),
+                                              [nodeId](const QSharedPointer<Router> &r) { return r->getId() == nodeId; });
+
+        if (routerIt == m_routers.end())
+        {
+            qWarning() << "Gateway router with ID:" << nodeId << "not found.";
+            continue;
+        }
+
         for (const QJsonValue &userValue : qAsConst(userArray))
         {
             int userId = userValue.toInt();
@@ -87,13 +116,11 @@ void AutonomousSystem::createPCs()
             auto pc = QSharedPointer<PC>::create(userId, pcIP, this);
             m_pcs.push_back(pc);
 
-            auto routerIt = std::find_if(m_routers.begin(), m_routers.end(),
-                                         [nodeId](const QSharedPointer<Router> &r) { return r->getId() == nodeId; });
-            if (routerIt != m_routers.end())
-            {
-                PortBindingManager bindingManager;
-                bindingManager.bind((*routerIt)->getAvailablePort(), pc->getPort());
-            }
+            PortBindingManager bindingManager;
+            bindingManager.bind((*routerIt)->getAvailablePort(), pc->getPort());
+
+            qDebug() << "PC created with ID:" << userId << "IP:" << pcIP
+                     << "connected to Router ID:" << nodeId;
         }
     }
 }
@@ -153,7 +180,7 @@ void AutonomousSystem::setupTopology()
                 }
                 else
                 {
-                    qWarning() << "No available ports to bind between Router"
+                    qWarning() << "Insufficient ports for binding between Router"
                                << routerA->getIPAddress() << "and Router" << routerB->getIPAddress();
                 }
             }
@@ -163,7 +190,7 @@ void AutonomousSystem::setupTopology()
     {
         if (m_routers.size() < 2)
         {
-            qWarning() << "Not enough routers to form a ring-star topology.";
+            qWarning() << "Not enough routers for a Ring-Star topology in AutonomousSystem ID:" << m_id;
             return;
         }
 
@@ -226,7 +253,7 @@ void AutonomousSystem::setupTopology()
     }
     else // Can add more topologies as see fit
     {
-        qWarning() << "Unknown topology type:" << m_topologyType;
+        qWarning() << "Unknown topology type for AutonomousSystem ID:" << m_id;
     }
 }
 
