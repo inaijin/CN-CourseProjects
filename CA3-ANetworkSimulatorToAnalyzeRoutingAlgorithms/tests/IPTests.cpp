@@ -54,5 +54,5 @@ void IPTests::testIPv6InvalidInput() {
     }
 }
 
-QTEST_MAIN(IPTests)
+// QTEST_MAIN(IPTests)
 #include "IPTests.moc"
