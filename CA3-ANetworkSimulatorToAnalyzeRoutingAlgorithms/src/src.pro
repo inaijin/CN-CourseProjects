@@ -25,7 +25,8 @@ SOURCES += \
     $$PWD/Network/AutonomousSystem.cpp \
     $$PWD/Network/Router.cpp \
     $$PWD/Network/PC.cpp \
-    $$PWD/Network/Node.cpp
+    $$PWD/Network/Node.cpp \
+    $$PWD/NetworkSimulator/ApplicationContext.cpp
 
 HEADERS += \
     $$PWD/DHCPServer/DHCPServer.h \
@@ -45,4 +46,5 @@ HEADERS += \
     $$PWD/Network/AutonomousSystem.h \
     $$PWD/Network/Router.h \
     $$PWD/Network/PC.h \
-    $$PWD/Network/Node.h
+    $$PWD/Network/Node.h \
+    $$PWD/NetworkSimulator/ApplicationContext.h
