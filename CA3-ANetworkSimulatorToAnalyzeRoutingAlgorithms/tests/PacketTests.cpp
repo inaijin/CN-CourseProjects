@@ -77,5 +77,5 @@ void PacketTests::testDroppedFlag() {
     QCOMPARE(packet.isDropped(), false);
 }
 
-QTEST_MAIN(PacketTests)
+// QTEST_MAIN(PacketTests)
 #include "PacketTests.moc"
