@@ -45,6 +45,11 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
     setupGateways();
 }
 
+AutonomousSystem::~AutonomousSystem()
+{
+    // Clean up if needed
+}
+
 void AutonomousSystem::createRouters()
 {
     QString baseIP = QString("192.168.%1.").arg(m_id * 100); // e.g., 192.168.100.x for AS1
@@ -88,4 +93,95 @@ void AutonomousSystem::createPCs()
             }
         }
     }
+}
+
+void AutonomousSystem::connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS)
+{
+    // Implement the logic to connect to other Autonomous Systems based on m_connectToAs
+
+    for (const QJsonValue &connectValue : qAsConst(m_connectToAs))
+    {
+        QJsonObject connectObj = connectValue.toObject();
+        int targetASId = connectObj.value("id").toInt();
+        QJsonArray gatewayPairs = connectObj.value("gateway_pairs").toArray();
+
+        // Find the target AS
+        auto targetASIt = std::find_if(allAS.begin(), allAS.end(),
+                                                [targetASId](const QSharedPointer<AutonomousSystem> &as) { return as->getId() == targetASId; });
+
+        if (targetASIt != allAS.end())
+        {
+            for (const QJsonValue &pairValue : qAsConst(gatewayPairs))
+            {
+                QJsonObject pairObj = pairValue.toObject();
+                int gatewayId = pairObj.value("gateway").toInt();
+                int connectToId = pairObj.value("connect_to").toInt();
+
+                // Find routers in both AS
+                auto localRouterIt = std::find_if(m_routers.begin(), m_routers.end(),
+                                                          [gatewayId](const QSharedPointer<Router> &r) { return r->getId() == gatewayId; });
+                auto remoteRouterIt = std::find_if((*targetASIt)->m_routers.begin(), (*targetASIt)->m_routers.end(),
+                                                          [connectToId](const QSharedPointer<Router> &r) { return r->getId() == connectToId; });
+
+                if (localRouterIt != m_routers.end() && remoteRouterIt != (*targetASIt)->m_routers.end())
+                {
+                    // Bind routers between AS
+                    PortBindingManager bindingManager;
+                    bindingManager.bind((*localRouterIt)->getAvailablePort(), (*remoteRouterIt)->getAvailablePort());
+                }
+            }
+        }
+    }
+}
+
+void AutonomousSystem::setupTopology()
+{
+    if (m_topologyType == "Mesh")
+    {
+        // Implement the mesh topology
+        for (const auto &routerA : qAsConst(m_routers))
+        {
+            for (const auto &routerB : qAsConst(m_routers))
+            {
+                if (routerA != routerB)
+                {
+                    PortBindingManager bindingManager;
+                    bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort());
+                }
+            }
+        }
+    }
+    else if (m_topologyType == "RingStar")
+    {
+        // Implement the ring-star topology
+        // Example: Connect routers in a ring
+        for (size_t i = 0; i < m_routers.size(); ++i)
+        {
+            auto routerA = m_routers[i];
+            auto routerB = m_routers[(i + 1) % m_routers.size()]; // Next router in the ring
+            PortBindingManager bindingManager;
+            bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort());
+        }
+
+        // Connect all routers to central hub (assuming first router is the hub)
+        auto hubRouter = m_routers.front();
+        for (size_t i = 1; i < m_routers.size(); ++i)
+        {
+            PortBindingManager bindingManager;
+            bindingManager.bind(hubRouter->getAvailablePort(), m_routers[i]->getAvailablePort());
+        }
+    }
+    else if (m_topologyType == "Torus")
+    {
+        // Implement torus topology if needed
+    }
+    else
+    {
+        qWarning() << "Unknown topology type:" << m_topologyType;
+    }
+}
+
+void AutonomousSystem::setupGateways()
+{
+    // Implement any additional setup for gateways if needed
 }
