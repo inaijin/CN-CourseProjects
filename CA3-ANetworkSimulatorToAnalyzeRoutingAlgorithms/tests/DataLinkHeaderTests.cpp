@@ -66,5 +66,5 @@ void DataLinkHeaderTests::testErrorDetectionCodeManagement() {
     QCOMPARE(header.getErrorDetectionCode(), QString("ABCD"));
 }
 
-QTEST_MAIN(DataLinkHeaderTests)
+// QTEST_MAIN(DataLinkHeaderTests)
 #include "DataLinkHeaderTests.moc"

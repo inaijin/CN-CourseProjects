@@ -1,6 +1,5 @@
-
 #include <QtTest/QtTest>
-#include "../src/TCPHeader/TCPHeader.h"
+#include "../src/Header/TCPHeader.h"
 
 class TCPHeaderTests : public QObject {
     Q_OBJECT

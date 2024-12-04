@@ -9,7 +9,8 @@ SOURCES += $$PWD/MACAddressTests.cpp \
            $$PWD/EventsCoordinatorTests.cpp \
            $$PWD/PacketTests.cpp \
            $$PWD/DataGeneratorTests.cpp \
-           $$PWD/DataLinkHeaderTests.cpp
+           $$PWD/DataLinkHeaderTests.cpp \
+           $$PWD/TCPHeaderTests.cpp
 
 INCLUDEPATH += $$PWD/../src \
                $$PWD/../src/Globals
