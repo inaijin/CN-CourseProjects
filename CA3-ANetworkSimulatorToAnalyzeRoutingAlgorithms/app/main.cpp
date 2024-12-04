@@ -1,16 +1,15 @@
 #include <QCoreApplication>
 #include <QDir>
+#include <QString>
 #include "../src/NetworkSimulator/Simulator.h"
 
 int main(int argv, char* argc[])
 {
-
     QCoreApplication app(argv, argc);
-
-    qDebug() << "Current working directory:" << QDir::currentPath();
+    QString filePath = "../../../../GitHub/CN-CourseProjects/CA3-ANetworkSimulatorToAnalyzeRoutingAlgorithms/assets/config.json";
 
     Simulator simulator;
-    if (!simulator.loadConfig("../assets/config.json"))
+    if (!simulator.loadConfig(filePath))
     {
         qCritical() << "Failed to load configuration.";
         return -1;
