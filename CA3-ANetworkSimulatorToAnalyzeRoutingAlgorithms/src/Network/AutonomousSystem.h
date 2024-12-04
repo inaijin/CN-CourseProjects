@@ -25,6 +25,7 @@ private:
     int m_id;
     QString m_topologyType;
     int m_nodeCount;
+    int m_portCount;
     std::vector<int> m_asGateways;
     std::vector<int> m_userGateways;
     int m_dhcpServerId;

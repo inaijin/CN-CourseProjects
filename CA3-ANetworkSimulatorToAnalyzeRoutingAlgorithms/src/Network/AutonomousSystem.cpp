@@ -12,6 +12,7 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
     m_id = config.value("id").toInt();
     m_topologyType = config.value("topology_type").toString();
     m_nodeCount = config.value("node_count").toInt();
+    m_portCount = config.value("router_port_count").toInt();
 
     // Convert "as_gateways" to std::vector<int>
     QJsonArray asGatewaysArray = config.value("as_gateways").toArray();
@@ -66,7 +67,7 @@ void AutonomousSystem::createRouters()
         }
 
         QString routerIP = baseIP + QString::number(i);
-        auto router = QSharedPointer<Router>::create(i, routerIP, this);
+        auto router = QSharedPointer<Router>::create(i, routerIP, m_portCount, this);
         m_routers.push_back(router);
     }
 }
