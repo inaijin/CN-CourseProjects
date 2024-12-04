@@ -50,6 +50,11 @@ AutonomousSystem::~AutonomousSystem()
     // Clean up if needed
 }
 
+int AutonomousSystem::getId() const
+{
+    return m_id;
+}
+
 void AutonomousSystem::createRouters()
 {
     QString baseIP = QString("192.168.%1.").arg(m_id * 100); // e.g., 192.168.100.x for AS1
