@@ -20,9 +20,9 @@ class EventsCoordinator : public QThread
     explicit EventsCoordinator(QThread *parent = nullptr);
 
 public:
-    ~EventsCoordinator() override = default;
+    ~EventsCoordinator() override;
     static EventsCoordinator *instance(QThread *parent = nullptr);
-    static void               release();
+    static void release();
 
     void startClock(Millis interval);
     void stopClock();
@@ -43,4 +43,4 @@ private:
     DataGenerator *m_dataGenerator = nullptr;
 };
 
-#endif
+#endif // EVENTSCOORDINATOR_H

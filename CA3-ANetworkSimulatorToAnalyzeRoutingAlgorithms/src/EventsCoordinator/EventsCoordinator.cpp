@@ -5,9 +5,18 @@
 EventsCoordinator::EventsCoordinator(QThread *parent) :
     QThread {parent},
     m_timer {new QTimer(this)},
-    m_dataGenerator {nullptr}  // Initialize DataGenerator pointer
+    m_dataGenerator {nullptr}
 {
     connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
+}
+
+EventsCoordinator::~EventsCoordinator()
+{
+    if (m_timer->isActive())
+    {
+        m_timer->stop();
+    }
+    delete m_timer;
 }
 
 EventsCoordinator *
@@ -73,11 +82,14 @@ EventsCoordinator::onTick()
     emit tick();
     qDebug() << "Tick emitted.";
 
-    if (m_dataGenerator)
+    if (!m_dataGenerator)
     {
-        m_dataGenerator->generatePackets();
-        qDebug() << "DataGenerator triggered to generate packets.";
+        qDebug() << "No DataGenerator set. Skipping packet generation.";
+        return;
     }
+
+    m_dataGenerator->generatePackets();
+    qDebug() << "DataGenerator triggered to generate packets.";
 }
 
 void
