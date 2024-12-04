@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <vector>
 
 class Router;

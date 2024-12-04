@@ -12,10 +12,30 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
     m_id = config.value("id").toInt();
     m_topologyType = config.value("topology_type").toString();
     m_nodeCount = config.value("node_count").toInt();
-    m_asGateways = config.value("as_gateways").toVariant().toList().toVector().toStdVector();
-    m_userGateways = config.value("user_gateways").toVariant().toList().toVector().toStdVector();
+
+    // Convert "as_gateways" to std::vector<int>
+    QJsonArray asGatewaysArray = config.value("as_gateways").toArray();
+    for (const QJsonValue &value : asGatewaysArray)
+    {
+        m_asGateways.push_back(value.toInt());
+    }
+
+    // Convert "user_gateways" to std::vector<int>
+    QJsonArray userGatewaysArray = config.value("user_gateways").toArray();
+    for (const QJsonValue &value : userGatewaysArray)
+    {
+        m_userGateways.push_back(value.toInt());
+    }
+
     m_dhcpServerId = config.value("dhcp_server").toInt();
-    m_brokenRouters = config.value("broken_routers").toVariant().toList().toVector().toStdVector();
+
+    // Convert "broken_routers" to std::vector<int>
+    QJsonArray brokenRoutersArray = config.value("broken_routers").toArray();
+    for (const QJsonValue &value : brokenRoutersArray)
+    {
+        m_brokenRouters.push_back(value.toInt());
+    }
+
     m_gateways = config.value("gateways").toArray();
     m_connectToAs = config.value("connect_to_as").toArray();
 
@@ -27,7 +47,6 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
 
 void AutonomousSystem::createRouters()
 {
-    // Assuming IP addresses are generated based on AS ID and router IDs
     QString baseIP = QString("192.168.%1.").arg(m_id * 100); // e.g., 192.168.100.x for AS1
     for (int i = 1; i <= m_nodeCount; ++i)
     {
@@ -44,14 +63,13 @@ void AutonomousSystem::createRouters()
 
 void AutonomousSystem::createPCs()
 {
-    // Iterate over gateways and create PCs
-    for (const QJsonValue &gatewayValue : m_gateways)
+    for (const QJsonValue &gatewayValue : qAsConst(m_gateways))
     {
         QJsonObject gatewayObj = gatewayValue.toObject();
         int nodeId = gatewayObj.value("node").toInt();
         QJsonArray userArray = gatewayObj.value("users").toArray();
 
-        for (const QJsonValue &userValue : userArray)
+        for (const QJsonValue &userValue : qAsConst(userArray))
         {
             int userId = userValue.toInt();
             // Generate PC IP addresses

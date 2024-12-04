@@ -34,7 +34,6 @@ void Router::initializePorts()
 
 PortPtr_t Router::getAvailablePort()
 {
-    // Return the first unconnected port
     for (const auto &port : m_ports)
     {
         if (!port->isConnected())
@@ -42,10 +41,10 @@ PortPtr_t Router::getAvailablePort()
             return port;
         }
     }
-    return nullptr; // No available ports
+    return nullptr;
 }
 
 void Router::run()
 {
-    // For Phase 1, routers remain inactive
+    // For Phase 1, routers remain inactive, Handle in other phases
 }

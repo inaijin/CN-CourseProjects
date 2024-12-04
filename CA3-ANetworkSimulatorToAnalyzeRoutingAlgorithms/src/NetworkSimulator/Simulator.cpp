@@ -1,5 +1,4 @@
 #include "Simulator.h"
-// #include "AutonomousSystem.h"
 #include <QFile>
 #include <QJsonArray>
 #include <QDebug>
@@ -54,15 +53,14 @@ void Simulator::createAutonomousSystems()
 
 void Simulator::connectAutonomousSystems()
 {
-    // Implement the logic to connect AS based on "connect_to_as" field
-    // for (const auto &asInstance : m_autonomousSystems)
-    // {
-    //     asInstance->connectToOtherAS(m_autonomousSystems);
-    // }
+    for (const auto &asInstance : m_autonomousSystems)
+    {
+        asInstance->connectToOtherAS(m_autonomousSystems);
+    }
 }
 
 void Simulator::startSimulation()
 {
-    // For Phase 1, routers remain inactive
+    // For Phase 1, routers remain inactive, Implement in future phases
     qDebug() << "Simulation initialized. Network topology is set up.";
 }

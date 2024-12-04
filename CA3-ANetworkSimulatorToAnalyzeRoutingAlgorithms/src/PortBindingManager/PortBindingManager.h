@@ -24,7 +24,7 @@ Q_SIGNALS:
                         uint8_t port2, bool bind);
 
 private:
-    QMap<PortPtr_t, PortPtr_t> m_bindings; // Map to keep track of bindings
+    QMap<PortPtr_t, PortPtr_t> m_bindings;
 };
 
 #endif    // PORTBINDINGMANAGER_H

@@ -20,7 +20,7 @@ public:
     QString getIPAddress() const;
     PortPtr_t getAvailablePort();
 
-    void run() override; // For future use when activating routers
+    void run() override;
 
 private:
     int m_id;

@@ -6,9 +6,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QString>
+#include "../Network/AutonomousSystem.h"
 #include <vector>
-
-class AutonomousSystem; // PlaceHolder
 
 class Simulator : public QObject
 {
