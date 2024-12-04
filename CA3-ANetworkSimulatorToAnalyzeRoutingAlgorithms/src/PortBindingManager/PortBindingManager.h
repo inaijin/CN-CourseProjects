@@ -3,8 +3,8 @@
 
 #include "../Port/Port.h"
 
-#include <QList>
 #include <QMap>
+#include <QMutex>
 #include <QObject>
 
 class PortBindingManager : public QObject
@@ -19,12 +19,11 @@ public:
     bool unbind(const PortPtr_t &port1, const PortPtr_t &port2);
 
 Q_SIGNALS:
-    // for testing purposes
-    void bindingChanged(const QString &router1, uint8_t port1, const QString &router2,
-                        uint8_t port2, bool bind);
+    void bindingChanged(const QString &router1, uint8_t port1, const QString &router2, uint8_t port2, bool bind);
 
 private:
     QMap<PortPtr_t, PortPtr_t> m_bindings;
+    mutable QMutex m_mutex;
 };
 
 #endif    // PORTBINDINGMANAGER_H

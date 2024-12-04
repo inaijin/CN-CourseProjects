@@ -4,6 +4,7 @@
 #include "../Packet/Packet.h"
 
 #include <QObject>
+#include <QMutex>
 
 class Port : public QObject
 {
@@ -31,10 +32,12 @@ public Q_SLOTS:
     void receivePacket(const PacketPtr_t &data);
 
 private:
-    uint8_t  m_number = 0;
-    uint64_t m_numberOfPacketsSent = 0;
+    uint8_t  m_number;
+    uint64_t m_numberOfPacketsSent;
     QString  m_routerIP;
-    bool     m_isConnected = false;
+    bool     m_isConnected;
+
+    mutable QMutex m_mutex;
 };
 
 typedef QSharedPointer<Port> PortPtr_t;

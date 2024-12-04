@@ -11,52 +11,51 @@ Port::Port(QObject *parent) :
 
 Port::~Port() {}
 
-void
-Port::setPortNumber(uint8_t number)
+void Port::setPortNumber(uint8_t number)
 {
+    QMutexLocker locker(&m_mutex);
     m_number = number;
 }
 
-uint8_t
-Port::getPortNumber() const
+uint8_t Port::getPortNumber() const
 {
+    QMutexLocker locker(&m_mutex);
     return m_number;
 }
 
-void
-Port::setRouterIP(const QString &ip)
+void Port::setRouterIP(const QString &ip)
 {
+    QMutexLocker locker(&m_mutex);
     m_routerIP = ip;
 }
 
-QString
-Port::getRouterIP() const
+QString Port::getRouterIP() const
 {
+    QMutexLocker locker(&m_mutex);
     return m_routerIP;
 }
 
-bool
-Port::isConnected() const
+bool Port::isConnected() const
 {
+    QMutexLocker locker(&m_mutex);
     return m_isConnected;
 }
 
-void
-Port::setConnected(bool connected)
+void Port::setConnected(bool connected)
 {
+    QMutexLocker locker(&m_mutex);
     m_isConnected = connected;
 }
 
-void
-Port::sendPacket(const PacketPtr_t &data)
+void Port::sendPacket(const PacketPtr_t &data)
 {
+    QMutexLocker locker(&m_mutex);
     ++m_numberOfPacketsSent;
     emit packetSent(data);
     qDebug() << "Port" << m_number << "on Router" << m_routerIP << "sent a packet.";
 }
 
-void
-Port::receivePacket(const PacketPtr_t &data)
+void Port::receivePacket(const PacketPtr_t &data)
 {
     emit packetReceived(data);
     qDebug() << "Port" << m_number << "on Router" << m_routerIP << "received a packet.";
