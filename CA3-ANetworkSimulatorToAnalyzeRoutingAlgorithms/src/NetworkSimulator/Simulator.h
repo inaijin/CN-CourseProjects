@@ -3,11 +3,9 @@
 
 #include <QObject>
 #include <QSharedPointer>
-#include <QJsonDocument>
 #include <QJsonObject>
 #include <QString>
-#include "../Network/AutonomousSystem.h"
-#include <vector>
+#include "Network.h"
 
 class Simulator : public QObject
 {
@@ -23,10 +21,7 @@ public:
 
 private:
     QJsonObject m_config;
-    std::vector<QSharedPointer<AutonomousSystem>> m_autonomousSystems;
-
-    void createAutonomousSystems();
-    void connectAutonomousSystems();
+    QSharedPointer<Network> m_network;
 };
 
 #endif // SIMULATOR_H

@@ -1,6 +1,6 @@
 #include "Simulator.h"
 #include <QFile>
-#include <QJsonArray>
+#include <QJsonDocument>
 #include <QDebug>
 
 Simulator::Simulator(QObject *parent)
@@ -36,31 +36,12 @@ bool Simulator::loadConfig(const QString &configFilePath)
 
 void Simulator::initializeNetwork()
 {
-    createAutonomousSystems();
-    connectAutonomousSystems();
-}
-
-void Simulator::createAutonomousSystems()
-{
-    QJsonArray asArray = m_config.value("Autonomous_systems").toArray();
-    for (const QJsonValue &asValue : asArray)
-    {
-        QJsonObject asObject = asValue.toObject();
-        auto asInstance = QSharedPointer<AutonomousSystem>::create(asObject);
-        m_autonomousSystems.push_back(asInstance);
-    }
-}
-
-void Simulator::connectAutonomousSystems()
-{
-    for (const auto &asInstance : m_autonomousSystems)
-    {
-        asInstance->connectToOtherAS(m_autonomousSystems);
-    }
+    m_network = QSharedPointer<Network>::create(m_config);
+    m_network->initialize();
 }
 
 void Simulator::startSimulation()
 {
-    // For Phase 1, routers remain inactive, Implement in future phases
+    // For Phase 1, routers remain inactive. Implement in future phases.
     qDebug() << "Simulation initialized. Network topology is set up.";
 }
