@@ -25,3 +25,5 @@ int main(int argc, char* argv[])
 
     return app.exec();
 }
+
+// Just Realized A Lot That I've Done Was For Next Phase :)))
