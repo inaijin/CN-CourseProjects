@@ -6,7 +6,8 @@ QT += network
 
 SOURCES += $$PWD/MACAddressTests.cpp \
            $$PWD/IPTests.cpp \
-           $$PWD/EventsCoordinatorTests.cpp
+           $$PWD/EventsCoordinatorTests.cpp \
+           $$PWD/PacketTests.cpp
 
 INCLUDEPATH += $$PWD/../src \
                $$PWD/../src/Globals

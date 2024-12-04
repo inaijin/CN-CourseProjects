@@ -58,5 +58,5 @@ void EventsCoordinatorTests::testTickSignal() {
     // - Verify that the system reacts appropriately to tick events
 }
 
-QTEST_MAIN(EventsCoordinatorTests)
+// QTEST_MAIN(EventsCoordinatorTests)
 #include "EventsCoordinatorTests.moc"
