@@ -23,6 +23,9 @@ public:
     bool isConnected() const;
     void setConnected(bool connected);
 
+    uint64_t getNumberOfPacketsSent() const;
+    uint64_t getNumberOfPacketsReceived() const;
+
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data);
     void packetReceived(const PacketPtr_t &data);
@@ -34,6 +37,7 @@ public Q_SLOTS:
 private:
     uint8_t  m_number;
     uint64_t m_numberOfPacketsSent;
+    uint64_t m_numberOfPacketsReceived;
     QString  m_routerIP;
     bool     m_isConnected;
 
