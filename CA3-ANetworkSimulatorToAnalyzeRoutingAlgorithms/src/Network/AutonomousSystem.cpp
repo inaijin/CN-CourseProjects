@@ -1,9 +1,6 @@
-
 #include "AutonomousSystem.h"
-#include "Router.h"
-#include "PC.h"
-#include "TopologyBuilder.h"
-#include "TopologyController.h"
+#include "../Topology/TopologyBuilder.h"
+#include "../Topology/TopologyController.h"
 #include <QDebug>
 
 AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)

@@ -1,7 +1,7 @@
 #include "TopologyController.h"
 #include "TopologyBuilder.h"
-#include "Router.h"
-#include "PC.h"
+#include "../Network/Router.h"
+#include "../Network/PC.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include <QDebug>
 
