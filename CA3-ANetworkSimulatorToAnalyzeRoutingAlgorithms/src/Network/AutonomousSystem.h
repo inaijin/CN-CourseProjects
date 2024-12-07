@@ -9,6 +9,8 @@
 
 class Router;
 class PC;
+class TopologyBuilder;
+class TopologyController;
 
 class AutonomousSystem : public QObject
 {
@@ -24,22 +26,10 @@ public:
 private:
     int m_id;
     QString m_topologyType;
-    int m_nodeCount;
-    int m_portCount;
-    std::vector<int> m_asGateways;
-    std::vector<int> m_userGateways;
-    int m_dhcpServerId;
-    std::vector<int> m_brokenRouters;
-    QJsonArray m_gateways;
-    QJsonArray m_connectToAs;
+    QJsonObject m_config;
 
-    std::vector<QSharedPointer<Router>> m_routers;
-    std::vector<QSharedPointer<PC>> m_pcs;
-
-    void createRouters();
-    void createPCs();
-    void setupTopology();
-    void setupGateways();
+    QSharedPointer<TopologyBuilder> m_topologyBuilder;
+    QSharedPointer<TopologyController> m_topologyController;
 };
 
 #endif // AUTONOMOUSSYSTEM_H

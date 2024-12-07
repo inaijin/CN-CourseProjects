@@ -5,7 +5,6 @@
 #include <QObject>
 #include <QString>
 #include <QMutex>
-#include "../Packet/Packet.h"
 
 enum class NodeType
 {
