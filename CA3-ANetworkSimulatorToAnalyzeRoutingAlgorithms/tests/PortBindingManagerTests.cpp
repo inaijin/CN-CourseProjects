@@ -1,4 +1,3 @@
-
 #include <QtTest/QtTest>
 #include "../src/Port/Port.h"
 #include "../src/PortBindingManager/PortBindingManager.h"

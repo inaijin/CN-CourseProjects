@@ -46,5 +46,5 @@ void PortTests::testPacketTransmission() {
     QCOMPARE(spy2.count(), 1);
 }
 
-QTEST_MAIN(PortTests)
+// QTEST_MAIN(PortTests)
 #include "PortTests.moc"

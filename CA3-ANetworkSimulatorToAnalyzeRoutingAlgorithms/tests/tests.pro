@@ -11,7 +11,8 @@ SOURCES += $$PWD/MACAddressTests.cpp \
            $$PWD/DataLinkHeaderTests.cpp \
            $$PWD/TCPHeaderTests.cpp \
            $$PWD/IPHeaderTests.cpp \
-           $$PWD/PortTests.cpp
+           $$PWD/PortTests.cpp \
+           $$PWD/PortBindingManagerTests.cpp
 
 INCLUDEPATH += $$PWD/../src \
                $$PWD/../src/Globals
