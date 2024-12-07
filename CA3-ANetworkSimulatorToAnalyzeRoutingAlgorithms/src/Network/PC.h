@@ -16,6 +16,7 @@ public:
     PortPtr_t getPort();
 
     void startPC();
+    void generatePacket();
 
 protected:
     void run() override;

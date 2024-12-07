@@ -2,7 +2,7 @@
 #include <QDebug>
 
 PC::PC(int id, const QString &ipAddress, QObject *parent)
-    : Node(id, ipAddress, parent)
+    : Node(id, ipAddress, NodeType::PC, parent)
 {
     m_port = PortPtr_t::create(this);
     m_port->setPortNumber(1);
@@ -24,7 +24,6 @@ PortPtr_t PC::getPort()
 void PC::run()
 {
     qDebug() << "PC" << m_id << "is in idle mode.";
-    // Implement PC's main loop in later phases
     exec();
 }
 
@@ -35,4 +34,11 @@ void PC::startPC()
     {
         start();
     }
+}
+
+void PC::generatePacket()
+{
+    qDebug() << "PC" << m_id << "is generating a packet.";
+    auto packet = QSharedPointer<Packet>::create(PacketType::Data, "Payload");
+    m_port->sendPacket(packet);
 }
