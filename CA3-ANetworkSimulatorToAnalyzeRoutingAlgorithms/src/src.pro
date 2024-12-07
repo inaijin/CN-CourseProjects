@@ -26,7 +26,8 @@ SOURCES += \
     $$PWD/Network/Router.cpp \
     $$PWD/Network/PC.cpp \
     $$PWD/Network/Node.cpp \
-    $$PWD/NetworkSimulator/ApplicationContext.cpp
+    $$PWD/NetworkSimulator/ApplicationContext.cpp \
+    $$PWD/IP/IPHeader.cpp
 
 HEADERS += \
     $$PWD/DHCPServer/DHCPServer.h \
@@ -47,4 +48,5 @@ HEADERS += \
     $$PWD/Network/Router.h \
     $$PWD/Network/PC.h \
     $$PWD/Network/Node.h \
-    $$PWD/NetworkSimulator/ApplicationContext.h
+    $$PWD/NetworkSimulator/ApplicationContext.h \
+    $$PWD/IP/IPHeader.h
