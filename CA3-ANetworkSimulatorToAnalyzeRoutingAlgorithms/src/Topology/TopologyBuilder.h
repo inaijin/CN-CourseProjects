@@ -21,6 +21,7 @@ public:
     void buildTopology();
     const std::vector<QSharedPointer<Router>> &getRouters() const;
     const std::vector<QSharedPointer<PC>> &getPCs() const;
+    const QJsonObject &getConfig() const;
 
 private:
     QJsonObject m_config;

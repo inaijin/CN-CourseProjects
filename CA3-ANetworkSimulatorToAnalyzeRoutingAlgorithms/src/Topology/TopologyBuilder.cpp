@@ -126,3 +126,8 @@ const std::vector<QSharedPointer<PC>> &TopologyBuilder::getPCs() const
 {
     return m_pcs;
 }
+
+const QJsonObject &TopologyBuilder::getConfig() const
+{
+    return m_config;
+}

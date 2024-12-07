@@ -1,7 +1,7 @@
 #include "TopologyController.h"
 #include "TopologyBuilder.h"
 #include "../Network/Router.h"
-#include "../Network/PC.h"
+#include "../Network/AutonomousSystem.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include <QDebug>
 
@@ -15,13 +15,13 @@ TopologyController::~TopologyController() {}
 
 void TopologyController::validateTopology() const
 {
-    qDebug() << "Validating topology...";
+    qDebug() << "Validating topology..."; // Implement In Future Phases !!!
 }
 
 void TopologyController::connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS)
 {
-    const auto &routers = m_builder->getRouters(); // Get routers from TopologyBuilder
-    QJsonArray connectToAsArray = m_builder->getConfig().value("connect_to_as").toArray(); // Configuration for connections
+    const auto &routers = m_builder->getRouters();
+    QJsonArray connectToAsArray = m_builder->getConfig().value("connect_to_as").toArray();
 
     for (const QJsonValue &connectValue : qAsConst(connectToAsArray))
     {
@@ -34,7 +34,7 @@ void TopologyController::connectToOtherAS(const std::vector<QSharedPointer<Auton
 
         if (targetASIt != allAS.end())
         {
-            const auto &targetRouters = (*targetASIt)->getRouters(); // Access target AS routers
+            const auto &targetRouters = (*targetASIt)->getRouters();
             for (const QJsonValue &pairValue : qAsConst(gatewayPairs))
             {
                 QJsonObject pairObj = pairValue.toObject();

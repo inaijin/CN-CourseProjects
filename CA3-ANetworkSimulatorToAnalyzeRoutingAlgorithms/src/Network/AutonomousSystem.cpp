@@ -42,3 +42,8 @@ void AutonomousSystem::connectToOtherAS(const std::vector<QSharedPointer<Autonom
 {
     m_topologyController->connectToOtherAS(allAS);
 }
+
+const std::vector<QSharedPointer<Router>> &AutonomousSystem::getRouters() const
+{
+    return m_topologyBuilder->getRouters();
+}
