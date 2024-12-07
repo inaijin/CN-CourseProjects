@@ -76,5 +76,5 @@ void IPHeaderTests::testIPv6SetAndGetAddress() {
     QCOMPARE(ipv6.getDestinationAddress(), QString("fe80::2"));
 }
 
-QTEST_MAIN(IPHeaderTests)
+// QTEST_MAIN(IPHeaderTests)
 #include "IPHeaderTests.moc"
