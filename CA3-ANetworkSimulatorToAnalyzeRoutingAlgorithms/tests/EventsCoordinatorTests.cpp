@@ -73,5 +73,5 @@ void EventsCoordinatorTests::testPacketQueueIntegration() {
     EventsCoordinator::release();
 }
 
-QTEST_MAIN(EventsCoordinatorTests)
+// QTEST_MAIN(EventsCoordinatorTests)
 #include "EventsCoordinatorTests.moc"

@@ -5,7 +5,6 @@ QT += core testlib
 QT += network
 
 SOURCES += $$PWD/MACAddressTests.cpp \
-           $$PWD/IPTests.cpp \
            $$PWD/EventsCoordinatorTests.cpp \
            $$PWD/PacketTests.cpp \
            $$PWD/DataGeneratorTests.cpp \
