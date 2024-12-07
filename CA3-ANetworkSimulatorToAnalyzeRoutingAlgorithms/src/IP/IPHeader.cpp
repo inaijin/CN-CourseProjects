@@ -1,5 +1,6 @@
 #include "IPHeader.h"
 #include <QDataStream>
+#include <QIODevice>
 
 AbstractIPHeader::AbstractIPHeader(QObject *parent) : QObject(parent) {}
 AbstractIPHeader::~AbstractIPHeader() {}
