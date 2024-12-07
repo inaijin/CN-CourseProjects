@@ -18,8 +18,8 @@ public:
     std::vector<PortPtr_t> getPorts();
 
     void startRouter();
-
-    void logPortStatuses() const; // Logs the statuses of all ports
+    void forwardPacket(const PacketPtr_t &packet);
+    void logPortStatuses() const;
 
 protected:
     void run() override;
@@ -29,6 +29,7 @@ private:
     int m_portCount;
 
     void initializePorts();
+    void processPacket(const PacketPtr_t &packet);
 };
 
 #endif // ROUTER_H

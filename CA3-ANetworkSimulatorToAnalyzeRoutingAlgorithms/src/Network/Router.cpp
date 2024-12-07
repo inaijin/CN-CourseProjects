@@ -2,11 +2,11 @@
 #include <QDebug>
 
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
-    : Node(id, ipAddress, parent), m_portCount(portCount)
+    : Node(id, ipAddress, NodeType::Router, parent), m_portCount(portCount)
 {
     if (m_portCount <= 0)
     {
-        m_portCount = 6; // Default to 6 ports if invalid value provided
+        m_portCount = 6;
     }
 
     initializePorts();
@@ -52,18 +52,9 @@ std::vector<PortPtr_t> Router::getPorts()
     return m_ports;
 }
 
-void Router::logPortStatuses() const
-{
-    for (const auto &port : m_ports)
-    {
-        qDebug() << "Port" << port->getPortNumber() << (port->isConnected() ? "Connected" : "Available");
-    }
-}
-
 void Router::run()
 {
     qDebug() << "Router" << m_id << "is in idle mode.";
-    // Implement the router's main loop in later phases
     exec();
 }
 
@@ -73,5 +64,25 @@ void Router::startRouter()
     if (!isRunning())
     {
         start();
+    }
+}
+
+void Router::forwardPacket(const PacketPtr_t &packet)
+{
+    qDebug() << "Router" << m_id << "is forwarding a packet.";
+    processPacket(packet);
+}
+
+void Router::processPacket(const PacketPtr_t &packet)
+{
+    qDebug() << "Router" << m_id << "is processing a packet.";
+    packet->incrementWaitCycles(); // Dummy logic implement later !!!
+}
+
+void Router::logPortStatuses() const
+{
+    for (const auto &port : m_ports)
+    {
+        qDebug() << "Port" << port->getPortNumber() << (port->isConnected() ? "Connected" : "Available");
     }
 }
