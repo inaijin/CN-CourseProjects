@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <vector>
 
 class Router;
@@ -18,10 +17,11 @@ class AutonomousSystem : public QObject
 
 public:
     explicit AutonomousSystem(const QJsonObject &config, QObject *parent = nullptr);
-    ~AutonomousSystem();
+    ~AutonomousSystem() override;
 
     int getId() const;
     const std::vector<QSharedPointer<Router>> &getRouters() const;
+    const std::vector<QSharedPointer<PC>> &getPCs() const;
     void connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS);
 
 private:

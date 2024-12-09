@@ -1,6 +1,8 @@
 #include "AutonomousSystem.h"
 #include "../Topology/TopologyBuilder.h"
 #include "../Topology/TopologyController.h"
+#include "../Network/Router.h"
+#include "../Network/PC.h"
 #include <QDebug>
 
 AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
@@ -31,6 +33,8 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
 
 AutonomousSystem::~AutonomousSystem()
 {
+    m_topologyController.reset();
+    m_topologyBuilder.reset();
 }
 
 int AutonomousSystem::getId() const
@@ -40,10 +44,20 @@ int AutonomousSystem::getId() const
 
 void AutonomousSystem::connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS)
 {
+    if (!m_topologyController)
+    {
+        qWarning() << "TopologyController not initialized. Cannot connect to other ASes.";
+        return;
+    }
     m_topologyController->connectToOtherAS(allAS);
 }
 
 const std::vector<QSharedPointer<Router>> &AutonomousSystem::getRouters() const
 {
     return m_topologyBuilder->getRouters();
+}
+
+const std::vector<QSharedPointer<PC>> &AutonomousSystem::getPCs() const
+{
+    return m_topologyBuilder->getPCs();
 }
