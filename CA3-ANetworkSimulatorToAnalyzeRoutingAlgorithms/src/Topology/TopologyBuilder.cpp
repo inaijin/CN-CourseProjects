@@ -14,13 +14,6 @@ TopologyBuilder::TopologyBuilder(const QJsonObject &config, QObject *parent)
 
 TopologyBuilder::~TopologyBuilder() {}
 
-void TopologyBuilder::buildTopology()
-{
-    createRouters();
-    createPCs();
-    setupTopology();
-}
-
 void TopologyBuilder::validateConfig() const
 {
     if (!m_config.contains("id") || !m_config.contains("node_count"))
@@ -47,7 +40,7 @@ void TopologyBuilder::createRouters()
         }
 
         QString routerIP = baseIP + QString::number(i);
-        auto router = QSharedPointer<Router>::create(i, routerIP, portCount, this);
+        auto router = QSharedPointer<Router>::create(routerIP, portCount, this);
         m_routers.push_back(router);
     }
 }
@@ -94,7 +87,7 @@ void TopologyBuilder::createPCs()
             QString pcIP = QString("192.168.%1.%2").arg(m_config.value("id").toInt() * 100).arg(userId);
             try
             {
-                auto pc = QSharedPointer<PC>::create(userId, pcIP, this);
+                auto pc = QSharedPointer<PC>::create(pcIP, this);
                 m_pcs.push_back(pc);
 
                 auto port1 = (*routerIt)->getAvailablePort();

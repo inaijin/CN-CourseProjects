@@ -1,8 +1,8 @@
 #include "Router.h"
 #include <QDebug>
 
-Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
-    : Node(id, ipAddress, NodeType::Router, parent), m_portCount(portCount)
+Router::Router(const QString &ipAddress, int portCount, QObject *parent)
+    : Node(ipAddress, NodeType::Router, parent), m_portCount(portCount)
 {
     if (m_portCount <= 0)
     {

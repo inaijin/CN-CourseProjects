@@ -24,8 +24,6 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
     }
 
     m_topologyBuilder = QSharedPointer<TopologyBuilder>::create(m_config, this);
-    m_topologyBuilder->buildTopology();
-
     m_topologyController = QSharedPointer<TopologyController>::create(m_topologyBuilder, this);
 
     qDebug() << "AutonomousSystem initialized with ID:" << m_id;
@@ -60,4 +58,20 @@ const std::vector<QSharedPointer<Router>> &AutonomousSystem::getRouters() const
 const std::vector<QSharedPointer<PC>> &AutonomousSystem::getPCs() const
 {
     return m_topologyBuilder->getPCs();
+}
+
+void AutonomousSystem::createRouters()
+{
+    m_topologyBuilder->createRouters();
+}
+
+void AutonomousSystem::createPCs()
+{
+    m_topologyBuilder->createPCs();
+}
+
+void AutonomousSystem::setupTopology()
+{
+    m_topologyBuilder->setupTopology();
+    m_topologyController->validateTopology();
 }

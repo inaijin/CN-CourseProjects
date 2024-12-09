@@ -18,7 +18,10 @@ public:
     explicit TopologyBuilder(const QJsonObject &config, QObject *parent = nullptr);
     ~TopologyBuilder();
 
-    void buildTopology();
+    void createRouters();
+    void createPCs();
+    void setupTopology();
+
     const std::vector<QSharedPointer<Router>> &getRouters() const;
     const std::vector<QSharedPointer<PC>> &getPCs() const;
     const QJsonObject &getConfig() const;
@@ -30,10 +33,8 @@ private:
     std::vector<QSharedPointer<Router>> m_routers;
     std::vector<QSharedPointer<PC>> m_pcs;
 
-    void createRouters();
-    void createPCs();
-    void setupTopology();
     void validateConfig() const;
+
 };
 
 #endif // TOPOLOGYBUILDER_H

@@ -8,12 +8,12 @@
 TopologyController::TopologyController(const QSharedPointer<TopologyBuilder> &builder, QObject *parent)
     : QObject(parent), m_builder(builder)
 {
-    validateTopology();
+    // MEOW
 }
 
 TopologyController::~TopologyController() {}
 
-void TopologyController::validateTopology() const
+void TopologyController::validateTopology()
 {
     qDebug() << "Validating topology...";
     const auto &routers = m_builder->getRouters();
