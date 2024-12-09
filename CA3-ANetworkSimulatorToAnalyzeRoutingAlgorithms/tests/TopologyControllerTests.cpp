@@ -82,5 +82,5 @@ void TopologyControllerTest::testConnectToOtherAS()
     QVERIFY(true);
 }
 
-QTEST_MAIN(TopologyControllerTest)
+// QTEST_MAIN(TopologyControllerTest)
 #include "TopologyControllerTests.moc"

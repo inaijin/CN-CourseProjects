@@ -16,7 +16,8 @@ SOURCES += $$PWD/MACAddressTests.cpp \
            $$PWD/PCTests.cpp \
            $$PWD/RouterTests.cpp \
            $$PWD/TopologyBuilderTests.cpp \
-           $$PWD/TopologyControllerTests.cpp
+           $$PWD/TopologyControllerTests.cpp \
+           $$PWD/AutonomousSystemTests.cpp
 
 INCLUDEPATH += $$PWD/../src \
                $$PWD/../src/Globals
