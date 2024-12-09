@@ -5,6 +5,7 @@
 #include <QSharedPointer>
 #include <QJsonObject>
 #include <vector>
+#include "../Globals/IdAssignment.h"
 
 class Router;
 class PC;
@@ -16,7 +17,7 @@ class AutonomousSystem : public QObject
     Q_OBJECT
 
 public:
-    explicit AutonomousSystem(const QJsonObject &config, QObject *parent = nullptr);
+    explicit AutonomousSystem(const QJsonObject &config, const IdAssignment &idAssignment, QObject *parent = nullptr);
     ~AutonomousSystem() override;
 
     int getId() const;

@@ -4,9 +4,9 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <vector>
 #include "../Network/AutonomousSystem.h"
+#include "../Globals/IdAssignment.h"
 
 class Network : public QObject
 {
@@ -16,16 +16,14 @@ public:
     explicit Network(const QJsonObject &config, QObject *parent = nullptr);
     ~Network();
 
-    void initialize();
+    void initialize(const IdAssignment &idAssignment);
     void connectAutonomousSystems();
-
-    std::vector<QSharedPointer<AutonomousSystem>> getAutonomousSystems() const;
 
 private:
     QJsonObject m_config;
     std::vector<QSharedPointer<AutonomousSystem>> m_autonomousSystems;
 
-    void createAutonomousSystems();
+    void createAutonomousSystems(const IdAssignment &idAssignment);
 };
 
 #endif // NETWORK_H

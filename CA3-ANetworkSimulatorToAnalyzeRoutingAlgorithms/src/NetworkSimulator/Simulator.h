@@ -6,6 +6,7 @@
 #include <QJsonObject>
 #include <QString>
 #include "Network.h"
+#include "IdAssignment.h"
 
 class Simulator : public QObject
 {
@@ -22,6 +23,9 @@ public:
 private:
     QJsonObject m_config;
     QSharedPointer<Network> m_network;
+    IdAssignment m_idAssignment;
+
+    void preAssignIDs();
 };
 
 #endif // SIMULATOR_H

@@ -3,19 +3,18 @@
 
 #include <QObject>
 #include <QJsonObject>
-#include <QJsonArray>
 #include <QSharedPointer>
 #include <vector>
-
-class Router;
-class PC;
+#include "../Network/Router.h"
+#include "../Network/PC.h"
+#include "../Globals/IdAssignment.h"
 
 class TopologyBuilder : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit TopologyBuilder(const QJsonObject &config, QObject *parent = nullptr);
+    explicit TopologyBuilder(const QJsonObject &config, const IdAssignment &idAssignment, QObject *parent = nullptr);
     ~TopologyBuilder();
 
     void buildTopology();
@@ -26,6 +25,7 @@ public:
 private:
     QJsonObject m_config;
     QString m_topologyType;
+    const IdAssignment &m_idAssignment;
 
     std::vector<QSharedPointer<Router>> m_routers;
     std::vector<QSharedPointer<PC>> m_pcs;

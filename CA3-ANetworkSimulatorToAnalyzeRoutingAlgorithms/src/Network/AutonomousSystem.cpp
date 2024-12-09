@@ -5,7 +5,7 @@
 #include "../Network/PC.h"
 #include <QDebug>
 
-AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
+AutonomousSystem::AutonomousSystem(const QJsonObject &config, const IdAssignment &idAssignment, QObject *parent)
     : QObject(parent), m_config(config)
 {
     if (!config.contains("id") || !config.contains("topology_type"))
@@ -23,7 +23,7 @@ AutonomousSystem::AutonomousSystem(const QJsonObject &config, QObject *parent)
         return;
     }
 
-    m_topologyBuilder = QSharedPointer<TopologyBuilder>::create(m_config, this);
+    m_topologyBuilder = QSharedPointer<TopologyBuilder>::create(m_config, idAssignment, this);
     m_topologyBuilder->buildTopology();
 
     m_topologyController = QSharedPointer<TopologyController>::create(m_topologyBuilder, this);

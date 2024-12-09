@@ -4,6 +4,7 @@
 #include "../Network/AutonomousSystem.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include <QDebug>
+#include <QJsonArray>
 
 TopologyController::TopologyController(const QSharedPointer<TopologyBuilder> &builder, QObject *parent)
     : QObject(parent), m_builder(builder)

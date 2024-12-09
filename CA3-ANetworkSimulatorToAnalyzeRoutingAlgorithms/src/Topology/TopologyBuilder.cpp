@@ -1,12 +1,11 @@
 #include "TopologyBuilder.h"
-#include "../Network/Router.h"
-#include "../Network/PC.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include <QDebug>
 #include <stdexcept>
+#include <QJsonArray>
 
-TopologyBuilder::TopologyBuilder(const QJsonObject &config, QObject *parent)
-    : QObject(parent), m_config(config)
+TopologyBuilder::TopologyBuilder(const QJsonObject &config, const IdAssignment &idAssignment, QObject *parent)
+    : QObject(parent), m_config(config), m_idAssignment(idAssignment)
 {
     validateConfig();
     m_topologyType = config.value("topology_type").toString();
@@ -30,32 +29,47 @@ void TopologyBuilder::validateConfig() const
 void TopologyBuilder::createRouters()
 {
     int asId = m_config.value("id").toInt();
-    QString baseIP = QString("192.168.%1.").arg(asId * 100);
+    AsIdRange range;
+    if (!m_idAssignment.getAsIdRange(asId, range)) {
+        throw std::runtime_error("ID range not found for AS");
+    }
+
     int nodeCount = m_config.value("node_count").toInt();
+    QString baseIP = QString("192.168.%1.").arg(asId * 100);
     int portCount = m_config.value("router_port_count").toInt(6);
+
+    if ((range.routerEndId - range.routerStartId + 1) != nodeCount)
+        throw std::runtime_error("Router count doesn't match assigned range.");
 
     QJsonArray brokenRoutersArray = m_config.value("broken_routers").toArray();
     std::vector<int> brokenRouters;
     for (const QJsonValue &value : brokenRoutersArray)
         brokenRouters.push_back(value.toInt());
 
-    for (int i = 1; i <= nodeCount; ++i)
+    for (int i = 0; i < nodeCount; ++i)
     {
-        if (std::find(brokenRouters.begin(), brokenRouters.end(), i) != brokenRouters.end())
+        int routerId = range.routerStartId + i;
+        if (std::find(brokenRouters.begin(), brokenRouters.end(), routerId) != brokenRouters.end())
         {
-            qWarning() << "Skipping broken router with ID:" << i;
+            qWarning() << "Skipping broken router with ID:" << routerId;
             continue;
         }
 
-        int globalId = Node::getNextGlobalId();
-        QString routerIP = baseIP + QString::number(globalId);
-        auto router = QSharedPointer<Router>::create(globalId, routerIP, portCount, this);
+        QString routerIP = baseIP + QString::number(routerId);
+        auto router = QSharedPointer<Router>::create(routerId, routerIP, portCount, this);
         m_routers.push_back(router);
     }
 }
 
 void TopologyBuilder::createPCs()
 {
+    int asId = m_config.value("id").toInt();
+    AsIdRange range;
+    if (!m_idAssignment.getAsIdRange(asId, range)) {
+        qWarning() << "ID range not found for AS when creating PCs";
+        return;
+    }
+
     QJsonArray gateways = m_config.value("gateways").toArray();
     if (gateways.isEmpty())
     {
@@ -63,40 +77,44 @@ void TopologyBuilder::createPCs()
         return;
     }
 
-    int asId = m_config.value("id").toInt();
+    int pcIndex = 0;
+    int asIdValue = m_config.value("id").toInt();
     for (const QJsonValue &gatewayValue : gateways)
     {
         QJsonObject gatewayObj = gatewayValue.toObject();
         if (!gatewayObj.contains("node") || !gatewayObj.contains("users"))
         {
-            qWarning() << "Invalid gateway definition: missing 'node' or 'users' key.";
+            qWarning() << "Invalid gateway definition.";
             continue;
         }
 
-        int nodeId = gatewayObj.value("node").toInt();
+        int gatewayNodeId = gatewayObj.value("node").toInt();
         QJsonArray userArray = gatewayObj.value("users").toArray();
 
         auto routerIt = std::find_if(m_routers.begin(), m_routers.end(),
-                                            [nodeId](const QSharedPointer<Router> &r) { return r->getId() == nodeId; });
+                                                [gatewayNodeId](const QSharedPointer<Router> &r){ return r->getId() == gatewayNodeId; });
 
         if (routerIt == m_routers.end())
         {
-            qWarning() << "Gateway router with ID:" << nodeId << "not found.";
+            qWarning() << "Gateway router with ID:" << gatewayNodeId << "not found.";
             continue;
         }
 
+        QString baseIP = QString("192.168.%1.").arg(asIdValue * 100);
         for (const QJsonValue &userValue : userArray)
         {
-            int userId = userValue.toInt();
-            if (userId <= 0)
+            int localUserId = userValue.toInt();
+            if (localUserId <= 0)
             {
-                qWarning() << "Invalid user ID:" << userId;
+                qWarning() << "Invalid user ID:" << localUserId;
                 continue;
             }
 
-            int globalId = Node::getNextGlobalId();
-            QString pcIP = QString("192.168.%1.%2").arg(asId * 100).arg(globalId);
-            auto pc = QSharedPointer<PC>::create(globalId, pcIP, this);
+            int pcId = range.pcStartId + pcIndex;
+            pcIndex++;
+
+            QString pcIP = baseIP + QString::number(pcId);
+            auto pc = QSharedPointer<PC>::create(pcId, pcIP, this);
             m_pcs.push_back(pc);
 
             PortBindingManager bindingManager;

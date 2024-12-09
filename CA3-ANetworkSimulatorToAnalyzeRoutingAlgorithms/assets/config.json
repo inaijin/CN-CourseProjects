@@ -47,7 +47,7 @@
             "id": 2,
             "router_port_count": 32,
             "topology_type": "RingStar",
-            "node_count": 5,
+            "node_count": 7,
             "as_gateways": [17, 18, 19],
             "user_gateways": [20, 21, 22],
             "dhcp_server": 22,
