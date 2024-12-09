@@ -3,10 +3,12 @@
 #include "../Network/PC.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include <QDebug>
+#include <stdexcept>
 
 TopologyBuilder::TopologyBuilder(const QJsonObject &config, QObject *parent)
     : QObject(parent), m_config(config)
 {
+    validateConfig();
     m_topologyType = config.value("topology_type").toString();
 }
 
@@ -19,14 +21,31 @@ void TopologyBuilder::buildTopology()
     setupTopology();
 }
 
+void TopologyBuilder::validateConfig() const
+{
+    if (!m_config.contains("id") || !m_config.contains("node_count"))
+        throw std::invalid_argument("Invalid configuration: Missing required keys 'id' or 'node_count'.");
+}
+
 void TopologyBuilder::createRouters()
 {
     QString baseIP = QString("192.168.%1.").arg(m_config.value("id").toInt() * 100);
     int nodeCount = m_config.value("node_count").toInt();
     int portCount = m_config.value("router_port_count").toInt(6);
 
+    QJsonArray brokenRoutersArray = m_config.value("broken_routers").toArray();
+    std::vector<int> brokenRouters;
+    for (const QJsonValue &value : brokenRoutersArray)
+        brokenRouters.push_back(value.toInt());
+
     for (int i = 1; i <= nodeCount; ++i)
     {
+        if (std::find(brokenRouters.begin(), brokenRouters.end(), i) != brokenRouters.end())
+        {
+            qWarning() << "Skipping broken router with ID:" << i;
+            continue;
+        }
+
         QString routerIP = baseIP + QString::number(i);
         auto router = QSharedPointer<Router>::create(i, routerIP, portCount, this);
         m_routers.push_back(router);
@@ -36,14 +55,26 @@ void TopologyBuilder::createRouters()
 void TopologyBuilder::createPCs()
 {
     QJsonArray gateways = m_config.value("gateways").toArray();
+    if (gateways.isEmpty())
+    {
+        qWarning() << "No gateways defined in the configuration.";
+        return;
+    }
+
     for (const QJsonValue &gatewayValue : gateways)
     {
         QJsonObject gatewayObj = gatewayValue.toObject();
+        if (!gatewayObj.contains("node") || !gatewayObj.contains("users"))
+        {
+            qWarning() << "Invalid gateway definition: missing 'node' or 'users' key.";
+            continue;
+        }
+
         int nodeId = gatewayObj.value("node").toInt();
         QJsonArray userArray = gatewayObj.value("users").toArray();
 
         auto routerIt = std::find_if(m_routers.begin(), m_routers.end(),
-                                              [nodeId](const QSharedPointer<Router> &r) { return r->getId() == nodeId; });
+                                            [nodeId](const QSharedPointer<Router> &r) { return r->getId() == nodeId; });
 
         if (routerIt == m_routers.end())
         {
@@ -54,12 +85,35 @@ void TopologyBuilder::createPCs()
         for (const QJsonValue &userValue : userArray)
         {
             int userId = userValue.toInt();
-            QString pcIP = QString("192.168.%1.%2").arg(m_config.value("id").toInt() * 100).arg(userId);
-            auto pc = QSharedPointer<PC>::create(userId, pcIP, this);
-            m_pcs.push_back(pc);
+            if (userId <= 0)
+            {
+                qWarning() << "Invalid user ID:" << userId;
+                continue;
+            }
 
-            PortBindingManager bindingManager;
-            bindingManager.bind((*routerIt)->getAvailablePort(), pc->getPort());
+            QString pcIP = QString("192.168.%1.%2").arg(m_config.value("id").toInt() * 100).arg(userId);
+            try
+            {
+                auto pc = QSharedPointer<PC>::create(userId, pcIP, this);
+                m_pcs.push_back(pc);
+
+                auto port1 = (*routerIt)->getAvailablePort();
+                auto port2 = pc->getPort();
+
+                if (!port1 || !port2)
+                {
+                    qWarning() << "Failed to get available ports for binding PC with ID:" << userId
+                               << "to Router with ID:" << nodeId;
+                    continue;
+                }
+
+                PortBindingManager bindingManager;
+                bindingManager.bind(port1, port2);
+            }
+            catch (const std::exception &e)
+            {
+                qWarning() << "Exception while creating PC with ID:" << userId << ":" << e.what();
+            }
         }
     }
 }
