@@ -3,12 +3,10 @@
 #include "../Network/PC.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include <QDebug>
-#include <stdexcept>
 
 TopologyBuilder::TopologyBuilder(const QJsonObject &config, QObject *parent)
     : QObject(parent), m_config(config)
 {
-    validateConfig();
     m_topologyType = config.value("topology_type").toString();
 }
 
@@ -21,31 +19,14 @@ void TopologyBuilder::buildTopology()
     setupTopology();
 }
 
-void TopologyBuilder::validateConfig() const
-{
-    if (!m_config.contains("id") || !m_config.contains("node_count"))
-        throw std::invalid_argument("Invalid configuration: Missing required keys 'id' or 'node_count'.");
-}
-
 void TopologyBuilder::createRouters()
 {
     QString baseIP = QString("192.168.%1.").arg(m_config.value("id").toInt() * 100);
     int nodeCount = m_config.value("node_count").toInt();
     int portCount = m_config.value("router_port_count").toInt(6);
-    QJsonArray brokenRoutersArray = m_config.value("broken_routers").toArray();
-    std::vector<int> brokenRouters;
-
-    for (const QJsonValue &value : brokenRoutersArray)
-        brokenRouters.push_back(value.toInt());
 
     for (int i = 1; i <= nodeCount; ++i)
     {
-        if (std::find(brokenRouters.begin(), brokenRouters.end(), i) != brokenRouters.end())
-        {
-            qWarning() << "Skipping broken router with ID:" << i;
-            continue;
-        }
-
         QString routerIP = baseIP + QString::number(i);
         auto router = QSharedPointer<Router>::create(i, routerIP, portCount, this);
         m_routers.push_back(router);
