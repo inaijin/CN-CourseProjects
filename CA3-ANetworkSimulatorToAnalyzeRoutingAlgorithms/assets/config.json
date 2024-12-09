@@ -5,7 +5,7 @@
     "packets_per_simulation": 500,
     "statistical_distribution": "Poisson | Pareto",
     "router_buffer_size": 6,
-    "router_port_count": 6,
+    "router_port_count": 12,
     "routing_protocol": "RIP | OSPF",
     "routing_table_update_interval": "Infinity | 30 | 60",
     "routing_per_port": true,
@@ -48,7 +48,7 @@
             "node_count": 5,
             "as_gateways": [17, 18, 19],
             "user_gateways": [20, 21, 22],
-            "dhcp_server": 23,
+            "dhcp_server": 22,
             "broken_routers": [23],
             "gateways": [
                 {

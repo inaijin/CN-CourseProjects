@@ -18,8 +18,6 @@ public:
     void bind(const PortPtr_t &port1, const PortPtr_t &port2);
     bool unbind(const PortPtr_t &port1, const PortPtr_t &port2);
 
-    bool isBound(const PortPtr_t &port) const;
-
 Q_SIGNALS:
     void bindingChanged(const QString &router1, uint8_t port1, const QString &router2, uint8_t port2, bool bind);
 
