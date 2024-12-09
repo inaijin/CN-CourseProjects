@@ -1,4 +1,3 @@
-
 #include <QtTest/QtTest>
 #include "../src/EventsCoordinator/EventsCoordinator.h"
 #include "../src/DataGenerator/DataGenerator.h"

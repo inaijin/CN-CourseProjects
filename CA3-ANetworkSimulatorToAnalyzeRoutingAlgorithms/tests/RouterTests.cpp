@@ -41,5 +41,5 @@ void RouterTests::testPacketForwarding()
     QVERIFY(true);
 }
 
-QTEST_MAIN(RouterTests)
+// QTEST_MAIN(RouterTests)
 #include "RouterTests.moc"
