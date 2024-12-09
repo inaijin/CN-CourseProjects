@@ -18,7 +18,7 @@ void RouterTests::testRouterInitialization()
     Router router(1, "192.168.1.1", 4);
     QCOMPARE(router.getId(), 1);
     QCOMPARE(router.getIPAddress(), QString("192.168.1.1"));
-    QCOMPARE(router.getPorts().size(), 4);
+    QCOMPARE(static_cast<int>(router.getPorts().size()), 4);
 }
 
 void RouterTests::testPortAvailability()
