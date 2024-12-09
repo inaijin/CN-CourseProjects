@@ -32,9 +32,9 @@ void TopologyBuilder::createRouters()
     QString baseIP = QString("192.168.%1.").arg(m_config.value("id").toInt() * 100);
     int nodeCount = m_config.value("node_count").toInt();
     int portCount = m_config.value("router_port_count").toInt(6);
-
     QJsonArray brokenRoutersArray = m_config.value("broken_routers").toArray();
     std::vector<int> brokenRouters;
+
     for (const QJsonValue &value : brokenRoutersArray)
         brokenRouters.push_back(value.toInt());
 
@@ -55,26 +55,14 @@ void TopologyBuilder::createRouters()
 void TopologyBuilder::createPCs()
 {
     QJsonArray gateways = m_config.value("gateways").toArray();
-    if (gateways.isEmpty())
-    {
-        qWarning() << "No gateways defined in the configuration.";
-        return;
-    }
-
     for (const QJsonValue &gatewayValue : gateways)
     {
         QJsonObject gatewayObj = gatewayValue.toObject();
-        if (!gatewayObj.contains("node") || !gatewayObj.contains("users"))
-        {
-            qWarning() << "Invalid gateway definition: missing 'node' or 'users' key.";
-            continue;
-        }
-
         int nodeId = gatewayObj.value("node").toInt();
         QJsonArray userArray = gatewayObj.value("users").toArray();
 
         auto routerIt = std::find_if(m_routers.begin(), m_routers.end(),
-                                            [nodeId](const QSharedPointer<Router> &r) { return r->getId() == nodeId; });
+                                              [nodeId](const QSharedPointer<Router> &r) { return r->getId() == nodeId; });
 
         if (routerIt == m_routers.end())
         {
@@ -85,35 +73,12 @@ void TopologyBuilder::createPCs()
         for (const QJsonValue &userValue : userArray)
         {
             int userId = userValue.toInt();
-            if (userId <= 0)
-            {
-                qWarning() << "Invalid user ID:" << userId;
-                continue;
-            }
-
             QString pcIP = QString("192.168.%1.%2").arg(m_config.value("id").toInt() * 100).arg(userId);
-            try
-            {
-                auto pc = QSharedPointer<PC>::create(userId, pcIP, this);
-                m_pcs.push_back(pc);
+            auto pc = QSharedPointer<PC>::create(userId, pcIP, this);
+            m_pcs.push_back(pc);
 
-                auto port1 = (*routerIt)->getAvailablePort();
-                auto port2 = pc->getPort();
-
-                if (!port1 || !port2)
-                {
-                    qWarning() << "Failed to get available ports for binding PC with ID:" << userId
-                               << "to Router with ID:" << nodeId;
-                    continue;
-                }
-
-                PortBindingManager bindingManager;
-                bindingManager.bind(port1, port2);
-            }
-            catch (const std::exception &e)
-            {
-                qWarning() << "Exception while creating PC with ID:" << userId << ":" << e.what();
-            }
+            PortBindingManager bindingManager;
+            bindingManager.bind((*routerIt)->getAvailablePort(), pc->getPort());
         }
     }
 }
