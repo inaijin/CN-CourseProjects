@@ -53,4 +53,5 @@ HEADERS += \
     $$PWD/NetworkSimulator/ApplicationContext.h \
     $$PWD/IP/IPHeader.h \
     $$PWD/Topology/TopologyController.h \
-    $$PWD/Topology/TopologyBuilder.h
+    $$PWD/Topology/TopologyBuilder.h \
+    $$PWD/Globals/IdAssignment.h
