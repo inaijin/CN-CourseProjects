@@ -33,3 +33,8 @@ const std::vector<QSharedPointer<Router>> &AutonomousSystem::getRouters() const
 {
     return m_topologyBuilder->getRouters();
 }
+
+void AutonomousSystem::connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS)
+{
+    m_topologyController->connectToOtherAS(allAS);
+}

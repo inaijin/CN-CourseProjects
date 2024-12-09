@@ -22,6 +22,8 @@ public:
     int getId() const;
     const std::vector<QSharedPointer<Router>> &getRouters() const;
 
+    void connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS);
+
 private:
     int m_id;
     QJsonObject m_config;
