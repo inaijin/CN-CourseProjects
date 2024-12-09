@@ -57,21 +57,49 @@ void TopologyBuilderTests::testCreatePCs()
     QJsonObject config;
     config.insert("id", 1);
 
+    // Define gateways
     QJsonArray gateways;
     QJsonObject gateway;
-    gateway.insert("node", 1);
+    gateway.insert("node", 1); // Router ID 1
     QJsonArray users;
-    users.append(201);
-    users.append(202);
+    users.append(201); // User ID 201
+    users.append(202); // User ID 202
     gateway.insert("users", users);
     gateways.append(gateway);
     config.insert("gateways", gateways);
 
+    // Define routers in the configuration
+    QJsonArray routers;
+    QJsonObject router;
+    router.insert("id", 1); // Router ID 1 exists in the topology
+    routers.append(router);
+    config.insert("routers", routers);
+
+    // Initialize the builder with the configuration
     TopologyBuilder builder(config);
     builder.buildTopology();
 
+    // Validate the PCs were created correctly
     QCOMPARE(builder.getPCs().size(), 2);
     QCOMPARE(builder.getPCs()[0]->getId(), 201);
+    QCOMPARE(builder.getPCs()[1]->getId(), 202);
+
+    // Validate PC properties
+    auto pc1 = builder.getPCs()[0];
+    auto pc2 = builder.getPCs()[1];
+
+    QVERIFY(pc1);
+    QVERIFY(pc2);
+
+    QCOMPARE(pc1->getIPAddress(), QString("192.168.100.201"));
+    QCOMPARE(pc2->getIPAddress(), QString("192.168.100.202"));
+
+    // Validate port binding (if applicable)
+    QVERIFY(pc1->getPort());
+    QVERIFY(pc1->getPort()->isConnected());
+
+    QVERIFY(pc2->getPort());
+    QVERIFY(pc2->getPort()->isConnected());
 }
 
 QTEST_MAIN(TopologyBuilderTests)
