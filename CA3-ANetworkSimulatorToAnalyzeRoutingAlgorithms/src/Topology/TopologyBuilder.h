@@ -33,6 +33,7 @@ private:
     void createRouters();
     void createPCs();
     void setupTopology();
+    void validateConfig() const;
 };
 
 #endif // TOPOLOGYBUILDER_H
