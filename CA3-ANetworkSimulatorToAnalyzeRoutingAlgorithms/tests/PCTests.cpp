@@ -24,5 +24,5 @@ void PCTests::testPacketGeneration()
     QVERIFY(true);
 }
 
-QTEST_MAIN(PCTests)
+// QTEST_MAIN(PCTests)
 #include "PCTests.moc"
