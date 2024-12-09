@@ -16,7 +16,7 @@ public:
     explicit TopologyController(const QSharedPointer<TopologyBuilder> &builder, QObject *parent = nullptr);
     ~TopologyController();
 
-    void validateTopology();
+    void validateTopology() const;
     void connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS);
 
 private:

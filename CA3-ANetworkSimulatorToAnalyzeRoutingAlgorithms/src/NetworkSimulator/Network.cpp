@@ -14,25 +14,8 @@ Network::~Network()
 void Network::initialize()
 {
     createAutonomousSystems();
-
-    for (auto &asInstance : m_autonomousSystems)
-    {
-        asInstance->createRouters();
-    }
-
-    for (auto &asInstance : m_autonomousSystems)
-    {
-        asInstance->createPCs();
-    }
-
-    for (auto &asInstance : m_autonomousSystems)
-    {
-        asInstance->setupTopology();
-    }
-
     connectAutonomousSystems();
 }
-
 
 void Network::createAutonomousSystems()
 {

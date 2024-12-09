@@ -12,7 +12,7 @@ private Q_SLOTS:
 
 void PCTests::testPCInitialization()
 {
-    PC pc("192.168.1.100");
+    PC pc(1, "192.168.1.100");
     QCOMPARE(pc.getId(), 1);
     QCOMPARE(pc.getIPAddress(), QString("192.168.1.100"));
     QVERIFY(pc.getPort() != nullptr);

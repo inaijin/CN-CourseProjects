@@ -1,19 +1,17 @@
 #include "Node.h"
 
-int Node::s_nextId = 1;
+int Node::s_globalNodeId = 0;
 
-Node::Node(const QString &ipAddress, NodeType type, QObject *parent)
-    : QThread(parent),
-    m_ipAddress(ipAddress),
-    m_type(type)
+Node::Node(int id, const QString &ipAddress, NodeType type, QObject *parent)
+    : QThread(parent), m_id(id), m_ipAddress(ipAddress), m_type(type)
 {
-    QMutexLocker locker(&m_mutex);
-    m_id = s_nextId++;
 }
 
-Node::~Node()
+Node::~Node() {}
+
+int Node::getNextGlobalId()
 {
-    // Virtual destructor implementation
+    return ++s_globalNodeId;
 }
 
 int Node::getId() const

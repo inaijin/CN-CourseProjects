@@ -1,8 +1,8 @@
 #include "PC.h"
 #include <QDebug>
 
-PC::PC(const QString &ipAddress, QObject *parent)
-    : Node(ipAddress, NodeType::PC, parent)
+PC::PC(int id, const QString &ipAddress, QObject *parent)
+    : Node(id, ipAddress, NodeType::PC, parent)
 {
     m_port = PortPtr_t::create(this);
     m_port->setPortNumber(1);

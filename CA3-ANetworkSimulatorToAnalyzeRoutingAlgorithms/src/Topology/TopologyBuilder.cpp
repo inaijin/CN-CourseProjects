@@ -14,6 +14,13 @@ TopologyBuilder::TopologyBuilder(const QJsonObject &config, QObject *parent)
 
 TopologyBuilder::~TopologyBuilder() {}
 
+void TopologyBuilder::buildTopology()
+{
+    createRouters();
+    setupTopology();
+    createPCs();
+}
+
 void TopologyBuilder::validateConfig() const
 {
     if (!m_config.contains("id") || !m_config.contains("node_count"))
@@ -22,7 +29,8 @@ void TopologyBuilder::validateConfig() const
 
 void TopologyBuilder::createRouters()
 {
-    QString baseIP = QString("192.168.%1.").arg(m_config.value("id").toInt() * 100);
+    int asId = m_config.value("id").toInt();
+    QString baseIP = QString("192.168.%1.").arg(asId * 100);
     int nodeCount = m_config.value("node_count").toInt();
     int portCount = m_config.value("router_port_count").toInt(6);
 
@@ -39,8 +47,9 @@ void TopologyBuilder::createRouters()
             continue;
         }
 
-        QString routerIP = baseIP + QString::number(i);
-        auto router = QSharedPointer<Router>::create(routerIP, portCount, this);
+        int globalId = Node::getNextGlobalId();
+        QString routerIP = baseIP + QString::number(globalId);
+        auto router = QSharedPointer<Router>::create(globalId, routerIP, portCount, this);
         m_routers.push_back(router);
     }
 }
@@ -54,6 +63,7 @@ void TopologyBuilder::createPCs()
         return;
     }
 
+    int asId = m_config.value("id").toInt();
     for (const QJsonValue &gatewayValue : gateways)
     {
         QJsonObject gatewayObj = gatewayValue.toObject();
@@ -84,29 +94,13 @@ void TopologyBuilder::createPCs()
                 continue;
             }
 
-            QString pcIP = QString("192.168.%1.%2").arg(m_config.value("id").toInt() * 100).arg(userId);
-            try
-            {
-                auto pc = QSharedPointer<PC>::create(pcIP, this);
-                m_pcs.push_back(pc);
+            int globalId = Node::getNextGlobalId();
+            QString pcIP = QString("192.168.%1.%2").arg(asId * 100).arg(globalId);
+            auto pc = QSharedPointer<PC>::create(globalId, pcIP, this);
+            m_pcs.push_back(pc);
 
-                auto port1 = (*routerIt)->getAvailablePort();
-                auto port2 = pc->getPort();
-
-                if (!port1 || !port2)
-                {
-                    qWarning() << "Failed to get available ports for binding PC with ID:" << userId
-                               << "to Router with ID:" << nodeId;
-                    continue;
-                }
-
-                PortBindingManager bindingManager;
-                bindingManager.bind(port1, port2);
-            }
-            catch (const std::exception &e)
-            {
-                qWarning() << "Exception while creating PC with ID:" << userId << ":" << e.what();
-            }
+            PortBindingManager bindingManager;
+            bindingManager.bind((*routerIt)->getAvailablePort(), pc->getPort());
         }
     }
 }

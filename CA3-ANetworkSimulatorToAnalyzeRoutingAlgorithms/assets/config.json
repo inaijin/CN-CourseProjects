@@ -5,7 +5,7 @@
     "packets_per_simulation": 500,
     "statistical_distribution": "Poisson | Pareto",
     "router_buffer_size": 6,
-    "router_port_count": 12,
+    "router_port_count": 32,
     "routing_protocol": "RIP | OSPF",
     "routing_table_update_interval": "Infinity | 30 | 60",
     "routing_per_port": true,
@@ -16,6 +16,7 @@
     [
         {
             "id": 1,
+            "router_port_count": 32,
             "topology_type": "Mesh",
             "node_count": 16,
             "as_gateways": [14, 15, 16],
@@ -44,6 +45,7 @@
         },
         {
             "id": 2,
+            "router_port_count": 32,
             "topology_type": "RingStar",
             "node_count": 5,
             "as_gateways": [17, 18, 19],

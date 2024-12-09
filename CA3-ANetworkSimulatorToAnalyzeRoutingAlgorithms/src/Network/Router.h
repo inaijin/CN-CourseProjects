@@ -11,7 +11,7 @@ class Router : public Node
     Q_OBJECT
 
 public:
-    explicit Router(const QString &ipAddress, int portCount = 6, QObject *parent = nullptr);
+    explicit Router(int id, const QString &ipAddress, int portCount = 6, QObject *parent = nullptr);
     ~Router() override;
 
     PortPtr_t getAvailablePort();

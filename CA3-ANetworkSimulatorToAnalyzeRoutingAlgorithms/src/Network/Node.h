@@ -17,12 +17,14 @@ class Node : public QThread
     Q_OBJECT
 
 public:
-    explicit Node(const QString &ipAddress, NodeType type, QObject *parent = nullptr);
+    explicit Node(int id, const QString &ipAddress, NodeType type, QObject *parent = nullptr);
     virtual ~Node() = 0;
 
     int getId() const;
     QString getIPAddress() const;
     NodeType getNodeType() const;
+
+    static int getNextGlobalId();
 
 protected:
     virtual void run() override = 0;
@@ -32,8 +34,7 @@ protected:
     NodeType m_type;
     mutable QMutex m_mutex;
 
-private:
-    static int s_nextId;
+    static int s_globalNodeId;
 };
 
 #endif // NODE_H
