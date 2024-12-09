@@ -59,5 +59,5 @@ void PortBindingManagerTests::testInvalidBinding() {
     QVERIFY(!port2->isConnected());
 }
 
-QTEST_MAIN(PortBindingManagerTests)
+// QTEST_MAIN(PortBindingManagerTests)
 #include "PortBindingManagerTests.moc"
