@@ -17,16 +17,13 @@ class AutonomousSystem : public QObject
 
 public:
     explicit AutonomousSystem(const QJsonObject &config, QObject *parent = nullptr);
-    ~AutonomousSystem() override;
+    ~AutonomousSystem();
 
     int getId() const;
     const std::vector<QSharedPointer<Router>> &getRouters() const;
-    const std::vector<QSharedPointer<PC>> &getPCs() const;
-    void connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS);
 
 private:
     int m_id;
-    QString m_topologyType;
     QJsonObject m_config;
 
     QSharedPointer<TopologyBuilder> m_topologyBuilder;
