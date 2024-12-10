@@ -127,14 +127,42 @@ void TopologyBuilder::setupTopology()
 {
     if (m_topologyType == "Mesh")
     {
-        for (size_t i = 0; i < m_routers.size(); ++i)
+        int rows = 4;
+        int columns = 4;
+
+        QSet<QPair<int, int>> connectedPairs;
+
+        for (int i = 0; i < static_cast<int>(m_routers.size()); ++i)
         {
-            auto routerA = m_routers[i];
-            for (size_t j = i + 1; j < m_routers.size(); ++j)
+            int routerId = m_routers[i]->getId();
+            int row = i / columns;
+            int col = i % columns;
+
+            QVector<int> neighbors;
+            if (row > 0)
+                neighbors.append(m_routers[(row - 1) * columns + col]->getId());
+            if (row < rows - 1)
+                neighbors.append(m_routers[(row + 1) * columns + col]->getId());
+            if (col > 0)
+                neighbors.append(m_routers[row * columns + (col - 1)]->getId());
+            if (col < columns - 1)
+                neighbors.append(m_routers[row * columns + (col + 1)]->getId());
+
+            for (int neighborId : neighbors)
             {
-                auto routerB = m_routers[j];
-                PortBindingManager bindingManager;
-                bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort());
+                QPair<int, int> pair = qMakePair(qMin(routerId, neighborId), qMax(routerId, neighborId));
+                if (connectedPairs.contains(pair))
+                    continue;
+
+                auto neighborIt = std::find_if(m_routers.begin(), m_routers.end(),
+                                               [neighborId](const QSharedPointer<Router> &r) { return r->getId() == neighborId; });
+
+                if (neighborIt != m_routers.end())
+                {
+                    PortBindingManager bindingManager;
+                    bindingManager.bind(m_routers[i]->getAvailablePort(), (*neighborIt)->getAvailablePort());
+                    connectedPairs.insert(pair);
+                }
             }
         }
     }
