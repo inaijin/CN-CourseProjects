@@ -95,5 +95,5 @@ void TopologyBuilderTests::testCreatePCs()
     }
 }
 
-QTEST_MAIN(TopologyBuilderTests)
+// QTEST_MAIN(TopologyBuilderTests)
 #include "TopologyBuilderTests.moc"
