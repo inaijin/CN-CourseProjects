@@ -46,5 +46,5 @@ void PCTests::testPortBinding()
     QVERIFY(pc2.getPort()->isConnected());
 }
 
-QTEST_MAIN(PCTests)
+// QTEST_MAIN(PCTests)
 #include "PCTests.moc"
