@@ -66,7 +66,7 @@ void TopologyBuilder::createPCs()
     int asId = m_config.value("id").toInt();
     AsIdRange range;
     if (!m_idAssignment.getAsIdRange(asId, range)) {
-        qWarning() << "ID range not found for AS when creating PCs";
+        qWarning() << "ID range not found for AS" << asId;
         return;
     }
 
@@ -77,8 +77,8 @@ void TopologyBuilder::createPCs()
         return;
     }
 
-    int pcIndex = 0;
-    int asIdValue = m_config.value("id").toInt();
+    QString baseIP = QString("192.168.%1.").arg(asId * 100);
+
     for (const QJsonValue &gatewayValue : gateways)
     {
         QJsonObject gatewayObj = gatewayValue.toObject();
@@ -92,7 +92,7 @@ void TopologyBuilder::createPCs()
         QJsonArray userArray = gatewayObj.value("users").toArray();
 
         auto routerIt = std::find_if(m_routers.begin(), m_routers.end(),
-                                                [gatewayNodeId](const QSharedPointer<Router> &r){ return r->getId() == gatewayNodeId; });
+                                                [gatewayNodeId](const QSharedPointer<Router> &r) { return r->getId() == gatewayNodeId; });
 
         if (routerIt == m_routers.end())
         {
@@ -100,18 +100,14 @@ void TopologyBuilder::createPCs()
             continue;
         }
 
-        QString baseIP = QString("192.168.%1.").arg(asIdValue * 100);
         for (const QJsonValue &userValue : userArray)
         {
-            int localUserId = userValue.toInt();
-            if (localUserId <= 0)
+            int pcId = userValue.toInt();
+            if (pcId <= 0)
             {
-                qWarning() << "Invalid user ID:" << localUserId;
+                qWarning() << "Invalid PC ID:" << pcId;
                 continue;
             }
-
-            int pcId = range.pcStartId + pcIndex;
-            pcIndex++;
 
             QString pcIP = baseIP + QString::number(pcId);
             auto pc = QSharedPointer<PC>::create(pcId, pcIP, this);
@@ -119,6 +115,8 @@ void TopologyBuilder::createPCs()
 
             PortBindingManager bindingManager;
             bindingManager.bind((*routerIt)->getAvailablePort(), pc->getPort());
+
+            qDebug() << "PC" << pcId << "bound to Router" << gatewayNodeId;
         }
     }
 }
