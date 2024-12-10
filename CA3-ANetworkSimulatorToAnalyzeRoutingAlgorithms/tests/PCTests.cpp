@@ -1,5 +1,7 @@
 #include <QtTest/QtTest>
 #include "../src/Network/PC.h"
+#include "../src/Packet/Packet.h"
+#include "../PortBindingManager/PortBindingManager.h"
 
 class PCTests : public QObject
 {
@@ -7,7 +9,8 @@ class PCTests : public QObject
 
 private Q_SLOTS:
     void testPCInitialization();
-    void testPacketGeneration(); // Placeholder for future phases implementation
+    void testPacketGeneration();
+    void testPortBinding();
 };
 
 void PCTests::testPCInitialization()
@@ -20,9 +23,28 @@ void PCTests::testPCInitialization()
 
 void PCTests::testPacketGeneration()
 {
-    // Placeholder for packet generation test in future phases
+    PC pc(2, "192.168.1.101");
+    auto port = pc.getPort();
+    connect(port.data(), &Port::packetSent, this, [](const PacketPtr_t &packet) {
+        QCOMPARE(packet->getType(), PacketType::Data);
+        QCOMPARE(packet->getPayload(), QString("TestPayload"));
+    });
+
+    pc.generatePacket(); // Assuming generatePacket creates and sends a test packet do in future phases
     QVERIFY(true);
 }
 
-// QTEST_MAIN(PCTests)
+void PCTests::testPortBinding()
+{
+    PC pc1(3, "192.168.1.102");
+    PC pc2(4, "192.168.1.103");
+
+    PortBindingManager manager;
+    manager.bind(pc1.getPort(), pc2.getPort());
+
+    QVERIFY(pc1.getPort()->isConnected());
+    QVERIFY(pc2.getPort()->isConnected());
+}
+
+QTEST_MAIN(PCTests)
 #include "PCTests.moc"

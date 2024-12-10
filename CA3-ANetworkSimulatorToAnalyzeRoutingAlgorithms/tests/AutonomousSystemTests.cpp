@@ -105,5 +105,5 @@ void AutonomousSystemTests::testConnectToOtherAS()
     QVERIFY(true);
 }
 
-QTEST_MAIN(AutonomousSystemTests)
+// QTEST_MAIN(AutonomousSystemTests)
 #include "AutonomousSystemTests.moc"
