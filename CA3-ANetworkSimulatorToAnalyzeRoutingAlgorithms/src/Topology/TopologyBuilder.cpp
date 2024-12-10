@@ -168,7 +168,11 @@ void TopologyBuilder::setupTopology()
     }
     else if (m_topologyType == "RingStar")
     {
-        auto hubRouter = m_routers.front();
+        auto hubRouter = *std::max_element(m_routers.begin(), m_routers.end(),
+                                                                      [](const QSharedPointer<Router> &a, const QSharedPointer<Router> &b) {
+                                               return a->getId() < b->getId();
+                                           });
+
         QVector<QSharedPointer<Router>> ringRouters;
 
         for (const auto &router : m_routers)
@@ -176,6 +180,11 @@ void TopologyBuilder::setupTopology()
             if (router != hubRouter)
                 ringRouters.append(router);
         }
+
+        std::sort(ringRouters.begin(), ringRouters.end(),
+                  [](const QSharedPointer<Router> &a, const QSharedPointer<Router> &b) {
+                      return a->getId() < b->getId();
+                  });
 
         for (int i = 0; i < ringRouters.size(); ++i)
         {
@@ -185,10 +194,11 @@ void TopologyBuilder::setupTopology()
             bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort());
         }
 
-        for (const auto &router : ringRouters)
+        for (int i = 0; i < ringRouters.size(); i += 2)
         {
+            auto router = ringRouters[i];
             PortBindingManager bindingManager;
-            bindingManager.bind(hubRouter->getAvailablePort(), router->getAvailablePort());
+            bindingManager.bind(router->getAvailablePort(), hubRouter->getAvailablePort());
         }
     }
 }
