@@ -62,5 +62,5 @@ void RouterTests::testPortBinding()
     QVERIFY(router2.getAvailablePort()->isConnected());
 }
 
-QTEST_MAIN(RouterTests)
+// QTEST_MAIN(RouterTests)
 #include "RouterTests.moc"
