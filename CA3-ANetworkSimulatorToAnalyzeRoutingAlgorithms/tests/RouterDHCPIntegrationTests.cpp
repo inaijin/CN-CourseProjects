@@ -17,6 +17,7 @@ void RouterDHCPIntegrationTests::testRouterReceivesIPFromDHCP() {
 
     // Use singleton for EventsCoordinator
     EventsCoordinator* coordinator = EventsCoordinator::instance();
+    coordinator->moveToThread(coordinator); // Ensure it's running in its own thread
     coordinator->start();
 
     auto router = QSharedPointer<Router>::create(1, "192.168.1.1", 6, nullptr);
@@ -28,8 +29,11 @@ void RouterDHCPIntegrationTests::testRouterReceivesIPFromDHCP() {
     connect(&dhcpServer, &DHCPServer::broadcastPacket, router.data(), &Router::receiveIPFromDHCP);
 
     // Start coordinator clock
-    coordinator->startClock(std::chrono::milliseconds(1000));
+    QMetaObject::invokeMethod(coordinator, [coordinator]() {
+        coordinator->startClock(std::chrono::milliseconds(1000));
+    });
 
+    // Spy on Router's signal for receiving IP
     QSignalSpy spy(router.data(), &Router::receiveIPFromDHCP);
     QVERIFY(spy.wait(3000)); // Wait for IP assignment
 
@@ -38,7 +42,9 @@ void RouterDHCPIntegrationTests::testRouterReceivesIPFromDHCP() {
     QVERIFY(packet->getPayload().contains("192.168.100.1"));
 
     // Stop coordinator
-    coordinator->stopClock();
+    QMetaObject::invokeMethod(coordinator, [coordinator]() {
+        coordinator->stopClock();
+    });
     EventsCoordinator::release();
 }
 

@@ -97,5 +97,7 @@ void Router::receiveIPFromDHCP(const PacketPtr_t &packet) {
     if (packet->getPayload().contains("DHCP_OFFER")) {
         m_assignedIP = packet->getPayload().split(":")[1];
         qDebug() << "Router" << m_id << "assigned IP:" << m_assignedIP;
+
+        emit receiveIPFromDHCP(packet);
     }
 }
