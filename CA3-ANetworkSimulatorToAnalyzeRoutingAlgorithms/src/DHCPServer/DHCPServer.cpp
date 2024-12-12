@@ -2,11 +2,10 @@
 #include "../Network/Router.h"
 #include <QDebug>
 
-// DHCPServer.cpp
-DHCPServer::DHCPServer(int asId, const QSharedPointer<Port> &port, QObject *parent)
+DHCPServer::DHCPServer(int asId, const QSharedPointer<Router> &router, QObject *parent)
     : QObject(parent),
     m_asId(asId),
-    m_port(port),
+    m_router(router),
     m_nextAvailableId(1),
     m_currentTime(0) {
     if (m_asId == 1) {
@@ -17,10 +16,11 @@ DHCPServer::DHCPServer(int asId, const QSharedPointer<Port> &port, QObject *pare
         qWarning() << "Unsupported AS ID:" << m_asId;
     }
 
-    connect(m_port.data(), &Port::packetReceived, this, &DHCPServer::receivePacket);
+    qDebug() << "DHCP Server initialized for AS ID:" << m_asId << "on Router ID:" << router->getId();
 }
 
 DHCPServer::~DHCPServer() {}
+
 
 void DHCPServer::receivePacket(const PacketPtr_t &packet) {
     if (!packet || packet->getType() != PacketType::Control) {
@@ -41,7 +41,8 @@ void DHCPServer::assignIP(const PacketPtr_t &packet) {
 
     for (const auto &lease : m_leases) {
         if (lease.clientId == clientId) {
-            qDebug() << "Client already has an IP:" << lease.ipAddress;
+            qDebug() << "Client" << clientId << "already has an IP:" << lease.ipAddress;
+            sendOffer(lease); // Send the existing offer
             return;
         }
     }
@@ -51,21 +52,26 @@ void DHCPServer::assignIP(const PacketPtr_t &packet) {
     m_leases.append(lease);
     m_nextAvailableId++;
 
-    sendOffer(lease);
+    sendOffer(lease); // Broadcast the new offer
 }
 
 void DHCPServer::sendOffer(const DHCPLease &lease) {
     QString payload = QString("DHCP_OFFER:%1:%2").arg(lease.ipAddress).arg(lease.clientId);
     auto offerPacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
 
-    const auto &ports = m_router->getPorts();
-    for (const auto &port : ports) {
-        if (port->isConnected()) {
-            port->sendPacket(offerPacket);
-            qDebug() << "DHCP Server on Router" << m_router->getId()
-                     << "broadcasted DHCP offer:" << payload
-                     << "via Port" << port->getPortNumber();
+    // Broadcast via the router's ports
+    if (m_router) {
+        const auto &ports = m_router->getPorts();
+        for (const auto &port : ports) {
+            if (port->isConnected()) {
+                port->sendPacket(offerPacket);
+                qDebug() << "DHCP Server on Router" << m_router->getId()
+                         << "broadcasted DHCP offer:" << payload
+                         << "via Port" << port->getPortNumber();
+            }
         }
+    } else {
+        qWarning() << "DHCP Server has no associated Router to broadcast offers.";
     }
 }
 

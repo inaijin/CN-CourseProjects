@@ -68,16 +68,15 @@ void Router::startRouter()
     }
 }
 
-void Router::forwardPacket(const PacketPtr_t &packet)
-{
-    qDebug() << "Router" << m_id << "is forwarding a packet.";
-    processPacket(packet);
-}
+void Router::forwardPacket(const PacketPtr_t &packet) {
+    qDebug() << "Router" << m_id << "is forwarding packet with payload:" << packet->getPayload();
 
-void Router::processPacket(const PacketPtr_t &packet)
-{
-    qDebug() << "Router" << m_id << "is processing a packet.";
-    packet->incrementWaitCycles(); // Dummy logic implement later !!!
+    for (const auto &port : m_ports) {
+        if (port->isConnected()) {
+            port->sendPacket(packet);
+            qDebug() << "Router" << m_id << "forwarded packet via Port" << port->getPortNumber();
+        }
+    }
 }
 
 void Router::logPortStatuses() const
@@ -94,46 +93,73 @@ void Router::requestIPFromDHCP() {
         return;
     }
 
-    // Create the DHCP request packet
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
+    qDebug() << "Router" << m_id << "created DHCP request with payload:" << packet->getPayload();
 
-    // Use the first available port to broadcast
-    auto port = getAvailablePort();
-    if (!port) {
-        qWarning() << "Router" << m_id << "has no available ports to send DHCP request.";
-        return;
-    }
-
-    port->sendPacket(packet);
-    qDebug() << "Router" << m_id << "broadcasted DHCP request using Port" << port->getPortNumber();
+    processPacket(packet); // Process packet internally
 }
 
-void Router::processDHCPResponse(const PacketPtr_t &packet) {
+void Router::processDHCPResponse(const PacketPtr_t &packet)
+{
     if (!packet || packet->getPayload().isEmpty()) return;
 
-    if (packet->getPayload().contains("DHCP_OFFER")) {
+    if (packet->getPayload().contains("DHCP_OFFER"))
+    {
         QStringList parts = packet->getPayload().split(":");
-        if (parts.size() >= 2) {
+        if (parts.size() >= 2)
+        {
             m_assignedIP = parts[1];
             m_hasValidIP = true;
             qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
-        } else {
+        }
+        else
+        {
             qWarning() << "Router" << m_id << "received malformed DHCP offer:" << packet->getPayload();
         }
     }
 }
 
-QString Router::getAssignedIP() { return m_assignedIP; }
+QString Router::getAssignedIP()
+{
+    return m_assignedIP;
+}
 
-void Router::setDHCPServer(QSharedPointer<DHCPServer> dhcpServer) {
+void Router::setDHCPServer(QSharedPointer<DHCPServer> dhcpServer)
+{
     m_dhcpServer = dhcpServer;
     qDebug() << "Router" << m_id << "configured as DHCP server.";
 }
 
-bool Router::isDHCPServer() const {
+bool Router::isDHCPServer() const
+{
     return !m_dhcpServer.isNull();
 }
 
-QSharedPointer<DHCPServer> Router::getDHCPServer() {
+QSharedPointer<DHCPServer> Router::getDHCPServer()
+{
     return m_dhcpServer;
+}
+
+void Router::processPacket(const PacketPtr_t &packet) {
+    qDebug() << "Router" << m_id << "processing packet with payload:" << packet->getPayload();
+
+    if (packet->getPayload().contains("DHCP_REQUEST")) {
+        if (isDHCPServer()) {
+            qDebug() << "Router" << m_id << "is a DHCP server. Handling DHCP request.";
+            if (m_dhcpServer) {
+                m_dhcpServer->receivePacket(packet);
+            }
+        } else {
+            forwardPacket(packet); // Forward request to neighbors
+        }
+    } else if (packet->getPayload().contains("DHCP_OFFER")) {
+        if (packet->getPayload().contains(QString(":%1").arg(m_id))) {
+            qDebug() << "Router" << m_id << "received DHCP offer:" << packet->getPayload();
+            processDHCPResponse(packet); // Handle IP assignment
+        } else {
+            forwardPacket(packet); // Forward offer
+        }
+    } else {
+        qWarning() << "Router" << m_id << "received unknown packet type.";
+    }
 }
