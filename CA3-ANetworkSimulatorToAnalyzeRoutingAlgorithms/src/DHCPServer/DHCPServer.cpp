@@ -33,9 +33,16 @@ void DHCPServer::receivePacket(const PacketPtr_t &packet) {
 }
 
 void DHCPServer::assignIP(const PacketPtr_t &packet) {
-    QString ipAddress = m_ipPrefix + QString::number(m_nextAvailableId);
     int clientId = packet->getPayload().split(":")[1].toInt();
 
+    for (const auto &lease : m_leases) {
+        if (lease.clientId == clientId) {
+            qDebug() << "Client already has an IP:" << lease.ipAddress;
+            return;
+        }
+    }
+
+    QString ipAddress = m_ipPrefix + QString::number(m_nextAvailableId);
     DHCPLease lease = {ipAddress, clientId, m_currentTime + LEASE_DURATION};
     m_leases.append(lease);
     m_nextAvailableId++;
