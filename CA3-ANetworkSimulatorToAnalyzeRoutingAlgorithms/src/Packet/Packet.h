@@ -42,6 +42,11 @@ public:
 
     PacketType getType() const;
 
+    // TTL methods
+    void setTTL(int ttl);
+    int getTTL() const;
+    void decrementTTL();
+
     // DataLinkHeader Methods
     void setDataLinkHeader(const DataLinkHeader &header);
     DataLinkHeader getDataLinkHeader() const;
@@ -50,12 +55,7 @@ public:
     void setTCPHeader(const TCPHeader &header);
     TCPHeader getTCPHeader() const;
 
-    // TTL and ID
-    void setTTL(int ttl);
-    int getTTL() const;
-    void decrementTTL();
-
-    qint64 getId() const; // Unique packet ID
+    qint64 getId() const; // Unique packet identifier
 
 private:
     static qint64 s_nextId;
@@ -69,9 +69,8 @@ private:
     bool m_isDropped;
     DataLinkHeader m_dataLinkHeader;
     TCPHeader m_tcpHeader;
-
-    int m_ttl;        // Time-To-Live for loop prevention
-    qint64 m_id;      // Unique packet identifier
+    int m_ttl;
+    qint64 m_id;
 };
 
 typedef QSharedPointer<Packet> PacketPtr_t;

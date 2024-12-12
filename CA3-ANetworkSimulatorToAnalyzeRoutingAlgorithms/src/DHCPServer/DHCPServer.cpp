@@ -61,7 +61,7 @@ void DHCPServer::sendOffer(const DHCPLease &lease) {
     QString payload = QString("DHCP_OFFER:%1:%2").arg(lease.ipAddress).arg(lease.clientId);
     auto offerPacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
 
-    // Set a TTL for the offer, e.g., 10 hops
+    // Set a TTL for the offer
     offerPacket->setTTL(10);
 
     if (m_router) {
@@ -71,7 +71,6 @@ void DHCPServer::sendOffer(const DHCPLease &lease) {
         qDebug() << "Number of ports on Router" << m_router->getId() << ":" << ports.size();
 
         for (const auto &port : ports) {
-            qDebug() << "Checking Port" << port->getPortNumber() << "connected =" << port->isConnected();
             if (port->isConnected()) {
                 port->sendPacket(offerPacket);
                 qDebug() << "DHCP Server on Router" << m_router->getId()

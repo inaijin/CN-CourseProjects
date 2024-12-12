@@ -148,26 +148,26 @@ QSharedPointer<DHCPServer> Router::getDHCPServer()
 }
 
 void Router::processPacket(const PacketPtr_t &packet) {
+    if (!packet) return;
     qDebug() << "Router" << m_id << "processing packet with payload:" << packet->getPayload();
 
-    QString payload = packet->getPayload();
-
-    // If TTL <= 0, drop the packet
+    // Check TTL
     if (packet->getTTL() <= 0) {
         qDebug() << "Router" << m_id << "dropping packet due to TTL expiration.";
         return;
     }
 
+    QString payload = packet->getPayload();
+
     if (payload.contains("DHCP_REQUEST")) {
-        // If this router is a DHCP server, handle request
+        // DHCP Request
         if (isDHCPServer()) {
             qDebug() << "Router" << m_id << "is a DHCP server. Handling DHCP request.";
             if (m_dhcpServer) {
                 m_dhcpServer->receivePacket(packet);
             }
-            // Do NOT forward the packet after handling it
+            // After serving the request, do not forward
         } else {
-            // Not a DHCP server. Forward only if not seen before
             if (!hasSeenPacket(packet)) {
                 markPacketAsSeen(packet);
                 packet->decrementTTL();
@@ -177,15 +177,16 @@ void Router::processPacket(const PacketPtr_t &packet) {
             }
         }
     } else if (payload.contains("DHCP_OFFER")) {
-        // Check if it's for this router
+        // DHCP Offer
         QStringList parts = payload.split(":");
         if (parts.size() >= 3) {
             int clientId = parts.last().toInt();
             if (clientId == m_id) {
+                // Offer is for this router
                 qDebug() << "Router" << m_id << "received DHCP offer:" << payload;
                 processDHCPResponse(packet);
             } else {
-                // Offer is not for this router, forward if not seen and TTL > 0
+                // Offer not for this router
                 if (!hasSeenPacket(packet)) {
                     markPacketAsSeen(packet);
                     packet->decrementTTL();
@@ -198,7 +199,7 @@ void Router::processPacket(const PacketPtr_t &packet) {
             qWarning() << "Router" << m_id << "received malformed DHCP offer:" << payload;
         }
     } else {
-        // For simplicity, other packet types are dropped to prevent loops
+        // Other types of packets: to prevent infinite loops, drop if not recognized
         qDebug() << "Router" << m_id << "received unknown or unsupported packet type, dropping it.";
     }
 }

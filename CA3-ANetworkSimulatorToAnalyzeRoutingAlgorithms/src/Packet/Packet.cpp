@@ -11,8 +11,8 @@ Packet::Packet(PacketType type, const QString &payload)
     m_isDropped(false),
     m_dataLinkHeader(),
     m_tcpHeader(),
-    m_ttl(10),         // Default TTL
-    m_id(++s_nextId)   // Assign unique ID
+    m_ttl(10), // Default TTL for all packets
+    m_id(++s_nextId)
 {
 }
 
@@ -68,7 +68,6 @@ PacketType Packet::getType() const {
     return m_type;
 }
 
-// DataLinkHeader Methods
 void Packet::setDataLinkHeader(const DataLinkHeader &header) {
     m_dataLinkHeader = header;
 }
@@ -77,7 +76,6 @@ DataLinkHeader Packet::getDataLinkHeader() const {
     return m_dataLinkHeader;
 }
 
-// TCPHeader Methods
 void Packet::setTCPHeader(const TCPHeader &header) {
     m_tcpHeader = header;
 }
@@ -86,7 +84,6 @@ TCPHeader Packet::getTCPHeader() const {
     return m_tcpHeader;
 }
 
-// TTL Methods
 void Packet::setTTL(int ttl) {
     m_ttl = ttl;
 }
@@ -99,7 +96,6 @@ void Packet::decrementTTL() {
     m_ttl--;
 }
 
-// Unique ID
 qint64 Packet::getId() const {
     return m_id;
 }

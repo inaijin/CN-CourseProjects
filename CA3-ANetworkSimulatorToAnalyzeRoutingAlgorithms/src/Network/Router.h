@@ -47,7 +47,6 @@ private:
     QSharedPointer<UDP> m_udp;
     QString m_assignedIP;
 
-    // For loop prevention
     QSet<qint64> m_seenPackets;
 
     void initializePorts();
