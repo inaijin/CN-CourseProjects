@@ -70,5 +70,5 @@ void DHCPServerTests::testDHCPServerReclaimsExpiredLeases() {
     QVERIFY(offerPacket->getPayload().contains("192.168.200.3"));
 }
 
-QTEST_MAIN(DHCPServerTests)
+// QTEST_MAIN(DHCPServerTests)
 #include "DHCPServerTests.moc"

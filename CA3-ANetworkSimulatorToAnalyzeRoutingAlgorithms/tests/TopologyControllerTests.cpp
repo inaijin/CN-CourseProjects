@@ -1,82 +1,32 @@
-// #include <QtTest/QtTest>
-// #include "../src/Topology/TopologyController.h"
-// #include "../src/Topology/TopologyBuilder.h"
-// #include "../src/Network/AutonomousSystem.h"
+#include <QtTest/QtTest>
+#include "../Topology/TopologyController.h"
+#include "../Topology/TopologyBuilder.h"
+#include "../Globals/IdAssignment.h"
 
-// class TopologyControllerTests : public QObject
-// {
-//     Q_OBJECT
+class TopologyControllerTests : public QObject {
+    Q_OBJECT
 
-// private slots:
-//     void testValidateTopology();
-//     void testConnectToOtherAS();
-// };
+private Q_SLOTS:
+    void testValidateTopology();
+};
 
-// void TopologyControllerTests::testValidateTopology()
-// {
-//     QJsonObject config;
-//     config["id"] = 1;
-//     config["topology_type"] = "Mesh";
-//     config["node_count"] = 3;
-//     config["router_port_count"] = 4;
+void TopologyControllerTests::testValidateTopology() {
+    QJsonObject config;
+    config["id"] = 1;
+    config["topology_type"] = "Mesh";
+    config["node_count"] = 4;
 
-//     QJsonArray gateways;
-//     QJsonObject gateway1;
-//     gateway1["node"] = 1;
-//     gateway1["users"] = QJsonArray({101, 102});
-//     gateways.append(gateway1);
-//     config["gateways"] = gateways;
+    IdAssignment idAssignment;
+    idAssignment.addAsIdRange(1, 1, 4, 5, 8);
 
-//     TopologyBuilder builder(config, IdAssignment());
-//     builder.buildTopology();
+    auto builder = QSharedPointer<TopologyBuilder>::create(config, idAssignment);
+    builder->buildTopology();
 
-//     TopologyController controller(QSharedPointer<TopologyBuilder>::create(builder));
-//     controller.validateTopology();
+    TopologyController controller(builder);
+    controller.validateTopology();
 
-//     QVERIFY(true);
-// }
+    QVERIFY(true);
+}
 
-// void TopologyControllerTests::testConnectToOtherAS()
-// {
-//     // Create AS 1
-//     QJsonObject config1;
-//     config1["id"] = 1;
-//     config1["topology_type"] = "Mesh";
-//     config1["node_count"] = 3;
-//     config1["router_port_count"] = 4;
-
-//     // Create AS 2
-//     QJsonObject config2;
-//     config2["id"] = 2;
-//     config2["topology_type"] = "Ring";
-//     config2["node_count"] = 3;
-//     config2["router_port_count"] = 4;
-
-//     QJsonArray connectToAsArray;
-//     QJsonObject connection;
-//     connection["id"] = 2;
-//     QJsonArray gatewayPairs;
-//     QJsonObject gatewayPair;
-//     gatewayPair["gateway"] = 1;
-//     gatewayPair["connect_to"] = 2;
-//     gatewayPairs.append(gatewayPair);
-//     connection["gateway_pairs"] = gatewayPairs;
-//     connectToAsArray.append(connection);
-//     config1["connect_to_as"] = connectToAsArray;
-
-//     AutonomousSystem as1(config1, IdAssignment());
-//     AutonomousSystem as2(config2, IdAssignment());
-
-//     std::vector<QSharedPointer<AutonomousSystem>> allAS = {
-//      QSharedPointer<AutonomousSystem>::create(as1),
-//      QSharedPointer<AutonomousSystem>::create(as2)
-//     };
-
-//     TopologyController controller(QSharedPointer<TopologyBuilder>::create(config1));
-//     controller.connectToOtherAS(allAS);
-
-//     QVERIFY(true);
-// }
-
-// QTEST_MAIN(TopologyControllerTests)
-// #include "TopologyControllerTests.moc"
+QTEST_MAIN(TopologyControllerTests)
+#include "TopologyControllerTests.moc"
