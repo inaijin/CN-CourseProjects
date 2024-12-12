@@ -38,11 +38,12 @@ void DHCPServer::receivePacket(const PacketPtr_t &packet) {
 
 void DHCPServer::assignIP(const PacketPtr_t &packet) {
     int clientId = packet->getPayload().split(":")[1].toInt();
+    qDebug() << "Assigning IP to client" << clientId << "in AS" << m_asId;
 
     for (const auto &lease : m_leases) {
         if (lease.clientId == clientId) {
-            qDebug() << "Client" << clientId << "already has an IP:" << lease.ipAddress;
-            sendOffer(lease); // Send the existing offer
+            qDebug() << "Client" << clientId << "already has an IP:" << lease.ipAddress << ". Re-sending offer.";
+            sendOffer(lease);
             return;
         }
     }
@@ -52,17 +53,20 @@ void DHCPServer::assignIP(const PacketPtr_t &packet) {
     m_leases.append(lease);
     m_nextAvailableId++;
 
-    sendOffer(lease); // Broadcast the new offer
+    qDebug() << "New IP assigned:" << ipAddress << "for client" << clientId;
+    sendOffer(lease);
 }
 
 void DHCPServer::sendOffer(const DHCPLease &lease) {
     QString payload = QString("DHCP_OFFER:%1:%2").arg(lease.ipAddress).arg(lease.clientId);
     auto offerPacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
 
-    // Broadcast via the router's ports
     if (m_router) {
         const auto &ports = m_router->getPorts();
+        qDebug() << "Sending DHCP offer from Router" << m_router->getId()
+                 << "to client" << lease.clientId << "with IP" << lease.ipAddress;
         for (const auto &port : ports) {
+            qDebug() << "Checking Port" << port->getPortNumber() << "connected =" << port->isConnected();
             if (port->isConnected()) {
                 port->sendPacket(offerPacket);
                 qDebug() << "DHCP Server on Router" << m_router->getId()
