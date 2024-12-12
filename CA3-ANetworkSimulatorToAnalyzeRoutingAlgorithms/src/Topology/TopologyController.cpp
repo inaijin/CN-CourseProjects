@@ -75,4 +75,3 @@ void TopologyController::initiateDHCPPhase() {
     }
     qDebug() << "Initiated DHCP phase.";
 }
-

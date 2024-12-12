@@ -1,4 +1,5 @@
 #include "Network.h"
+#include "Topology/TopologyController.h"
 #include <QDebug>
 #include <QJsonArray>
 
@@ -34,5 +35,21 @@ void Network::connectAutonomousSystems()
     for (const auto &asInstance : m_autonomousSystems)
     {
         asInstance->connectToOtherAS(m_autonomousSystems);
+    }
+}
+
+void Network::initiateDHCPPhase()
+{
+    for (const auto &asInstance : m_autonomousSystems)
+    {
+        auto topologyController = asInstance->getTopologyController();
+        if (topologyController)
+        {
+            topologyController->initiateDHCPPhase();
+        }
+        else
+        {
+            qWarning() << "TopologyController is not initialized for AS.";
+        }
     }
 }

@@ -92,5 +92,18 @@ void Simulator::initializeNetwork()
 void Simulator::startSimulation()
 {
     qDebug() << "Simulation initialized. Network topology is set up.";
+
+    // Initiate DHCP Phase
+    initiateDHCPPhase();
+
     // Start clock, events, etc.
+}
+
+void Simulator::initiateDHCPPhase()
+{
+    if (m_network) {
+        m_network->initiateDHCPPhase();
+    } else {
+        qWarning() << "Failed to initiate DHCP phase: Network not initialized.";
+    }
 }

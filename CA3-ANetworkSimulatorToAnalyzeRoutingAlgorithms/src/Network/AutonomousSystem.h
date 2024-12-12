@@ -24,6 +24,7 @@ public:
     const std::vector<QSharedPointer<Router>> &getRouters() const;
     const std::vector<QSharedPointer<PC>> &getPCs() const;
     void connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS);
+    QSharedPointer<TopologyController> getTopologyController() const;
 
 private:
     int m_id;

@@ -19,6 +19,7 @@ public:
     bool loadConfig(const QString &configFilePath);
     void initializeNetwork();
     void startSimulation();
+    void initiateDHCPPhase();
 
 private:
     QJsonObject m_config;

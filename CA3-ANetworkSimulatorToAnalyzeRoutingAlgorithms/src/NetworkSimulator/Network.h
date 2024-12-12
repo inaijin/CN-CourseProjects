@@ -18,6 +18,7 @@ public:
 
     void initialize(const IdAssignment &idAssignment);
     void connectAutonomousSystems();
+    void initiateDHCPPhase();
 
 private:
     QJsonObject m_config;

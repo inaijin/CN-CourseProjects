@@ -61,3 +61,8 @@ const std::vector<QSharedPointer<PC>> &AutonomousSystem::getPCs() const
 {
     return m_topologyBuilder->getPCs();
 }
+
+QSharedPointer<TopologyController> AutonomousSystem::getTopologyController() const
+{
+    return m_topologyController;
+}
