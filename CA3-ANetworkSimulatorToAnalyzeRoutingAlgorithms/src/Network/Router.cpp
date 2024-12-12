@@ -2,7 +2,7 @@
 #include <QDebug>
 
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
-    : Node(id, ipAddress, NodeType::Router, parent), m_portCount(portCount)
+    : Node(id, ipAddress, NodeType::Router, parent), m_portCount(portCount), m_hasValidIP(false), m_assignedIP("")
 {
     if (m_portCount <= 0)
     {
@@ -88,14 +88,20 @@ void Router::logPortStatuses() const
 }
 
 void Router::requestIPFromDHCP() {
+    if (m_hasValidIP) {
+        qDebug() << "Router" << m_id << "already has a valid IP:" << m_assignedIP;
+        return;
+    }
+
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
     emit sendDHCPRequest(packet);
     qDebug() << "Router" << m_id << "sent DHCP request.";
 }
 
-void Router::receiveIPFromDHCP(const PacketPtr_t &packet) {
+void Router::processDHCPResponse(const PacketPtr_t &packet) {
     if (packet->getPayload().contains("DHCP_OFFER")) {
         m_assignedIP = packet->getPayload().split(":")[1];
+        m_hasValidIP = true;
         qDebug() << "Router" << m_id << "assigned IP:" << m_assignedIP;
 
         emit receiveIPFromDHCP(packet);

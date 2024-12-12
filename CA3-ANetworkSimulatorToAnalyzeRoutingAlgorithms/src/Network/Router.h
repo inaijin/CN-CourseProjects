@@ -24,9 +24,10 @@ public:
 
 Q_SIGNALS:
     void sendDHCPRequest(const PacketPtr_t &packet);
+    void receiveIPFromDHCP(const PacketPtr_t &packet);
 
 public Q_SLOTS:
-    void receiveIPFromDHCP(const PacketPtr_t &packet);
+    void processDHCPResponse(const PacketPtr_t &packet);
 
 protected:
     void run() override;
@@ -34,6 +35,7 @@ protected:
 private:
     std::vector<PortPtr_t> m_ports;
     int m_portCount;
+    bool m_hasValidIP;
 
     void initializePorts();
     void processPacket(const PacketPtr_t &packet);

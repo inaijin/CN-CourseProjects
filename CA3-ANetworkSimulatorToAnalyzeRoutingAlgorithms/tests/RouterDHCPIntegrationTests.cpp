@@ -27,6 +27,7 @@ void RouterDHCPIntegrationTests::testRouterReceivesIPFromDHCP() {
     // Connect DHCP server to router
     connect(router.data(), &Router::sendDHCPRequest, &dhcpServer, &DHCPServer::receivePacket);
     connect(&dhcpServer, &DHCPServer::broadcastPacket, router.data(), &Router::receiveIPFromDHCP);
+    connect(&dhcpServer, &DHCPServer::broadcastPacket, router.data(), &Router::processDHCPResponse);
 
     // Start coordinator clock
     QMetaObject::invokeMethod(coordinator, [coordinator]() {
