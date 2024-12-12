@@ -230,7 +230,6 @@ void TopologyBuilder::configureDHCPServers() {
 
         if (routerIt != m_routers.end()) {
             auto router = *routerIt;
-            auto rawPort = router->getAvailablePort().data(); // Extract raw pointer
 
             // Use AS ID from the configuration
             int asId = m_config.value("id").toInt();
@@ -239,7 +238,8 @@ void TopologyBuilder::configureDHCPServers() {
                 continue;
             }
 
-            auto dhcpServer = QSharedPointer<DHCPServer>::create(asId, rawPort, this);
+            // Pass the router itself instead of a raw port
+            auto dhcpServer = QSharedPointer<DHCPServer>::create(asId, router, this);
             router->setDHCPServer(dhcpServer);
             qDebug() << "Configured DHCP Server for AS ID:" << asId
                      << "on Router ID:" << routerId;

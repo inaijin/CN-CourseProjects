@@ -1,10 +1,11 @@
 #include "DHCPServer.h"
+#include "../Network/Router.h"
 #include <QDebug>
 
-DHCPServer::DHCPServer(int asId, Port *port, QObject *parent)
+DHCPServer::DHCPServer(int asId, const QSharedPointer<Router> &router, QObject *parent)
     : QObject(parent),
     m_asId(asId),
-    m_port(port),
+    m_router(router),
     m_nextAvailableId(1),
     m_currentTime(0)
 {
@@ -16,14 +17,22 @@ DHCPServer::DHCPServer(int asId, Port *port, QObject *parent)
         qWarning() << "Unsupported AS ID:" << m_asId;
     }
 
-    connect(m_port, &Port::packetReceived, this, &DHCPServer::receivePacket);
+    // Connect router's ports to the DHCP server
+    const auto &ports = m_router->getPorts();
+    for (const auto &port : ports) {
+        connect(port.data(), &Port::packetReceived, this, &DHCPServer::receivePacket);
+    }
 }
 
 DHCPServer::~DHCPServer() {}
 
 void DHCPServer::receivePacket(const PacketPtr_t &packet) {
-    qDebug() << "DHCP Server received packet with payload:" << packet->getPayload();
-    if (packet->getType() == PacketType::Control && packet->getPayload().contains("DHCP_REQUEST")) {
+    if (!packet || packet->getType() != PacketType::Control) {
+        return;
+    }
+
+    QString payload = packet->getPayload();
+    if (payload.contains("DHCP_REQUEST")) {
         assignIP(packet);
     }
 }
@@ -49,8 +58,16 @@ void DHCPServer::assignIP(const PacketPtr_t &packet) {
 void DHCPServer::sendOffer(const DHCPLease &lease) {
     QString payload = QString("DHCP_OFFER:%1:%2").arg(lease.ipAddress).arg(lease.clientId);
     auto offerPacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
-    emit broadcastPacket(offerPacket);
-    qDebug() << "Sent DHCP offer:" << payload;
+
+    const auto &ports = m_router->getPorts();
+    for (const auto &port : ports) {
+        if (port->isConnected()) {
+            port->sendPacket(offerPacket);
+            qDebug() << "DHCP Server on Router" << m_router->getId()
+                     << "broadcasted DHCP offer:" << payload
+                     << "via Port" << port->getPortNumber();
+        }
+    }
 }
 
 void DHCPServer::tick(int currentTime) {

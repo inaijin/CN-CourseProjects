@@ -1,4 +1,5 @@
 #include "Router.h"
+#include "../BroadCast/UDP.h"
 #include <QDebug>
 
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
@@ -92,21 +93,22 @@ void Router::requestIPFromDHCP() {
         qDebug() << "Router" << m_id << "already has a valid IP:" << m_assignedIP;
         return;
     }
+
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
-    emit sendDHCPRequest(packet);
-    qDebug() << "Router" << m_id << "sent DHCP request with payload:" << packet->getPayload();
+    UDP udp;
+    udp.broadcastPacket(packet, QSharedPointer<Router>(this, [](Router *) {})); // Pass existing Router instance
+    qDebug() << "Router" << m_id << "broadcasted DHCP request.";
 }
 
 void Router::processDHCPResponse(const PacketPtr_t &packet) {
-    qDebug() << "Router" << m_id << "processing packet:" << packet->getPayload();
+    if (!packet || packet->getPayload().isEmpty()) return;
 
     if (packet->getPayload().contains("DHCP_OFFER")) {
         QStringList parts = packet->getPayload().split(":");
         if (parts.size() >= 2) {
             m_assignedIP = parts[1];
             m_hasValidIP = true;
-            qDebug() << "Router" << m_id << "assigned IP:" << m_assignedIP;
-            emit receiveIPFromDHCP(packet);
+            qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
         } else {
             qWarning() << "Router" << m_id << "received malformed DHCP offer:" << packet->getPayload();
         }
