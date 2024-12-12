@@ -115,3 +115,4 @@ void Router::processDHCPResponse(const PacketPtr_t &packet) {
     }
 }
 
+QString Router::getAssignedIP() { return m_assignedIP; }

@@ -10,13 +10,14 @@ EventsCoordinator::EventsCoordinator(QThread *parent) :
     connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
 }
 
-EventsCoordinator::~EventsCoordinator()
-{
-    if (m_timer->isActive())
-    {
-        m_timer->stop();
-    }
-    delete m_timer;
+EventsCoordinator::~EventsCoordinator() {
+    QMetaObject::invokeMethod(this, [this]() {
+        if (m_timer) {
+            m_timer->stop();
+            delete m_timer;
+            m_timer = nullptr;
+        }
+    });
 
     quit();
     wait();
@@ -43,24 +44,24 @@ EventsCoordinator::release()
     }
 }
 
-void
-EventsCoordinator::startClock(Millis interval)
-{
-    if (!m_timer->isActive())
-    {
+void EventsCoordinator::startClock(Millis interval) {
+    QMetaObject::invokeMethod(this, [this, interval]() {
+        if (!m_timer) {
+            m_timer = new QTimer();
+            connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
+        }
         m_timer->start(interval.count());
         qDebug() << "Clock started with interval:" << interval.count() << "ms";
-    }
+    });
 }
 
-void
-EventsCoordinator::stopClock()
-{
-    if (m_timer->isActive())
-    {
-        m_timer->stop();
-        qDebug() << "Clock stopped.";
-    }
+void EventsCoordinator::stopClock() {
+    QMetaObject::invokeMethod(this, [this]() {
+        if (m_timer && m_timer->isActive()) {
+            m_timer->stop();
+            qDebug() << "Clock stopped.";
+        }
+    });
 }
 
 void
@@ -112,6 +113,13 @@ void EventsCoordinator::addRouter(const QSharedPointer<Router> &router) {
 }
 
 void EventsCoordinator::run() {
-    m_timer->start(1000); // Tick every second
+    m_timer = new QTimer();
+    connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
+    m_timer->start(1000); // Example tick interval
+    qDebug() << "Clock started with interval:" << 1000 << "ms";
+
     exec();
+    m_timer->stop();
+    delete m_timer;
+    m_timer = nullptr;
 }

@@ -21,7 +21,6 @@ public:
     void requestIPFromDHCP();
     void forwardPacket(const PacketPtr_t &packet);
     void logPortStatuses() const;
-    QString m_assignedIP;
 
 Q_SIGNALS:
     void sendDHCPRequest(const PacketPtr_t &packet);
@@ -29,6 +28,7 @@ Q_SIGNALS:
 
 public Q_SLOTS:
     void processDHCPResponse(const PacketPtr_t &packet);
+    QString getAssignedIP();
 
 protected:
     void run() override;
@@ -40,6 +40,7 @@ private:
 
     void initializePorts();
     void processPacket(const PacketPtr_t &packet);
+    QString m_assignedIP;
 };
 
 #endif // ROUTER_H
