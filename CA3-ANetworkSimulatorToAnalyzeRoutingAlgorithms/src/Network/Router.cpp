@@ -99,11 +99,19 @@ void Router::requestIPFromDHCP() {
 }
 
 void Router::processDHCPResponse(const PacketPtr_t &packet) {
-    if (packet->getPayload().contains("DHCP_OFFER")) {
-        m_assignedIP = packet->getPayload().split(":")[1];
-        m_hasValidIP = true;
-        qDebug() << "Router" << m_id << "assigned IP:" << m_assignedIP;
+    qDebug() << "Router" << m_id << "processing packet:" << packet->getPayload();
 
-        emit receiveIPFromDHCP(packet);
+    if (packet->getPayload().contains("DHCP_OFFER")) {
+        QStringList parts = packet->getPayload().split(":");
+        if (parts.size() >= 2) {
+            m_assignedIP = parts[1];
+            m_hasValidIP = true;
+            qDebug() << "Router" << m_id << "assigned IP:" << m_assignedIP;
+
+            emit receiveIPFromDHCP(packet);
+        } else {
+            qWarning() << "Router" << m_id << "received malformed DHCP offer:" << packet->getPayload();
+        }
     }
 }
+

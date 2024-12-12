@@ -41,6 +41,7 @@ void RouterDHCPIntegrationTests::testRouterReceivesIPFromDHCP() {
     // Verify IP was assigned
     auto packet = qvariant_cast<PacketPtr_t>(spy.takeFirst().at(0));
     QVERIFY(packet->getPayload().contains("192.168.100.1"));
+    QVERIFY(router->m_assignedIP == "192.168.100.1");
 
     // Stop coordinator
     QMetaObject::invokeMethod(coordinator, [coordinator]() {
