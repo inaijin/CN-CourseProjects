@@ -116,7 +116,13 @@ void TopologyBuilder::createPCs()
             m_pcs.push_back(pc);
 
             PortBindingManager bindingManager;
-            bindingManager.bind((*routerIt)->getAvailablePort(), pc->getPort());
+            auto routerPort = (*routerIt)->getAvailablePort();
+            if (!routerPort) {
+                qWarning() << "Router" << gatewayNodeId << "has no available ports.";
+                continue;
+            }
+
+            bindingManager.bind(routerPort, pc->getPort(), gatewayNodeId, pcId);
 
             qDebug() << "PC" << pcId << "bound to Router" << gatewayNodeId;
         }
@@ -160,7 +166,7 @@ void TopologyBuilder::setupTopology()
                 if (neighborIt != m_routers.end())
                 {
                     PortBindingManager bindingManager;
-                    bindingManager.bind(m_routers[i]->getAvailablePort(), (*neighborIt)->getAvailablePort());
+                    bindingManager.bind(m_routers[i]->getAvailablePort(), (*neighborIt)->getAvailablePort(), routerId, neighborId);
                     connectedPairs.insert(pair);
                 }
             }
@@ -191,14 +197,14 @@ void TopologyBuilder::setupTopology()
             auto routerA = ringRouters[i];
             auto routerB = ringRouters[(i + 1) % ringRouters.size()];
             PortBindingManager bindingManager;
-            bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort());
+            bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort(), routerA->getId(), routerB->getId());
         }
 
         for (int i = 0; i < ringRouters.size(); i += 2)
         {
             auto router = ringRouters[i];
             PortBindingManager bindingManager;
-            bindingManager.bind(router->getAvailablePort(), hubRouter->getAvailablePort());
+            bindingManager.bind(router->getAvailablePort(), hubRouter->getAvailablePort(), router->getId(), hubRouter->getId());
         }
     }
 }

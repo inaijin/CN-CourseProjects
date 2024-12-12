@@ -56,7 +56,7 @@ void TopologyController::connectToOtherAS(const std::vector<QSharedPointer<Auton
                 if (localRouterIt != routers.end() && remoteRouterIt != targetRouters.end())
                 {
                     PortBindingManager bindingManager;
-                    bindingManager.bind((*localRouterIt)->getAvailablePort(), (*remoteRouterIt)->getAvailablePort());
+                    bindingManager.bind((*localRouterIt)->getAvailablePort(), (*remoteRouterIt)->getAvailablePort(), gatewayId, connectToId);
                 }
             }
         }
