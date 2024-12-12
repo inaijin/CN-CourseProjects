@@ -18,8 +18,15 @@ public:
     std::vector<PortPtr_t> getPorts();
 
     void startRouter();
+    void requestIPFromDHCP();
     void forwardPacket(const PacketPtr_t &packet);
     void logPortStatuses() const;
+
+Q_SIGNALS:
+    void sendDHCPRequest(const PacketPtr_t &packet);
+
+public Q_SLOTS:
+    void receiveIPFromDHCP(const PacketPtr_t &packet);
 
 protected:
     void run() override;
@@ -30,6 +37,7 @@ private:
 
     void initializePorts();
     void processPacket(const PacketPtr_t &packet);
+    QString m_assignedIP;
 };
 
 #endif // ROUTER_H

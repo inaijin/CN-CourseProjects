@@ -86,3 +86,16 @@ void Router::logPortStatuses() const
         qDebug() << "Port" << port->getPortNumber() << (port->isConnected() ? "Connected" : "Available");
     }
 }
+
+void Router::requestIPFromDHCP() {
+    auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
+    emit sendDHCPRequest(packet);
+    qDebug() << "Router" << m_id << "sent DHCP request.";
+}
+
+void Router::receiveIPFromDHCP(const PacketPtr_t &packet) {
+    if (packet->getPayload().contains("DHCP_OFFER")) {
+        m_assignedIP = packet->getPayload().split(":")[1];
+        qDebug() << "Router" << m_id << "assigned IP:" << m_assignedIP;
+    }
+}

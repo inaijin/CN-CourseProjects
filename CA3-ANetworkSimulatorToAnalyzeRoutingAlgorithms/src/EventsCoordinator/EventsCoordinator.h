@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <QSharedPointer>
 #include <vector>
+#include <../Network/Router.h>
 
 class DataGenerator;
 class Packet;
@@ -28,6 +29,7 @@ public:
     void stopClock();
 
     void setDataGenerator(DataGenerator *generator);
+    void addRouter(const QSharedPointer<Router> &router);
 
 Q_SIGNALS:
     void tick();
@@ -43,6 +45,7 @@ private:
     DataGenerator *m_dataGenerator = nullptr;
 
     std::vector<QSharedPointer<Packet>> m_packetQueue;
+    std::vector<QSharedPointer<Router>> m_routers;
 };
 
 #endif // EVENTSCOORDINATOR_H
