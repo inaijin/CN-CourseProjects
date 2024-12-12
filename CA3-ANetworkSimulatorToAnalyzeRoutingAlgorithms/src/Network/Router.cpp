@@ -1,5 +1,4 @@
 #include "Router.h"
-#include "../BroadCast/UDP.h"
 #include <QDebug>
 
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
@@ -11,6 +10,14 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
     }
 
     initializePorts();
+
+    // Connect ports' packetReceived signal to Router's processPacket slot
+    for (auto &port : m_ports) {
+        connect(port.data(), &Port::packetReceived, this, [this](const PacketPtr_t &packet) {
+            processPacket(packet);
+        });
+    }
+
     qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress << ", Ports =" << m_portCount;
 }
 
