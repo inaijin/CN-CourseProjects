@@ -21,6 +21,7 @@ class Packet
 {
 public:
     explicit Packet(PacketType type = PacketType::Data, const QString &payload = "");
+    Packet(PacketType type, const QString &payload, int ttl); // New constructor
 
     void setPayload(const QString &payload);
     QString getPayload() const;

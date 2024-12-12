@@ -47,17 +47,12 @@ private:
     QSharedPointer<UDP> m_udp;
     QString m_assignedIP;
 
-    QSet<qint64> m_seenPackets;
+    QSet<QString> m_seenPackets;
 
     void initializePorts();
 
-    bool hasSeenPacket(const PacketPtr_t &packet) {
-        return m_seenPackets.contains(packet->getId());
-    }
-
-    void markPacketAsSeen(const PacketPtr_t &packet) {
-        m_seenPackets.insert(packet->getId());
-    }
+    bool hasSeenPacket(const PacketPtr_t &packet);
+    void markPacketAsSeen(const PacketPtr_t &packet);
 };
 
 #endif // ROUTER_H

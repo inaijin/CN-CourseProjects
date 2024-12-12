@@ -16,6 +16,20 @@ Packet::Packet(PacketType type, const QString &payload)
 {
 }
 
+Packet::Packet(PacketType type, const QString &payload, int ttl)
+    : m_type(type),
+    m_payload(payload),
+    m_waitCycles(0),
+    m_queueWaitCycles(0),
+    m_sequenceNumber(0),
+    m_isDropped(false),
+    m_dataLinkHeader(),
+    m_tcpHeader(),
+    m_ttl(ttl),
+    m_id(++s_nextId)
+{
+}
+
 void Packet::setPayload(const QString &payload) {
     m_payload = payload;
 }
