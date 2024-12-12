@@ -29,7 +29,8 @@ SOURCES += \
     $$PWD/NetworkSimulator/ApplicationContext.cpp \
     $$PWD/IP/IPHeader.cpp \
     $$PWD/Topology/TopologyController.cpp \
-    $$PWD/Topology/TopologyBuilder.cpp
+    $$PWD/Topology/TopologyBuilder.cpp \
+    $$PWD/BroadCast/UDP.cpp
 
 HEADERS += \
     $$PWD/DHCPServer/DHCPServer.h \
@@ -54,4 +55,5 @@ HEADERS += \
     $$PWD/IP/IPHeader.h \
     $$PWD/Topology/TopologyController.h \
     $$PWD/Topology/TopologyBuilder.h \
-    $$PWD/Globals/IdAssignment.h
+    $$PWD/Globals/IdAssignment.h \
+    $$PWD/BroadCast/UDP.h
