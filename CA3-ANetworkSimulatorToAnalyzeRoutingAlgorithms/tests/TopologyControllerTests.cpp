@@ -28,5 +28,5 @@ void TopologyControllerTests::testValidateTopology() {
     QVERIFY(true);
 }
 
-QTEST_MAIN(TopologyControllerTests)
+// QTEST_MAIN(TopologyControllerTests)
 #include "TopologyControllerTests.moc"

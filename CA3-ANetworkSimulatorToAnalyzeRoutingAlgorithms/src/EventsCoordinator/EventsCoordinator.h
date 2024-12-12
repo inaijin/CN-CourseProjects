@@ -7,7 +7,7 @@
 #include <QTimer>
 #include <QSharedPointer>
 #include <vector>
-#include <../Network/Router.h>
+#include "../Network/Router.h"
 
 class DataGenerator;
 class Packet;
@@ -18,9 +18,11 @@ class EventsCoordinator : public QThread
 
     typedef std::chrono::milliseconds Millis;
 
-    explicit EventsCoordinator(QThread *parent = nullptr);
+protected:
+    explicit EventsCoordinator(QThread *parent = nullptr); // Change this to protected
 
 public:
+    explicit EventsCoordinator(QObject *parent = nullptr);
     ~EventsCoordinator() override;
     static EventsCoordinator *instance(QThread *parent = nullptr);
     static void release();
@@ -49,6 +51,8 @@ private:
 
     std::vector<QSharedPointer<Packet>> m_packetQueue;
     std::vector<QSharedPointer<Router>> m_routers;
+
+    void synchronizeRoutersWithDHCP();
 };
 
 #endif // EVENTSCOORDINATOR_H

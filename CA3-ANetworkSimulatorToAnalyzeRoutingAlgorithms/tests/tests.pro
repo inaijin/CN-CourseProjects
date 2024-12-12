@@ -19,7 +19,8 @@ SOURCES += $$PWD/MACAddressTests.cpp \
            $$PWD/TopologyControllerTests.cpp \
            $$PWD/AutonomousSystemTests.cpp \
            $$PWD/UDPTests.cpp \
-           $$PWD/DHCPServerTests.cpp
+           $$PWD/DHCPServerTests.cpp \
+           $$PWD/RouterDHCPIntegrationTests.cpp
 
 INCLUDEPATH += $$PWD/../src \
                $$PWD/../src/Globals
