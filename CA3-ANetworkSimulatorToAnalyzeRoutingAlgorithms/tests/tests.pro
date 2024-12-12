@@ -18,7 +18,8 @@ SOURCES += $$PWD/MACAddressTests.cpp \
            $$PWD/TopologyBuilderTests.cpp \
            $$PWD/TopologyControllerTests.cpp \
            $$PWD/AutonomousSystemTests.cpp \
-           $$PWD/UDPTests.cpp
+           $$PWD/UDPTests.cpp \
+           $$PWD/DHCPServerTests.cpp
 
 INCLUDEPATH += $$PWD/../src \
                $$PWD/../src/Globals

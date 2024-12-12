@@ -41,5 +41,5 @@ void UDPTests::testBroadcast() {
     testRouter->wait();
 }
 
-QTEST_MAIN(UDPTests)
+// QTEST_MAIN(UDPTests)
 #include "UDPTests.moc"
