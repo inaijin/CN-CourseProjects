@@ -18,6 +18,7 @@ public:
 
     void validateTopology() const;
     void connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS);
+    void initiateDHCPPhase();
 
 private:
     QSharedPointer<TopologyBuilder> m_builder;

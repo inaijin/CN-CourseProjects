@@ -1,5 +1,6 @@
 #include "TopologyBuilder.h"
 #include "../PortBindingManager/PortBindingManager.h"
+#include "../DHCPServer/DHCPServer.h"
 #include <QDebug>
 #include <stdexcept>
 #include <QJsonArray>
@@ -13,11 +14,11 @@ TopologyBuilder::TopologyBuilder(const QJsonObject &config, const IdAssignment &
 
 TopologyBuilder::~TopologyBuilder() {}
 
-void TopologyBuilder::buildTopology()
-{
+void TopologyBuilder::buildTopology() {
     createRouters();
     setupTopology();
     createPCs();
+    configureDHCPServers();
 }
 
 void TopologyBuilder::validateConfig() const
@@ -26,38 +27,39 @@ void TopologyBuilder::validateConfig() const
         throw std::invalid_argument("Invalid configuration: Missing required keys 'id' or 'node_count'.");
 }
 
-void TopologyBuilder::createRouters()
-{
+void TopologyBuilder::createRouters() {
     int asId = m_config.value("id").toInt();
     AsIdRange range;
+
     if (!m_idAssignment.getAsIdRange(asId, range)) {
         throw std::runtime_error("ID range not found for AS");
     }
 
     int nodeCount = m_config.value("node_count").toInt();
-    QString baseIP = QString("192.168.%1.").arg(asId * 100);
     int portCount = m_config.value("router_port_count").toInt(6);
 
-    if ((range.routerEndId - range.routerStartId + 1) != nodeCount)
+    if ((range.routerEndId - range.routerStartId + 1) != nodeCount) {
         throw std::runtime_error("Router count doesn't match assigned range.");
+    }
 
     QJsonArray brokenRoutersArray = m_config.value("broken_routers").toArray();
     std::vector<int> brokenRouters;
-    for (const QJsonValue &value : brokenRoutersArray)
-        brokenRouters.push_back(value.toInt());
 
-    for (int i = 0; i < nodeCount; ++i)
-    {
+    for (const QJsonValue &value : brokenRoutersArray) {
+        brokenRouters.push_back(value.toInt());
+    }
+
+    for (int i = 0; i < nodeCount; ++i) {
         int routerId = range.routerStartId + i;
-        if (std::find(brokenRouters.begin(), brokenRouters.end(), routerId) != brokenRouters.end())
-        {
+
+        if (std::find(brokenRouters.begin(), brokenRouters.end(), routerId) != brokenRouters.end()) {
             qWarning() << "Skipping broken router with ID:" << routerId;
             continue;
         }
 
-        QString routerIP = baseIP + QString::number(routerId);
-        auto router = QSharedPointer<Router>::create(routerId, routerIP, portCount, this);
+        auto router = QSharedPointer<Router>::create(routerId, "", portCount, this); // No placeholder IP
         m_routers.push_back(router);
+        qDebug() << "Created Router with ID:" << routerId;
     }
 }
 
@@ -214,4 +216,35 @@ const std::vector<QSharedPointer<PC>> &TopologyBuilder::getPCs() const
 const QJsonObject &TopologyBuilder::getConfig() const
 {
     return m_config;
+}
+
+void TopologyBuilder::configureDHCPServers() {
+    QJsonArray dhcpServers = m_config.value("dhcpServers").toArray();
+
+    for (const auto &value : dhcpServers) {
+        int routerId = value.toInt();
+        auto routerIt = std::find_if(m_routers.begin(), m_routers.end(),
+                                     [routerId](const QSharedPointer<Router> &router) {
+                                         return router->getId() == routerId;
+                                     });
+
+        if (routerIt != m_routers.end()) {
+            auto router = *routerIt;
+            auto rawPort = router->getAvailablePort().data(); // Extract raw pointer
+
+            // Use AS ID from the configuration
+            int asId = m_config.value("id").toInt();
+            if (asId <= 0) {
+                qWarning() << "Invalid AS ID for DHCP server configuration.";
+                continue;
+            }
+
+            auto dhcpServer = QSharedPointer<DHCPServer>::create(asId, rawPort, this);
+            router->setDHCPServer(dhcpServer);
+            qDebug() << "Configured DHCP Server for AS ID:" << asId
+                     << "on Router ID:" << routerId;
+        } else {
+            qWarning() << "DHCP Server Router ID not found:" << routerId;
+        }
+    }
 }

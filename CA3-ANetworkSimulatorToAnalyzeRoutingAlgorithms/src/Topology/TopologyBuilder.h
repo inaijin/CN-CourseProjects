@@ -25,6 +25,7 @@ public:
 private:
     QJsonObject m_config;
     QString m_topologyType;
+
     const IdAssignment &m_idAssignment;
 
     std::vector<QSharedPointer<Router>> m_routers;
@@ -34,6 +35,7 @@ private:
     void createPCs();
     void setupTopology();
     void validateConfig() const;
+    void configureDHCPServers();
 };
 
 #endif // TOPOLOGYBUILDER_H

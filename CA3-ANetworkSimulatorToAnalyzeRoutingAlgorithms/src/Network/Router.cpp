@@ -116,3 +116,12 @@ void Router::processDHCPResponse(const PacketPtr_t &packet) {
 }
 
 QString Router::getAssignedIP() { return m_assignedIP; }
+
+void Router::setDHCPServer(QSharedPointer<DHCPServer> dhcpServer) {
+    m_dhcpServer = dhcpServer;
+    qDebug() << "Router" << m_id << "configured as DHCP server.";
+}
+
+bool Router::isDHCPServer() const {
+    return !m_dhcpServer.isNull();
+}

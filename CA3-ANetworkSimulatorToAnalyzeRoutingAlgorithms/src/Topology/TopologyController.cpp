@@ -62,3 +62,17 @@ void TopologyController::connectToOtherAS(const std::vector<QSharedPointer<Auton
         }
     }
 }
+
+void TopologyController::initiateDHCPPhase() {
+    const auto &routers = m_builder->getRouters(); // Fetch routers from the builder
+    for (const auto &router : routers) {
+        if (!router->isDHCPServer()) {
+            qDebug() << "Router" << router->getId() << "sending DHCP request...";
+            router->requestIPFromDHCP();
+        } else {
+            qDebug() << "Router" << router->getId() << "is a DHCP server.";
+        }
+    }
+    qDebug() << "Initiated DHCP phase.";
+}
+

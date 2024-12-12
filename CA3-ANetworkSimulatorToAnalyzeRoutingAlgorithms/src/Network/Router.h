@@ -5,6 +5,7 @@
 #include <vector>
 #include <QSharedPointer>
 #include "../Port/Port.h"
+#include "../DHCPServer/DHCPServer.h"
 
 class Router : public Node
 {
@@ -22,6 +23,9 @@ public:
     void forwardPacket(const PacketPtr_t &packet);
     void logPortStatuses() const;
 
+    void setDHCPServer(QSharedPointer<DHCPServer> dhcpServer);
+    bool isDHCPServer() const;
+
 Q_SIGNALS:
     void sendDHCPRequest(const PacketPtr_t &packet);
     void receiveIPFromDHCP(const PacketPtr_t &packet);
@@ -37,6 +41,7 @@ private:
     std::vector<PortPtr_t> m_ports;
     int m_portCount;
     bool m_hasValidIP;
+    QSharedPointer<DHCPServer> m_dhcpServer;
 
     void initializePorts();
     void processPacket(const PacketPtr_t &packet);
