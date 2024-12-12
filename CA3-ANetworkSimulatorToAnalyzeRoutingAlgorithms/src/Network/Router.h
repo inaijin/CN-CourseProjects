@@ -24,6 +24,7 @@ public:
     void logPortStatuses() const;
 
     void setDHCPServer(QSharedPointer<DHCPServer> dhcpServer);
+    QSharedPointer<DHCPServer> getDHCPServer();
     bool isDHCPServer() const;
 
 Q_SIGNALS:

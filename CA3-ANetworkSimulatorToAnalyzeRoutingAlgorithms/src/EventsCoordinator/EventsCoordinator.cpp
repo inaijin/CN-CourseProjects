@@ -81,14 +81,18 @@ EventsCoordinator::setDataGenerator(DataGenerator *generator)
     }
 }
 
-void
-EventsCoordinator::onTick()
-{
+void EventsCoordinator::onTick() {
+    ++m_currentTime;
     emit tick();
-    qDebug() << "Tick emitted.";
+    qDebug() << "Tick emitted. Current time:" << m_currentTime;
 
-    if (m_packetQueue.empty())
-    {
+    for (const auto &router : m_routers) {
+        if (router->isDHCPServer()) {
+            router->getDHCPServer()->tick(m_currentTime);
+        }
+    }
+
+    if (m_packetQueue.empty()) {
         qDebug() << "No packets left to emit.";
         return;
     }
@@ -96,7 +100,6 @@ EventsCoordinator::onTick()
     auto packet = m_packetQueue.front();
     m_packetQueue.erase(m_packetQueue.begin());
     emit packetGenerated(packet);
-
     qDebug() << "Packet emitted from the queue.";
 }
 

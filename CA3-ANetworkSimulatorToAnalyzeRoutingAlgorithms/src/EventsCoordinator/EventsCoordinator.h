@@ -53,6 +53,7 @@ private:
     std::vector<QSharedPointer<Router>> m_routers;
 
     void synchronizeRoutersWithDHCP();
+    int m_currentTime = 0;
 };
 
 #endif // EVENTSCOORDINATOR_H

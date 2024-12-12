@@ -22,14 +22,8 @@ DHCPServer::DHCPServer(int asId, Port *port, QObject *parent)
 DHCPServer::~DHCPServer() {}
 
 void DHCPServer::receivePacket(const PacketPtr_t &packet) {
-    if (!packet || packet->getType() != PacketType::Control) {
-        qDebug() << "DHCP Server received invalid packet.";
-        return;
-    }
-
-    QString payload = packet->getPayload();
-    if (payload.contains("DHCP_REQUEST")) {
-        qDebug() << "DHCP Server on AS" << m_asId << "processing request from:" << payload;
+    qDebug() << "DHCP Server received packet with payload:" << packet->getPayload();
+    if (packet->getType() == PacketType::Control && packet->getPayload().contains("DHCP_REQUEST")) {
         assignIP(packet);
     }
 }

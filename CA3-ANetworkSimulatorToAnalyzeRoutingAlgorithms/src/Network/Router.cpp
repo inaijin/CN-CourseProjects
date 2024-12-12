@@ -92,10 +92,9 @@ void Router::requestIPFromDHCP() {
         qDebug() << "Router" << m_id << "already has a valid IP:" << m_assignedIP;
         return;
     }
-
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
     emit sendDHCPRequest(packet);
-    qDebug() << "Router" << m_id << "sent DHCP request.";
+    qDebug() << "Router" << m_id << "sent DHCP request with payload:" << packet->getPayload();
 }
 
 void Router::processDHCPResponse(const PacketPtr_t &packet) {
@@ -107,7 +106,6 @@ void Router::processDHCPResponse(const PacketPtr_t &packet) {
             m_assignedIP = parts[1];
             m_hasValidIP = true;
             qDebug() << "Router" << m_id << "assigned IP:" << m_assignedIP;
-
             emit receiveIPFromDHCP(packet);
         } else {
             qWarning() << "Router" << m_id << "received malformed DHCP offer:" << packet->getPayload();
@@ -124,4 +122,8 @@ void Router::setDHCPServer(QSharedPointer<DHCPServer> dhcpServer) {
 
 bool Router::isDHCPServer() const {
     return !m_dhcpServer.isNull();
+}
+
+QSharedPointer<DHCPServer> Router::getDHCPServer() {
+    return m_dhcpServer;
 }

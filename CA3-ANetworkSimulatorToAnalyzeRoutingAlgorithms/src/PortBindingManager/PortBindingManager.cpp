@@ -7,6 +7,9 @@ PortBindingManager::PortBindingManager(QObject *parent) :
 
 void PortBindingManager::bind(const PortPtr_t &port1, const PortPtr_t &port2)
 {
+    qDebug() << "Binding Router" << port1->getRouterIP() << "Port" << port1->getPortNumber()
+    << "to Router" << port2->getRouterIP() << "Port" << port2->getPortNumber();
+
     if (!port1 || !port2)
     {
         qWarning() << "Invalid ports provided for binding.";
