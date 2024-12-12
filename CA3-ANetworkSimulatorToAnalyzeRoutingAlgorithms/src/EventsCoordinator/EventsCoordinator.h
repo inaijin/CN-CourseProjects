@@ -31,6 +31,9 @@ public:
     void setDataGenerator(DataGenerator *generator);
     void addRouter(const QSharedPointer<Router> &router);
 
+protected:
+    void run() override;
+
 Q_SIGNALS:
     void tick();
     void packetGenerated(QSharedPointer<Packet> packet);

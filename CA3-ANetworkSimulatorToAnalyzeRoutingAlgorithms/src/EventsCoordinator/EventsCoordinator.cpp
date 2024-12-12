@@ -17,6 +17,9 @@ EventsCoordinator::~EventsCoordinator()
         m_timer->stop();
     }
     delete m_timer;
+
+    quit();
+    wait();
 }
 
 EventsCoordinator *
@@ -101,4 +104,14 @@ EventsCoordinator::onPacketsGenerated(const std::vector<QSharedPointer<Packet>> 
 {
     m_packetQueue.insert(m_packetQueue.end(), packets.begin(), packets.end());
     qDebug() << packets.size() << "packets added to the queue. Total queue size:" << m_packetQueue.size();
+}
+
+void EventsCoordinator::addRouter(const QSharedPointer<Router> &router) {
+    m_routers.push_back(router);
+    connect(this, &EventsCoordinator::tick, router.data(), &Router::requestIPFromDHCP);
+}
+
+void EventsCoordinator::run() {
+    m_timer->start(1000); // Tick every second
+    exec();
 }
