@@ -94,10 +94,18 @@ void Router::requestIPFromDHCP() {
         return;
     }
 
+    // Create the DHCP request packet
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
-    UDP udp;
-    udp.broadcastPacket(packet, QSharedPointer<Router>(this, [](Router *) {})); // Pass existing Router instance
-    qDebug() << "Router" << m_id << "broadcasted DHCP request.";
+
+    // Use the first available port to broadcast
+    auto port = getAvailablePort();
+    if (!port) {
+        qWarning() << "Router" << m_id << "has no available ports to send DHCP request.";
+        return;
+    }
+
+    port->sendPacket(packet);
+    qDebug() << "Router" << m_id << "broadcasted DHCP request using Port" << port->getPortNumber();
 }
 
 void Router::processDHCPResponse(const PacketPtr_t &packet) {

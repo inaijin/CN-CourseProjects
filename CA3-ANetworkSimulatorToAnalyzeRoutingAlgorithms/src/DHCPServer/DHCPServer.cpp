@@ -2,13 +2,13 @@
 #include "../Network/Router.h"
 #include <QDebug>
 
-DHCPServer::DHCPServer(int asId, const QSharedPointer<Router> &router, QObject *parent)
+// DHCPServer.cpp
+DHCPServer::DHCPServer(int asId, const QSharedPointer<Port> &port, QObject *parent)
     : QObject(parent),
     m_asId(asId),
-    m_router(router),
+    m_port(port),
     m_nextAvailableId(1),
-    m_currentTime(0)
-{
+    m_currentTime(0) {
     if (m_asId == 1) {
         m_ipPrefix = "192.168.100.";
     } else if (m_asId == 2) {
@@ -17,21 +17,20 @@ DHCPServer::DHCPServer(int asId, const QSharedPointer<Router> &router, QObject *
         qWarning() << "Unsupported AS ID:" << m_asId;
     }
 
-    // Connect router's ports to the DHCP server
-    const auto &ports = m_router->getPorts();
-    for (const auto &port : ports) {
-        connect(port.data(), &Port::packetReceived, this, &DHCPServer::receivePacket);
-    }
+    connect(m_port.data(), &Port::packetReceived, this, &DHCPServer::receivePacket);
 }
 
 DHCPServer::~DHCPServer() {}
 
 void DHCPServer::receivePacket(const PacketPtr_t &packet) {
     if (!packet || packet->getType() != PacketType::Control) {
+        qWarning() << "DHCP Server received invalid packet.";
         return;
     }
 
     QString payload = packet->getPayload();
+    qDebug() << "DHCP Server processing packet with payload:" << payload;
+
     if (payload.contains("DHCP_REQUEST")) {
         assignIP(packet);
     }

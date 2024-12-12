@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include "../Packet/Packet.h"
+#include "../Port/Port.h"
 
 class Router;
 
@@ -13,6 +14,7 @@ class DHCPServer : public QObject
 
 public:
     explicit DHCPServer(int asId, const QSharedPointer<Router> &router, QObject *parent = nullptr);
+    explicit DHCPServer(int asId, const QSharedPointer<Port> &port, QObject *parent = nullptr);
     ~DHCPServer() override;
 
     void receivePacket(const PacketPtr_t &packet);
@@ -33,6 +35,7 @@ private:
     void reclaimExpiredLeases();
 
     int m_asId;
+    QSharedPointer<Port> m_port;
     QSharedPointer<Router> m_router;
     QVector<DHCPLease> m_leases;
     QString m_ipPrefix;

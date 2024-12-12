@@ -231,6 +231,13 @@ void TopologyBuilder::configureDHCPServers() {
         if (routerIt != m_routers.end()) {
             auto router = *routerIt;
 
+            // Use router's first available port
+            auto port = router->getAvailablePort();
+            if (!port) {
+                qWarning() << "Router" << routerId << "has no available ports for DHCP server.";
+                continue;
+            }
+
             // Use AS ID from the configuration
             int asId = m_config.value("id").toInt();
             if (asId <= 0) {
@@ -238,11 +245,10 @@ void TopologyBuilder::configureDHCPServers() {
                 continue;
             }
 
-            // Pass the router itself instead of a raw port
-            auto dhcpServer = QSharedPointer<DHCPServer>::create(asId, router, this);
+            // Create and set the DHCP server
+            auto dhcpServer = QSharedPointer<DHCPServer>::create(asId, port, this);
             router->setDHCPServer(dhcpServer);
-            qDebug() << "Configured DHCP Server for AS ID:" << asId
-                     << "on Router ID:" << routerId;
+            qDebug() << "Configured DHCP Server for AS ID:" << asId << "on Router ID:" << routerId;
         } else {
             qWarning() << "DHCP Server Router ID not found:" << routerId;
         }
