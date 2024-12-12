@@ -15,17 +15,17 @@ public:
     explicit PortBindingManager(QObject *parent = nullptr);
     ~PortBindingManager() override = default;
 
-    void bind(const PortPtr_t &port1, const PortPtr_t &port2);
-    bool unbind(const PortPtr_t &port1, const PortPtr_t &port2);
+    void bind(const QSharedPointer<Port> &port1, const QSharedPointer<Port> &port2, int router1Id, int router2Id);
+    bool unbind(const QSharedPointer<Port> &port1, const QSharedPointer<Port> &port2);
 
-    bool isBound(const PortPtr_t &port) const;
+    bool isBound(const QSharedPointer<Port> &port) const;
 
 Q_SIGNALS:
-    void bindingChanged(const QString &router1, uint8_t port1, const QString &router2, uint8_t port2, bool bind);
+    void bindingChanged(int router1Id, uint8_t port1, int router2Id, uint8_t port2, bool bind);
 
 private:
     QMap<PortPtr_t, PortPtr_t> m_bindings;
     mutable QMutex m_mutex;
 };
 
-#endif    // PORTBINDINGMANAGER_H
+#endif // PORTBINDINGMANAGER_H

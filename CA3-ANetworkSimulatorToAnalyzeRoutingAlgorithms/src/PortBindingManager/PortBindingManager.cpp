@@ -1,11 +1,10 @@
 #include "PortBindingManager.h"
 #include <QDebug>
 
-PortBindingManager::PortBindingManager(QObject *parent) :
-    QObject {parent}
-{}
+PortBindingManager::PortBindingManager(QObject *parent) : QObject(parent) {}
 
-void PortBindingManager::bind(const PortPtr_t &port1, const PortPtr_t &port2) {
+void PortBindingManager::bind(const QSharedPointer<Port> &port1, const QSharedPointer<Port> &port2, int router1Id, int router2Id)
+{
     if (!port1 || !port2) {
         qWarning() << "Invalid ports provided for binding.";
         return;
@@ -18,11 +17,6 @@ void PortBindingManager::bind(const PortPtr_t &port1, const PortPtr_t &port2) {
         return;
     }
 
-    if (port1->getRouterIP().isEmpty() || port2->getRouterIP().isEmpty()) {
-        qWarning() << "Cannot bind ports without valid router IPs.";
-        return;
-    }
-
     connect(port1.data(), &Port::packetSent, port2.data(), &Port::receivePacket);
     connect(port2.data(), &Port::packetSent, port1.data(), &Port::receivePacket);
 
@@ -32,23 +26,21 @@ void PortBindingManager::bind(const PortPtr_t &port1, const PortPtr_t &port2) {
     m_bindings.insert(port1, port2);
     m_bindings.insert(port2, port1);
 
-    emit bindingChanged(port1->getRouterIP(), port1->getPortNumber(), port2->getRouterIP(), port2->getPortNumber(), true);
-    qDebug() << "Ports bound between Router" << port1->getRouterIP() << "Port" << port1->getPortNumber()
-             << "and Router" << port2->getRouterIP() << "Port" << port2->getPortNumber();
+    emit bindingChanged(router1Id, port1->getPortNumber(), router2Id, port2->getPortNumber(), true);
+    qDebug() << "Ports bound between Router ID" << router1Id << "Port" << port1->getPortNumber()
+             << "and Router ID" << router2Id << "Port" << port2->getPortNumber();
 }
 
-bool PortBindingManager::unbind(const PortPtr_t &port1, const PortPtr_t &port2)
+bool PortBindingManager::unbind(const QSharedPointer<Port> &port1, const QSharedPointer<Port> &port2)
 {
-    if (!port1 || !port2)
-    {
+    if (!port1 || !port2) {
         qWarning() << "Invalid ports provided for unbinding.";
         return false;
     }
 
     QMutexLocker locker(&m_mutex);
 
-    if (m_bindings.value(port1) != port2)
-    {
+    if (m_bindings.value(port1) != port2) {
         qWarning() << "Ports are not bound.";
         return false;
     }
@@ -62,14 +54,12 @@ bool PortBindingManager::unbind(const PortPtr_t &port1, const PortPtr_t &port2)
     m_bindings.remove(port1);
     m_bindings.remove(port2);
 
-    emit bindingChanged(port1->getRouterIP(), port1->getPortNumber(), port2->getRouterIP(), port2->getPortNumber(), false);
-    qDebug() << "Ports unbound between Router" << port1->getRouterIP() << "Port" << port1->getPortNumber()
-             << "and Router" << port2->getRouterIP() << "Port" << port2->getPortNumber();
-
+    emit bindingChanged(port1->getPortNumber(), port1->getPortNumber(), port2->getPortNumber(), port2->getPortNumber(), false);
+    qDebug() << "Ports unbound.";
     return true;
 }
 
-bool PortBindingManager::isBound(const PortPtr_t &port) const
+bool PortBindingManager::isBound(const QSharedPointer<Port> &port) const
 {
     QMutexLocker locker(&m_mutex);
     return m_bindings.contains(port);
