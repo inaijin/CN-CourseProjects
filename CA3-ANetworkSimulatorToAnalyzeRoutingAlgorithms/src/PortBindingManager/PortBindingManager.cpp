@@ -17,8 +17,9 @@ void PortBindingManager::bind(const QSharedPointer<Port> &port1, const QSharedPo
         return;
     }
 
-    connect(port1.data(), &Port::packetSent, port2.data(), &Port::receivePacket);
-    connect(port2.data(), &Port::packetSent, port1.data(), &Port::receivePacket);
+    // Use queued connections to prevent immediate re-entrancy
+    connect(port1.data(), &Port::packetSent, port2.data(), &Port::receivePacket, Qt::QueuedConnection);
+    connect(port2.data(), &Port::packetSent, port1.data(), &Port::receivePacket, Qt::QueuedConnection);
 
     port1->setConnected(true);
     port2->setConnected(true);

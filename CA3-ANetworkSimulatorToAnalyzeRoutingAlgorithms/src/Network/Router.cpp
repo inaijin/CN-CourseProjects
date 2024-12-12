@@ -150,23 +150,55 @@ QSharedPointer<DHCPServer> Router::getDHCPServer()
 void Router::processPacket(const PacketPtr_t &packet) {
     qDebug() << "Router" << m_id << "processing packet with payload:" << packet->getPayload();
 
-    if (packet->getPayload().contains("DHCP_REQUEST")) {
+    QString payload = packet->getPayload();
+
+    // If TTL <= 0, drop the packet
+    if (packet->getTTL() <= 0) {
+        qDebug() << "Router" << m_id << "dropping packet due to TTL expiration.";
+        return;
+    }
+
+    if (payload.contains("DHCP_REQUEST")) {
+        // If this router is a DHCP server, handle request
         if (isDHCPServer()) {
             qDebug() << "Router" << m_id << "is a DHCP server. Handling DHCP request.";
             if (m_dhcpServer) {
                 m_dhcpServer->receivePacket(packet);
             }
+            // Do NOT forward the packet after handling it
         } else {
-            forwardPacket(packet); // Forward request to neighbors
+            // Not a DHCP server. Forward only if not seen before
+            if (!hasSeenPacket(packet)) {
+                markPacketAsSeen(packet);
+                packet->decrementTTL();
+                forwardPacket(packet);
+            } else {
+                qDebug() << "Router" << m_id << "already seen this DHCP request, dropping to prevent loops.";
+            }
         }
-    } else if (packet->getPayload().contains("DHCP_OFFER")) {
-        if (packet->getPayload().contains(QString(":%1").arg(m_id))) {
-            qDebug() << "Router" << m_id << "received DHCP offer:" << packet->getPayload();
-            processDHCPResponse(packet); // Handle IP assignment
+    } else if (payload.contains("DHCP_OFFER")) {
+        // Check if it's for this router
+        QStringList parts = payload.split(":");
+        if (parts.size() >= 3) {
+            int clientId = parts.last().toInt();
+            if (clientId == m_id) {
+                qDebug() << "Router" << m_id << "received DHCP offer:" << payload;
+                processDHCPResponse(packet);
+            } else {
+                // Offer is not for this router, forward if not seen and TTL > 0
+                if (!hasSeenPacket(packet)) {
+                    markPacketAsSeen(packet);
+                    packet->decrementTTL();
+                    forwardPacket(packet);
+                } else {
+                    qDebug() << "Router" << m_id << "already seen this DHCP offer, dropping to prevent loops.";
+                }
+            }
         } else {
-            forwardPacket(packet); // Forward offer
+            qWarning() << "Router" << m_id << "received malformed DHCP offer:" << payload;
         }
     } else {
-        qWarning() << "Router" << m_id << "received unknown packet type.";
+        // For simplicity, other packet types are dropped to prevent loops
+        qDebug() << "Router" << m_id << "received unknown or unsupported packet type, dropping it.";
     }
 }

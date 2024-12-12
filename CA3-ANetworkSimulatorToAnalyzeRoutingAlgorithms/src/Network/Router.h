@@ -7,6 +7,7 @@
 #include <QEnableSharedFromThis>
 #include "../Port/Port.h"
 #include "../DHCPServer/DHCPServer.h"
+#include <QSet>
 
 class UDP;
 
@@ -31,9 +32,6 @@ public:
     QSharedPointer<DHCPServer> getDHCPServer();
     bool isDHCPServer() const;
 
-Q_SIGNALS:
-    void sendDHCPRequest(const PacketPtr_t &packet);
-
 public Q_SLOTS:
     void processDHCPResponse(const PacketPtr_t &packet);
     QString getAssignedIP();
@@ -47,9 +45,20 @@ private:
     bool m_hasValidIP;
     QSharedPointer<DHCPServer> m_dhcpServer;
     QSharedPointer<UDP> m_udp;
+    QString m_assignedIP;
+
+    // For loop prevention
+    QSet<qint64> m_seenPackets;
 
     void initializePorts();
-    QString m_assignedIP;
+
+    bool hasSeenPacket(const PacketPtr_t &packet) {
+        return m_seenPackets.contains(packet->getId());
+    }
+
+    void markPacketAsSeen(const PacketPtr_t &packet) {
+        m_seenPackets.insert(packet->getId());
+    }
 };
 
 #endif // ROUTER_H

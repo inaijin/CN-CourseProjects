@@ -50,17 +50,28 @@ public:
     void setTCPHeader(const TCPHeader &header);
     TCPHeader getTCPHeader() const;
 
-private:
-    PacketType m_type;                  // Type of the packet (data, control, etc.)
-    QString m_payload;                  // The data or information the packet carries
-    QVector<QString> m_path;            // Path the packet has traversed (IP addresses)
-    int m_waitCycles;                   // Total cycles the packet has waited
-    int m_queueWaitCycles;              // Cycles spent in a queue
-    int m_sequenceNumber;               // Sequence number for tracking
-    bool m_isDropped;                   // Flag indicating if the packet was dropped
+    // TTL and ID
+    void setTTL(int ttl);
+    int getTTL() const;
+    void decrementTTL();
 
-    DataLinkHeader m_dataLinkHeader;    // DataLink layer header
-    TCPHeader m_tcpHeader;              // TCP layer header
+    qint64 getId() const; // Unique packet ID
+
+private:
+    static qint64 s_nextId;
+
+    PacketType m_type;
+    QString m_payload;
+    QVector<QString> m_path;
+    int m_waitCycles;
+    int m_queueWaitCycles;
+    int m_sequenceNumber;
+    bool m_isDropped;
+    DataLinkHeader m_dataLinkHeader;
+    TCPHeader m_tcpHeader;
+
+    int m_ttl;        // Time-To-Live for loop prevention
+    qint64 m_id;      // Unique packet identifier
 };
 
 typedef QSharedPointer<Packet> PacketPtr_t;

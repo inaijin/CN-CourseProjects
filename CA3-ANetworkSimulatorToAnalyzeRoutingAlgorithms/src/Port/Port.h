@@ -2,7 +2,6 @@
 #define PORT_H
 
 #include "../Packet/Packet.h"
-
 #include <QObject>
 #include <QMutex>
 

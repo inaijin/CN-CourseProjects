@@ -61,15 +61,25 @@ uint64_t Port::getNumberOfPacketsReceived() const
 }
 
 void Port::sendPacket(const PacketPtr_t &data) {
-    QMutexLocker locker(&m_mutex);
-    ++m_numberOfPacketsSent;
+    {
+        QMutexLocker locker(&m_mutex);
+        ++m_numberOfPacketsSent;
+        // All critical data modifications done here under lock
+    }
+    // Mutex is released when locker goes out of scope
+    // Emit signal after releasing the mutex
     emit packetSent(data);
-    qDebug() << "Port" << m_number << "on Router" << m_routerIP << "sent packet with payload:" << data->getPayload();
+    qDebug() << "Port::sendPacket() emitted packetSent.";
 }
 
 void Port::receivePacket(const PacketPtr_t &data) {
-    QMutexLocker locker(&m_mutex);
-    ++m_numberOfPacketsReceived;
+    {
+        QMutexLocker locker(&m_mutex);
+        ++m_numberOfPacketsReceived;
+        // All critical data modifications done here under lock
+    }
+    // Mutex is released when locker goes out of scope
+    // Emit signal after releasing the mutex
     emit packetReceived(data);
-    qDebug() << "Port" << m_number << "on Router" << m_routerIP << "received packet with payload:" << data->getPayload();
+    qDebug() << "Port::receivePacket() emitted packetReceived.";
 }

@@ -61,10 +61,15 @@ void DHCPServer::sendOffer(const DHCPLease &lease) {
     QString payload = QString("DHCP_OFFER:%1:%2").arg(lease.ipAddress).arg(lease.clientId);
     auto offerPacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
 
+    // Set a TTL for the offer, e.g., 10 hops
+    offerPacket->setTTL(10);
+
     if (m_router) {
         const auto &ports = m_router->getPorts();
         qDebug() << "Sending DHCP offer from Router" << m_router->getId()
                  << "to client" << lease.clientId << "with IP" << lease.ipAddress;
+        qDebug() << "Number of ports on Router" << m_router->getId() << ":" << ports.size();
+
         for (const auto &port : ports) {
             qDebug() << "Checking Port" << port->getPortNumber() << "connected =" << port->isConnected();
             if (port->isConnected()) {

@@ -1,14 +1,18 @@
 #include "Packet.h"
 
-Packet::Packet(PacketType type, const QString &payload) :
-    m_type(type),
+qint64 Packet::s_nextId = 0;
+
+Packet::Packet(PacketType type, const QString &payload)
+    : m_type(type),
     m_payload(payload),
     m_waitCycles(0),
     m_queueWaitCycles(0),
     m_sequenceNumber(0),
     m_isDropped(false),
     m_dataLinkHeader(),
-    m_tcpHeader()
+    m_tcpHeader(),
+    m_ttl(10),         // Default TTL
+    m_id(++s_nextId)   // Assign unique ID
 {
 }
 
@@ -80,4 +84,22 @@ void Packet::setTCPHeader(const TCPHeader &header) {
 
 TCPHeader Packet::getTCPHeader() const {
     return m_tcpHeader;
+}
+
+// TTL Methods
+void Packet::setTTL(int ttl) {
+    m_ttl = ttl;
+}
+
+int Packet::getTTL() const {
+    return m_ttl;
+}
+
+void Packet::decrementTTL() {
+    m_ttl--;
+}
+
+// Unique ID
+qint64 Packet::getId() const {
+    return m_id;
 }
