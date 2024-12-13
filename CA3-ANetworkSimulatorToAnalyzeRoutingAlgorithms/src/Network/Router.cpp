@@ -11,7 +11,6 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
 
     initializePorts();
 
-    // Connect ports' packetReceived signal to Router's processPacket slot
     for (auto &port : m_ports) {
         connect(port.data(), &Port::packetReceived, this, [this](const PacketPtr_t &packet) {
             processPacket(packet);
@@ -82,10 +81,8 @@ void Router::forwardPacket(const PacketPtr_t &packet) {
         return;
     }
 
-    // Decrement TTL before forwarding
     PacketPtr_t fwdPacket(new Packet(packet->getType(), packet->getPayload(), packet->getTTL()-1));
 
-    // Forward to all connected ports (assuming you have a method getPorts())
     for (auto &port : m_ports) {
         if (port->isConnected()) {
             port->sendPacket(fwdPacket);
@@ -111,7 +108,7 @@ void Router::requestIPFromDHCP() {
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
     qDebug() << "Router" << m_id << "created DHCP request with payload:" << packet->getPayload();
 
-    processPacket(packet); // Process packet internally
+    processPacket(packet);
 }
 
 void Router::processDHCPResponse(const PacketPtr_t &packet)
@@ -156,8 +153,6 @@ QSharedPointer<DHCPServer> Router::getDHCPServer()
 }
 
 bool Router::hasSeenPacket(const PacketPtr_t &packet) {
-    // Use payload as a key for simplicity. For more robust solution,
-    // consider a unique ID or (payload + type + sequence number).
     return m_seenPackets.contains(packet->getPayload());
 }
 
@@ -175,18 +170,12 @@ void Router::processPacket(const PacketPtr_t &packet) {
         return;
     }
 
-    // If we already have a valid IP and the packet is a DHCP offer for us, ignore requests
-    // For simplicity, we won't re-request DHCP if we have a valid IP.
-
     if (payload.contains("DHCP_REQUEST")) {
-        // DHCP Request Format: "DHCP_REQUEST:<clientId>"
         if (isDHCPServer()) {
-            // Handle request
             if (m_dhcpServer) {
                 m_dhcpServer->receivePacket(packet);
             }
         } else {
-            // Not a server, forward if not seen
             if (!hasSeenPacket(packet)) {
                 markPacketAsSeen(packet);
                 forwardPacket(packet);
@@ -195,21 +184,17 @@ void Router::processPacket(const PacketPtr_t &packet) {
             }
         }
     } else if (payload.contains("DHCP_OFFER")) {
-        // DHCP Offer Format: "DHCP_OFFER:<ipAddress>:<clientId>"
         QStringList parts = payload.split(":");
         if (parts.size() == 3) {
             QString offeredIP = parts[1];
             int clientId = parts[2].toInt();
 
             if (clientId == m_id) {
-                // This offer is for this router
                 qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
                 m_assignedIP = offeredIP;
                 m_hasValidIP = true;
                 qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
-                // Don't forward
             } else {
-                // Not for me
                 if (!hasSeenPacket(packet)) {
                     markPacketAsSeen(packet);
                     forwardPacket(packet);

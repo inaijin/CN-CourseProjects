@@ -61,8 +61,7 @@ void DHCPServer::sendOffer(const DHCPLease &lease) {
     QString payload = QString("DHCP_OFFER:%1:%2").arg(lease.ipAddress).arg(lease.clientId);
     auto offerPacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
 
-    // Set a TTL for the offer
-    offerPacket->setTTL(10);
+    offerPacket->setTTL(10); // Defaut TTL For Offer DHCP Server
 
     if (m_router) {
         const auto &ports = m_router->getPorts();

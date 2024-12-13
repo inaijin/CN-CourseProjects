@@ -45,7 +45,6 @@ void Simulator::preAssignIDs()
 
     int currentMaxId = 0;
 
-    // First loop to calculate the total number of nodes across all AS
     int totalNodeCount = 0;
     for (const QJsonValue &asVal : asArray)
     {
@@ -94,9 +93,9 @@ void Simulator::startSimulation()
     qDebug() << "Simulation initialized. Network topology is set up.";
 
     // Initiate DHCP Phase
-    initiateDHCPPhase();
+    // initiateDHCPPhase();
 
-    // Start clock, events, etc.
+    // Start clock, events, etc. Complete In Future Phases
 }
 
 void Simulator::initiateDHCPPhase()

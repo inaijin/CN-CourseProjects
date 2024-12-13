@@ -19,7 +19,7 @@ class EventsCoordinator : public QThread
     typedef std::chrono::milliseconds Millis;
 
 protected:
-    explicit EventsCoordinator(QThread *parent = nullptr); // Change this to protected
+    explicit EventsCoordinator(QThread *parent = nullptr);
 
 public:
     explicit EventsCoordinator(QObject *parent = nullptr);

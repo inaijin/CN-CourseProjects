@@ -77,7 +77,7 @@ EventsCoordinator::setDataGenerator(DataGenerator *generator)
     if (m_dataGenerator)
     {
         connect(m_dataGenerator, &DataGenerator::packetsGenerated, this, &EventsCoordinator::onPacketsGenerated);
-        m_dataGenerator->generatePackets(); // Preload packets into the queue
+        m_dataGenerator->generatePackets();
     }
 }
 
@@ -118,7 +118,7 @@ void EventsCoordinator::addRouter(const QSharedPointer<Router> &router) {
 void EventsCoordinator::run() {
     m_timer = new QTimer();
     connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
-    m_timer->start(1000); // Example tick interval
+    m_timer->start(1000);
     qDebug() << "Clock started with interval:" << 1000 << "ms";
 
     exec();
