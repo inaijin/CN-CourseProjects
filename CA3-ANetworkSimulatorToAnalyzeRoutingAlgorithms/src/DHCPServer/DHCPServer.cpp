@@ -38,6 +38,15 @@ void DHCPServer::receivePacket(const PacketPtr_t &packet) {
 
 void DHCPServer::assignIP(const PacketPtr_t &packet) {
     int clientId = packet->getPayload().split(":")[1].toInt();
+
+    if(m_asId == 1 && clientId > 16) {
+        qDebug() << "Router Not In Our AS(1)";
+        return;
+    } else if (m_asId == 2 && clientId < 17) {
+        qDebug() << "Router Not In Our AS(2)";
+        return;
+    }
+
     qDebug() << "Assigning IP to client" << clientId << "in AS" << m_asId;
 
     for (const auto &lease : m_leases) {

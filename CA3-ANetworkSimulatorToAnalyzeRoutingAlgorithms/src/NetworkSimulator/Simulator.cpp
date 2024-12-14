@@ -93,7 +93,7 @@ void Simulator::startSimulation()
     qDebug() << "Simulation initialized. Network topology is set up.";
 
     // Initiate DHCP Phase
-    // initiateDHCPPhase();
+    initiateDHCPPhase();
 
     // Start clock, events, etc. Complete In Future Phases
 }
