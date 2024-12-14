@@ -7,6 +7,7 @@ PC::PC(int id, const QString &ipAddress, QObject *parent)
     m_port = PortPtr_t::create(this);
     m_port->setPortNumber(1);
     m_port->setRouterIP(m_ipAddress);
+    moveToThread(this);
 
     qDebug() << "PC initialized: ID =" << m_id << ", IP =" << m_ipAddress;
 }

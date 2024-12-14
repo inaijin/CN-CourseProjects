@@ -57,7 +57,7 @@ void TopologyBuilder::createRouters() {
             continue;
         }
 
-        auto router = QSharedPointer<Router>::create(routerId, "", portCount, this); // No placeholder IP
+        auto router = QSharedPointer<Router>::create(routerId, "", portCount, nullptr);        // No placeholder IP
         m_routers.push_back(router);
         qDebug() << "Created Router with ID:" << routerId;
     }
@@ -112,7 +112,7 @@ void TopologyBuilder::createPCs()
             }
 
             QString pcIP = baseIP + QString::number(pcId);
-            auto pc = QSharedPointer<PC>::create(pcId, pcIP, this);
+            auto pc = QSharedPointer<PC>::create(pcId, pcIP, nullptr);
             m_pcs.push_back(pc);
 
             PortBindingManager bindingManager;

@@ -16,6 +16,7 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
             processPacket(packet);
         });
     }
+    moveToThread(this);
 
     qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress << ", Ports =" << m_portCount;
 }
