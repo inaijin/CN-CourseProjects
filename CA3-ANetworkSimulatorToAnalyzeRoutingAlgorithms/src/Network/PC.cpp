@@ -4,10 +4,11 @@
 PC::PC(int id, const QString &ipAddress, QObject *parent)
     : Node(id, ipAddress, NodeType::PC, parent)
 {
-    m_port = PortPtr_t::create(this);
+    moveToThread(this);
+
+    m_port = PortPtr_t::create(nullptr);
     m_port->setPortNumber(1);
     m_port->setRouterIP(m_ipAddress);
-    moveToThread(this);
 
     qDebug() << "PC initialized: ID =" << m_id << ", IP =" << m_ipAddress;
 }

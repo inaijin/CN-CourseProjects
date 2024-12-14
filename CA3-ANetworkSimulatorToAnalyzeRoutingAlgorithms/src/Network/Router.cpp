@@ -4,6 +4,8 @@
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
     : Node(id, ipAddress, NodeType::Router, parent), m_portCount(portCount), m_hasValidIP(false), m_assignedIP("")
 {
+    moveToThread(this);
+
     if (m_portCount <= 0)
     {
         m_portCount = 6;
@@ -16,7 +18,6 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
             processPacket(packet);
         });
     }
-    moveToThread(this);
 
     qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress << ", Ports =" << m_portCount;
 }
@@ -36,7 +37,7 @@ void Router::initializePorts()
 {
     for (int i = 0; i < m_portCount; ++i)
     {
-        auto port = PortPtr_t::create(this);
+        auto port = PortPtr_t::create(nullptr);
         port->setPortNumber(static_cast<uint8_t>(i + 1));
         port->setRouterIP(m_ipAddress);
         m_ports.push_back(port);
