@@ -1,7 +1,6 @@
 #ifndef NODE_H
 #define NODE_H
 
-#include <QThread>
 #include <QObject>
 #include <QString>
 #include <QMutex>
@@ -12,7 +11,7 @@ enum class NodeType
     Router
 };
 
-class Node : public QThread
+class Node : public QObject
 {
     Q_OBJECT
 
@@ -27,7 +26,7 @@ public:
     static int getNextGlobalId();
 
 protected:
-    virtual void run() override = 0;
+    // Removed QThread inheritance and run() method
 
     int m_id;
     QString m_ipAddress;
@@ -35,6 +34,7 @@ protected:
     mutable QMutex m_mutex;
 
     static int s_globalNodeId;
+    static QMutex s_mutex; // Static mutex for thread-safe access to s_globalNodeId
 };
 
 #endif // NODE_H

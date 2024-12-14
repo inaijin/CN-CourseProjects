@@ -2,10 +2,11 @@
 #include <QDebug>
 
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
-    : Node(id, ipAddress, NodeType::Router, parent), m_portCount(portCount), m_hasValidIP(false), m_assignedIP("")
+    : Node(id, ipAddress, NodeType::Router, parent),
+    m_portCount(portCount),
+    m_hasValidIP(false),
+    m_assignedIP("")
 {
-    moveToThread(this);
-
     if (m_portCount <= 0)
     {
         m_portCount = 6;
@@ -14,9 +15,7 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
     initializePorts();
 
     for (auto &port : m_ports) {
-        connect(port.data(), &Port::packetReceived, this, [this](const PacketPtr_t &packet) {
-            processPacket(packet);
-        });
+        connect(port.data(), &Port::packetReceived, this, &Router::processPacket);
     }
 
     qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress << ", Ports =" << m_portCount;
@@ -24,12 +23,6 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
 
 Router::~Router()
 {
-    if (isRunning())
-    {
-        quit();
-        wait();
-    }
-
     qDebug() << "Router destroyed: ID =" << m_id;
 }
 
@@ -61,56 +54,16 @@ std::vector<PortPtr_t> Router::getPorts()
     return m_ports;
 }
 
-void Router::run()
-{
-    qDebug() << "Router" << m_id << "is in idle mode.";
-    exec();
-}
-
-void Router::startRouter()
-{
-    qDebug() << "Starting Router" << m_id;
-    if (!isRunning())
-    {
-        start();
-    }
-}
-
-void Router::forwardPacket(const PacketPtr_t &packet) {
-    if (!packet) return;
-    if (packet->getTTL() <= 0) {
-        qDebug() << "Router" << m_id << "dropping packet due to TTL expiration.";
-        return;
-    }
-
-    PacketPtr_t fwdPacket(new Packet(packet->getType(), packet->getPayload(), packet->getTTL()-1));
-
-    for (auto &port : m_ports) {
-        if (port->isConnected()) {
-            port->sendPacket(fwdPacket);
-            qDebug() << "Router" << m_id << "forwarded packet via Port" << port->getPortNumber();
-        }
-    }
-}
-
-void Router::logPortStatuses() const
-{
-    for (const auto &port : m_ports)
-    {
-        qDebug() << "Port" << port->getPortNumber() << (port->isConnected() ? "Connected" : "Available");
-    }
-}
-
 void Router::requestIPFromDHCP() {
     if (m_hasValidIP) {
         qDebug() << "Router" << m_id << "already has a valid IP:" << m_assignedIP;
         return;
     }
 
-    auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
+    auto packet = QSharedPointer<Packet>::create(PacketType::DHCPRequest, QString("DHCP_REQUEST:%1").arg(m_id), 16);
     qDebug() << "Router" << m_id << "created DHCP request with payload:" << packet->getPayload();
 
-    processPacket(packet);
+    processPacket(packet); // Directly process the packet to start forwarding
 }
 
 void Router::processDHCPResponse(const PacketPtr_t &packet)
@@ -120,11 +73,20 @@ void Router::processDHCPResponse(const PacketPtr_t &packet)
     if (packet->getPayload().contains("DHCP_OFFER"))
     {
         QStringList parts = packet->getPayload().split(":");
-        if (parts.size() >= 2)
+        if (parts.size() == 3)
         {
-            m_assignedIP = parts[1];
-            m_hasValidIP = true;
-            qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
+            QString offeredIP = parts[1];
+            int clientId = parts[2].toInt();
+            if (clientId == m_id)
+            {
+                m_assignedIP = offeredIP;
+                m_hasValidIP = true;
+                qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
+            }
+            else
+            {
+                qDebug() << "Router" << m_id << "received DHCP offer for client" << clientId << ". Ignoring.";
+            }
         }
         else
         {
@@ -144,22 +106,50 @@ void Router::setDHCPServer(QSharedPointer<DHCPServer> dhcpServer)
     qDebug() << "Router" << m_id << "configured as DHCP server.";
 }
 
-bool Router::isDHCPServer() const
-{
-    return !m_dhcpServer.isNull();
-}
-
 QSharedPointer<DHCPServer> Router::getDHCPServer()
 {
     return m_dhcpServer;
 }
 
-bool Router::hasSeenPacket(const PacketPtr_t &packet) {
-    return m_seenPackets.contains(packet->getPayload());
+bool Router::isDHCPServer() const
+{
+    return !m_dhcpServer.isNull();
 }
 
-void Router::markPacketAsSeen(const PacketPtr_t &packet) {
-    m_seenPackets.insert(packet->getPayload());
+bool Router::hasSeenPacket(qint64 packetId) const {
+    return m_seenPacketIds.contains(packetId);
+}
+
+void Router::markPacketAsSeen(qint64 packetId) {
+    m_seenPacketIds.insert(packetId);
+}
+
+void Router::forwardPacket(const PacketPtr_t &packet) {
+    if (!packet) return;
+
+    // Decrement TTL
+    packet->decrementTTL();
+
+    if (packet->getTTL() <= 0) {
+        qDebug() << "Router" << m_id << "dropping packet due to TTL expiration.";
+        return;
+    }
+
+    for (auto &port : m_ports) {
+        if (port->isConnected()) {
+            port->sendPacket(packet);
+            qDebug() << "Router" << m_id << "forwarded packet via Port" << port->getPortNumber()
+                     << "with TTL:" << packet->getTTL();
+        }
+    }
+}
+
+void Router::logPortStatuses() const
+{
+    for (const auto &port : m_ports)
+    {
+        qDebug() << "Port" << port->getPortNumber() << (port->isConnected() ? "Connected" : "Available");
+    }
 }
 
 void Router::processPacket(const PacketPtr_t &packet) {
@@ -172,42 +162,52 @@ void Router::processPacket(const PacketPtr_t &packet) {
         return;
     }
 
+    // Track seen packets by unique ID to prevent loops
+    if (hasSeenPacket(packet->getId())) {
+        qDebug() << "Router" << m_id << "already seen packet ID" << packet->getId() << ", dropping to prevent loops.";
+        return;
+    }
+
+    markPacketAsSeen(packet->getId());
+
     if (payload.contains("DHCP_REQUEST")) {
+        // DHCP Request Format: "DHCP_REQUEST:<clientId>"
         if (isDHCPServer()) {
+            qDebug() << "Router" << m_id << "is a DHCP server. Handling DHCP request.";
             if (m_dhcpServer) {
                 m_dhcpServer->receivePacket(packet);
             }
         } else {
-            if (!hasSeenPacket(packet)) {
-                markPacketAsSeen(packet);
-                forwardPacket(packet);
-            } else {
-                qDebug() << "Router" << m_id << "already seen this DHCP request, dropping to prevent loops.";
-            }
+            // Not a server, forward the DHCP request
+            forwardPacket(packet);
         }
-    } else if (payload.contains("DHCP_OFFER")) {
+    }
+    else if (payload.contains("DHCP_OFFER")) {
+        // DHCP Offer Format: "DHCP_OFFER:<ipAddress>:<clientId>"
         QStringList parts = payload.split(":");
         if (parts.size() == 3) {
             QString offeredIP = parts[1];
             int clientId = parts[2].toInt();
 
             if (clientId == m_id) {
+                // This offer is for this router
                 qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
                 m_assignedIP = offeredIP;
                 m_hasValidIP = true;
                 qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
-            } else {
-                if (!hasSeenPacket(packet)) {
-                    markPacketAsSeen(packet);
-                    forwardPacket(packet);
-                } else {
-                    qDebug() << "Router" << m_id << "already seen this DHCP offer, dropping to prevent loops.";
-                }
+                // Do not forward this packet further
             }
-        } else {
-            qWarning() << "Malformed DHCP_OFFER packet on Router" << m_id << "payload:" << payload;
+            else {
+                // Offer not for this router, forward if not seen
+                forwardPacket(packet);
+            }
         }
-    } else {
-        qDebug() << "Router" << m_id << "received unknown/unsupported packet:" << payload << "Dropping it.";
+        else {
+            qWarning() << "Router" << m_id << "received malformed DHCP offer:" << payload;
+        }
+    }
+    else {
+        // Unknown packet type
+        qDebug() << "Router" << m_id << "received unknown or unsupported packet type. Dropping it.";
     }
 }

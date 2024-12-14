@@ -15,11 +15,10 @@ public:
 
     PortPtr_t getPort();
 
-    void startPC();
     void generatePacket();
 
-protected:
-    void run() override;
+public slots:
+    void receivePacket(const PacketPtr_t &packet);
 
 private:
     PortPtr_t m_port;

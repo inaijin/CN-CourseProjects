@@ -2,29 +2,26 @@
 #include "../DataGenerator/DataGenerator.h"
 #include <QDebug>
 
-EventsCoordinator::EventsCoordinator(QThread *parent) :
-    QThread {parent},
-    m_timer {new QTimer(this)},
-    m_dataGenerator {nullptr}
+EventsCoordinator* EventsCoordinator::m_self = nullptr;
+
+EventsCoordinator::EventsCoordinator(QObject *parent)
+    : QObject(parent),
+    m_timer(new QTimer(this)),
+    m_dataGenerator(nullptr),
+    m_currentTime(0)
 {
     connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
 }
 
 EventsCoordinator::~EventsCoordinator() {
-    QMetaObject::invokeMethod(this, [this]() {
-        if (m_timer) {
-            m_timer->stop();
-            delete m_timer;
-            m_timer = nullptr;
-        }
-    });
-
-    quit();
-    wait();
+    if (m_timer) {
+        m_timer->stop();
+        m_timer->deleteLater();
+        m_timer = nullptr;
+    }
 }
 
-EventsCoordinator *
-EventsCoordinator::instance(QThread *parent)
+EventsCoordinator* EventsCoordinator::instance(QObject *parent)
 {
     if (!m_self)
     {
@@ -34,38 +31,32 @@ EventsCoordinator::instance(QThread *parent)
     return m_self;
 }
 
-void
-EventsCoordinator::release()
+void EventsCoordinator::release()
 {
     if (m_self)
     {
-        delete m_self;
+        m_self->deleteLater();
         m_self = nullptr;
     }
 }
 
 void EventsCoordinator::startClock(Millis interval) {
-    QMetaObject::invokeMethod(this, [this, interval]() {
-        if (!m_timer) {
-            m_timer = new QTimer();
-            connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
-        }
-        m_timer->start(interval.count());
-        qDebug() << "Clock started with interval:" << interval.count() << "ms";
-    });
+    if (!m_timer) {
+        m_timer = new QTimer(this);
+        connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
+    }
+    m_timer->start(interval.count());
+    qDebug() << "Clock started with interval:" << interval.count() << "ms";
 }
 
 void EventsCoordinator::stopClock() {
-    QMetaObject::invokeMethod(this, [this]() {
-        if (m_timer && m_timer->isActive()) {
-            m_timer->stop();
-            qDebug() << "Clock stopped.";
-        }
-    });
+    if (m_timer && m_timer->isActive()) {
+        m_timer->stop();
+        qDebug() << "Clock stopped.";
+    }
 }
 
-void
-EventsCoordinator::setDataGenerator(DataGenerator *generator)
+void EventsCoordinator::setDataGenerator(DataGenerator *generator)
 {
     if (m_dataGenerator)
     {
@@ -79,6 +70,11 @@ EventsCoordinator::setDataGenerator(DataGenerator *generator)
         connect(m_dataGenerator, &DataGenerator::packetsGenerated, this, &EventsCoordinator::onPacketsGenerated);
         m_dataGenerator->generatePackets();
     }
+}
+
+void EventsCoordinator::addRouter(const QSharedPointer<Router> &router) {
+    m_routers.push_back(router);
+    connect(this, &EventsCoordinator::tick, router.data(), &Router::requestIPFromDHCP);
 }
 
 void EventsCoordinator::onTick() {
@@ -103,26 +99,13 @@ void EventsCoordinator::onTick() {
     qDebug() << "Packet emitted from the queue.";
 }
 
-void
-EventsCoordinator::onPacketsGenerated(const std::vector<QSharedPointer<Packet>> &packets)
+void EventsCoordinator::onPacketsGenerated(const std::vector<QSharedPointer<Packet>> &packets)
 {
     m_packetQueue.insert(m_packetQueue.end(), packets.begin(), packets.end());
     qDebug() << packets.size() << "packets added to the queue. Total queue size:" << m_packetQueue.size();
 }
 
-void EventsCoordinator::addRouter(const QSharedPointer<Router> &router) {
-    m_routers.push_back(router);
-    connect(this, &EventsCoordinator::tick, router.data(), &Router::requestIPFromDHCP);
-}
-
-void EventsCoordinator::run() {
-    m_timer = new QTimer();
-    connect(m_timer, &QTimer::timeout, this, &EventsCoordinator::onTick);
-    m_timer->start(1000);
-    qDebug() << "Clock started with interval:" << 1000 << "ms";
-
-    exec();
-    m_timer->stop();
-    delete m_timer;
-    m_timer = nullptr;
+void EventsCoordinator::synchronizeRoutersWithDHCP()
+{
+    // Implement synchronization logic if needed
 }

@@ -3,7 +3,6 @@
 
 #include <chrono>
 #include <QObject>
-#include <QThread>
 #include <QTimer>
 #include <QSharedPointer>
 #include <vector>
@@ -12,29 +11,25 @@
 class DataGenerator;
 class Packet;
 
-class EventsCoordinator : public QThread
+class EventsCoordinator : public QObject
 {
     Q_OBJECT
 
     typedef std::chrono::milliseconds Millis;
 
-protected:
-    explicit EventsCoordinator(QThread *parent = nullptr);
-
 public:
+    // Singleton access methods
+    static EventsCoordinator* instance(QObject *parent = nullptr);
+    static void release();
+
     explicit EventsCoordinator(QObject *parent = nullptr);
     ~EventsCoordinator() override;
-    static EventsCoordinator *instance(QThread *parent = nullptr);
-    static void release();
 
     void startClock(Millis interval);
     void stopClock();
 
     void setDataGenerator(DataGenerator *generator);
     void addRouter(const QSharedPointer<Router> &router);
-
-protected:
-    void run() override;
 
 Q_SIGNALS:
     void tick();
@@ -45,15 +40,19 @@ private Q_SLOTS:
     void onPacketsGenerated(const std::vector<QSharedPointer<Packet>> &packets);
 
 private:
-    inline static EventsCoordinator *m_self = nullptr;
-    QTimer *m_timer = nullptr;
-    DataGenerator *m_dataGenerator = nullptr;
+    static EventsCoordinator *m_self;
+    QTimer *m_timer;
+    DataGenerator *m_dataGenerator;
 
     std::vector<QSharedPointer<Packet>> m_packetQueue;
     std::vector<QSharedPointer<Router>> m_routers;
 
     void synchronizeRoutersWithDHCP();
-    int m_currentTime = 0;
+    int m_currentTime;
+
+    // Prevent copying
+    EventsCoordinator(const EventsCoordinator &) = delete;
+    EventsCoordinator& operator=(const EventsCoordinator &) = delete;
 };
 
 #endif // EVENTSCOORDINATOR_H
