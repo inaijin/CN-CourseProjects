@@ -4,13 +4,14 @@
 #include "Node.h"
 #include <vector>
 #include <QSharedPointer>
+#include <QEnableSharedFromThis>
 #include "../Port/Port.h"
 #include "../DHCPServer/DHCPServer.h"
 #include <QSet>
 
 class UDP;
 
-class Router : public Node
+class Router : public Node, public QEnableSharedFromThis<Router>
 {
     Q_OBJECT
 
@@ -21,6 +22,7 @@ public:
     PortPtr_t getAvailablePort();
     std::vector<PortPtr_t> getPorts();
 
+    void startRouter();
     void requestIPFromDHCP();
     void forwardPacket(const PacketPtr_t &packet);
     void logPortStatuses() const;
@@ -31,6 +33,7 @@ public:
     bool isDHCPServer() const;
 
 public Q_SLOTS:
+    void initialize();
     void processDHCPResponse(const PacketPtr_t &packet);
     QString getAssignedIP();
 
@@ -39,14 +42,15 @@ private:
     int m_portCount;
     bool m_hasValidIP;
     QSharedPointer<DHCPServer> m_dhcpServer;
+    QSharedPointer<UDP> m_udp;
     QString m_assignedIP;
 
-    QSet<qint64> m_seenPacketIds; // Track seen packet IDs to prevent loops
+    QSet<QString> m_seenPackets;
 
     void initializePorts();
 
-    bool hasSeenPacket(qint64 packetId) const;
-    void markPacketAsSeen(qint64 packetId);
+    bool hasSeenPacket(const PacketPtr_t &packet);
+    void markPacketAsSeen(const PacketPtr_t &packet);
 };
 
 #endif // ROUTER_H

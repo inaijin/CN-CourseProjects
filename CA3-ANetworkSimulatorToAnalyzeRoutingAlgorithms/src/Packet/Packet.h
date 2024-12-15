@@ -4,7 +4,6 @@
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
-#include <atomic>
 #include "../Header/DataLinkHeader.h"
 #include "../Header/TCPHeader.h"
 
@@ -60,7 +59,7 @@ public:
     qint64 getId() const; // Unique packet identifier
 
 private:
-    static std::atomic<qint64> s_nextId; // Changed to atomic
+    static qint64 s_nextId;
 
     PacketType m_type;
     QString m_payload;

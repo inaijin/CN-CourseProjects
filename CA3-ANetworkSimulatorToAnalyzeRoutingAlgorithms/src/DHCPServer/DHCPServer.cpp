@@ -21,8 +21,9 @@ DHCPServer::DHCPServer(int asId, const QSharedPointer<Router> &router, QObject *
 
 DHCPServer::~DHCPServer() {}
 
+
 void DHCPServer::receivePacket(const PacketPtr_t &packet) {
-    if (!packet || packet->getType() != PacketType::DHCPRequest) { // Changed to DHCPRequest
+    if (!packet || packet->getType() != PacketType::Control) {
         qWarning() << "DHCP Server received invalid packet.";
         return;
     }
@@ -36,18 +37,7 @@ void DHCPServer::receivePacket(const PacketPtr_t &packet) {
 }
 
 void DHCPServer::assignIP(const PacketPtr_t &packet) {
-    QStringList parts = packet->getPayload().split(":");
-    if (parts.size() < 2) {
-        qWarning() << "DHCP Server received malformed DHCP_REQUEST packet.";
-        return;
-    }
-
-    bool ok;
-    int clientId = parts[1].toInt(&ok);
-    if (!ok) {
-        qWarning() << "DHCP Server received invalid client ID in packet:" << packet->getPayload();
-        return;
-    }
+    int clientId = packet->getPayload().split(":")[1].toInt();
 
     if(m_asId == 1 && clientId > 16) {
         qDebug() << "Router Not In Our AS(1)";
@@ -78,7 +68,9 @@ void DHCPServer::assignIP(const PacketPtr_t &packet) {
 
 void DHCPServer::sendOffer(const DHCPLease &lease) {
     QString payload = QString("DHCP_OFFER:%1:%2").arg(lease.ipAddress).arg(lease.clientId);
-    auto offerPacket = QSharedPointer<Packet>::create(PacketType::DHCPOffer, payload, 10); // Changed to DHCPOffer and TTL=10
+    auto offerPacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
+
+    offerPacket->setTTL(10); // Defaut TTL For Offer DHCP Server
 
     if (m_router) {
         const auto &ports = m_router->getPorts();

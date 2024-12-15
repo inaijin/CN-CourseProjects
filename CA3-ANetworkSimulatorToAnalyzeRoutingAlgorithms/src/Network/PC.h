@@ -15,10 +15,9 @@ public:
 
     PortPtr_t getPort();
 
+public Q_SLOTS:
+    void initialize();
     void generatePacket();
-
-public slots:
-    void receivePacket(const PacketPtr_t &packet);
 
 private:
     PortPtr_t m_port;

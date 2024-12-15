@@ -17,7 +17,7 @@ class Node : public QObject
 
 public:
     explicit Node(int id, const QString &ipAddress, NodeType type, QObject *parent = nullptr);
-    virtual ~Node() = 0;
+    virtual ~Node();
 
     int getId() const;
     QString getIPAddress() const;
@@ -26,15 +26,12 @@ public:
     static int getNextGlobalId();
 
 protected:
-    // Removed QThread inheritance and run() method
-
     int m_id;
     QString m_ipAddress;
     NodeType m_type;
     mutable QMutex m_mutex;
 
     static int s_globalNodeId;
-    static QMutex s_mutex; // Static mutex for thread-safe access to s_globalNodeId
 };
 
 #endif // NODE_H

@@ -1,6 +1,6 @@
 #include "Packet.h"
 
-std::atomic<qint64> Packet::s_nextId{0}; // Initialize as atomic
+qint64 Packet::s_nextId = 0;
 
 Packet::Packet(PacketType type, const QString &payload)
     : m_type(type),

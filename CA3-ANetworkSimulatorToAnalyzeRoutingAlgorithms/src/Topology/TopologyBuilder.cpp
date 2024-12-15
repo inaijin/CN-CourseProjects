@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <stdexcept>
 #include <QJsonArray>
+#include <QThread>
 
 TopologyBuilder::TopologyBuilder(const QJsonObject &config, const IdAssignment &idAssignment, QObject *parent)
     : QObject(parent), m_config(config), m_idAssignment(idAssignment)
@@ -57,7 +58,14 @@ void TopologyBuilder::createRouters() {
             continue;
         }
 
-        auto router = QSharedPointer<Router>::create(routerId, "", portCount, nullptr);        // No placeholder IP
+        auto router = QSharedPointer<Router>::create(routerId, "", portCount, nullptr);
+        QThread *routerThread = new QThread(this);
+        router->moveToThread(routerThread);
+
+        connect(routerThread, &QThread::started, router.data(), &Router::initialize);
+        connect(routerThread, &QThread::finished, router.data(), &QObject::deleteLater);
+
+        routerThread->start();
         m_routers.push_back(router);
         qDebug() << "Created Router with ID:" << routerId;
     }
@@ -113,6 +121,13 @@ void TopologyBuilder::createPCs()
 
             QString pcIP = baseIP + QString::number(pcId);
             auto pc = QSharedPointer<PC>::create(pcId, pcIP, nullptr);
+            QThread *pcThread = new QThread(this);
+            pc->moveToThread(pcThread);
+
+            connect(pcThread, &QThread::started, pc.data(), &PC::initialize);
+            connect(pcThread, &QThread::finished, pc.data(), &QObject::deleteLater);
+
+            pcThread->start();;
             m_pcs.push_back(pc);
 
             PortBindingManager bindingManager;
