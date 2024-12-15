@@ -20,6 +20,7 @@ public:
     void initializeNetwork();
     void startSimulation();
     void initiateDHCPPhase();
+    void checkAssignedIP();
 
 private:
     QJsonObject m_config;

@@ -4,6 +4,7 @@
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
+#include <QThread>
 
 Simulator::Simulator(QObject *parent)
     : QObject(parent)
@@ -95,6 +96,11 @@ void Simulator::startSimulation()
     // Initiate DHCP Phase
     initiateDHCPPhase();
 
+    QThread::sleep(5);
+
+    // Check the assigned IP's
+    checkAssignedIP();
+
     // Start clock, events, etc. Complete In Future Phases
 }
 
@@ -104,5 +110,13 @@ void Simulator::initiateDHCPPhase()
         m_network->initiateDHCPPhase();
     } else {
         qWarning() << "Failed to initiate DHCP phase: Network not initialized.";
+    }
+}
+
+void Simulator::checkAssignedIP() {
+    if (m_network) {
+        m_network->checkAssignedIP();
+    } else {
+        qWarning() << "Failed to check IP: Network not initialized.";
     }
 }

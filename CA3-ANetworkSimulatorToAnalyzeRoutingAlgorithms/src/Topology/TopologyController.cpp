@@ -75,3 +75,10 @@ void TopologyController::initiateDHCPPhase() {
     }
     qDebug() << "DHCP phase initiated.";
 }
+
+void TopologyController::checkAssignedIP() {
+    const auto &routers = m_builder->getRouters();
+    for (const auto &router : routers) {
+        qDebug() << "IP Router " << router->getId() << " is " << router->getIPAddress();
+    }
+}

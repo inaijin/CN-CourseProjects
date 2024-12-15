@@ -178,6 +178,7 @@ void Router::processPacket(const PacketPtr_t &packet) {
             if (clientId == m_id) {
                 qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
                 m_assignedIP = offeredIP;
+                m_ipAddress = m_assignedIP;
                 m_hasValidIP = true;
                 qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
             } else {

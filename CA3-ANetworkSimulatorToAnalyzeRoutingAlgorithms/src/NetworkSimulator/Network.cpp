@@ -53,3 +53,18 @@ void Network::initiateDHCPPhase()
         }
     }
 }
+
+void Network::checkAssignedIP() {
+    for (const auto &asInstance : m_autonomousSystems)
+    {
+        auto topologyController = asInstance->getTopologyController();
+        if (topologyController)
+        {
+            topologyController->checkAssignedIP();
+        }
+        else
+        {
+            qWarning() << "TopologyController is not initialized for AS.";
+        }
+    }
+}
