@@ -27,6 +27,7 @@ public:
     void forwardPacket(const PacketPtr_t &packet);
     void logPortStatuses() const;
     void processPacket(const PacketPtr_t &packet);
+    void setIP(QString IP) { m_ipAddress = IP; }
 
     void setDHCPServer(QSharedPointer<DHCPServer> dhcpServer);
     QSharedPointer<DHCPServer> getDHCPServer();

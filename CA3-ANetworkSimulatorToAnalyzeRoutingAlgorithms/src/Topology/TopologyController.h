@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <vector>
+#include <../Network/Router.h>
 
 class TopologyBuilder;
 class AutonomousSystem;
@@ -23,6 +24,7 @@ public:
 
 private:
     QSharedPointer<TopologyBuilder> m_builder;
+    void initiateDHCPIP(const QSharedPointer<Router> &router);
 };
 
 #endif // TOPOLOGYCONTROLLER_H

@@ -21,6 +21,7 @@ public:
     const std::vector<QSharedPointer<Router>> &getRouters() const;
     const std::vector<QSharedPointer<PC>> &getPCs() const;
     const QJsonObject &getConfig() const;
+    int getASIdForRouter(int routerId) const;
 
 private:
     QJsonObject m_config;
@@ -30,6 +31,7 @@ private:
 
     std::vector<QSharedPointer<Router>> m_routers;
     std::vector<QSharedPointer<PC>> m_pcs;
+    std::map<int, int> m_routerToASMap;
 
     void createRouters();
     void createPCs();

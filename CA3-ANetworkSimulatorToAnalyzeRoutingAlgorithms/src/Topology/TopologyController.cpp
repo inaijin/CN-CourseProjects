@@ -25,6 +25,31 @@ void TopologyController::validateTopology() const
     }
 }
 
+void TopologyController::initiateDHCPIP(const QSharedPointer<Router> &router) {
+    if (!router) {
+        qWarning() << "Invalid router passed to initiateDHCPIP.";
+        return;
+    }
+
+    int asId = m_builder->getASIdForRouter(router->getId());
+
+    QString ipPrefix;
+    if (asId == 1) {
+        ipPrefix = "192.168.100.";
+    } else if (asId == 2) {
+        ipPrefix = "192.168.200.";
+    } else {
+        qWarning() << "Unsupported AS ID:" << asId << "for Router" << router->getId();
+        return;
+    }
+
+    QString assignedIP = ipPrefix + QString::number(router->getId());
+    router->setIP(assignedIP);
+
+    qDebug() << "DHCP Server Router" << router->getId()
+             << "assigned IP:" << assignedIP;
+}
+
 void TopologyController::connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS)
 {
     const auto &routers = m_builder->getRouters();
@@ -71,6 +96,7 @@ void TopologyController::initiateDHCPPhase() {
             router->requestIPFromDHCP();
         } else {
             qDebug() << "Router" << router->getId() << "is a DHCP server.";
+            initiateDHCPIP(router);
         }
     }
     qDebug() << "DHCP phase initiated.";

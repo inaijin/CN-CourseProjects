@@ -37,13 +37,19 @@ void DHCPServer::receivePacket(const PacketPtr_t &packet) {
 }
 
 void DHCPServer::assignIP(const PacketPtr_t &packet) {
-    int clientId = packet->getPayload().split(":")[1].toInt();
+    QStringList parts = packet->getPayload().split(":");
+    if (parts.size() < 2) {
+        qWarning() << "Malformed DHCP_REQUEST packet.";
+        return;
+    }
 
-    if(m_asId == 1 && clientId > 16) {
-        qDebug() << "Router Not In Our AS(1)";
+    int clientId = parts[1].toInt();
+
+    if (m_asId == 1 && clientId > 16) {
+        qDebug() << "Router" << clientId << "Not In Our AS(1)";
         return;
     } else if (m_asId == 2 && clientId < 17) {
-        qDebug() << "Router Not In Our AS(2)";
+        qDebug() << "Router" << clientId << "Not In Our AS(2)";
         return;
     }
 
@@ -57,10 +63,17 @@ void DHCPServer::assignIP(const PacketPtr_t &packet) {
         }
     }
 
-    QString ipAddress = m_ipPrefix + QString::number(m_nextAvailableId);
+    QString ipAddress = QString("%1%2").arg(m_ipPrefix).arg(clientId);
+
+    for (const auto &lease : m_leases) {
+        if (lease.ipAddress == ipAddress) {
+            qWarning() << "IP address" << ipAddress << "is already assigned. Cannot assign to client" << clientId;
+            return;
+        }
+    }
+
     DHCPLease lease = {ipAddress, clientId, m_currentTime + LEASE_DURATION};
     m_leases.append(lease);
-    m_nextAvailableId++;
 
     qDebug() << "New IP assigned:" << ipAddress << "for client" << clientId;
     sendOffer(lease);
@@ -70,7 +83,7 @@ void DHCPServer::sendOffer(const DHCPLease &lease) {
     QString payload = QString("DHCP_OFFER:%1:%2").arg(lease.ipAddress).arg(lease.clientId);
     auto offerPacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
 
-    offerPacket->setTTL(10); // Defaut TTL For Offer DHCP Server
+    offerPacket->setTTL(10); // Default TTL For Offer DHCP Server
 
     if (m_router) {
         const auto &ports = m_router->getPorts();

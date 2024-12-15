@@ -34,8 +34,8 @@ private:
     void reclaimExpiredLeases();
 
     int m_asId;
-    QSharedPointer<Port> m_port;  // For directly assigned ports
-    QSharedPointer<Router> m_router;  // For router-based initialization
+    QSharedPointer<Port> m_port;
+    QSharedPointer<Router> m_router;
     QVector<DHCPLease> m_leases;
     QString m_ipPrefix;
     int m_nextAvailableId;

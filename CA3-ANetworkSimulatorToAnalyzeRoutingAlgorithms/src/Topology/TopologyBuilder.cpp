@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <QJsonArray>
 #include <QThread>
+#include <algorithm>
 
 TopologyBuilder::TopologyBuilder(const QJsonObject &config, const IdAssignment &idAssignment, QObject *parent)
     : QObject(parent), m_config(config), m_idAssignment(idAssignment)
@@ -68,6 +69,8 @@ void TopologyBuilder::createRouters() {
         routerThread->start();
         m_routers.push_back(router);
         qDebug() << "Created Router with ID:" << routerId;
+
+        m_routerToASMap[routerId] = asId;
     }
 }
 
@@ -127,7 +130,7 @@ void TopologyBuilder::createPCs()
             connect(pcThread, &QThread::started, pc.data(), &PC::initialize);
             connect(pcThread, &QThread::finished, pc.data(), &QObject::deleteLater);
 
-            pcThread->start();;
+            pcThread->start();
             m_pcs.push_back(pc);
 
             PortBindingManager bindingManager;
@@ -189,6 +192,7 @@ void TopologyBuilder::setupTopology()
     }
     else if (m_topologyType == "RingStar")
     {
+        // Find the hub router (assuming the router with the highest ID is the hub)
         auto hubRouter = *std::max_element(m_routers.begin(), m_routers.end(),
                                                                       [](const QSharedPointer<Router> &a, const QSharedPointer<Router> &b) {
                                                return a->getId() < b->getId();
@@ -207,6 +211,7 @@ void TopologyBuilder::setupTopology()
                       return a->getId() < b->getId();
                   });
 
+        // Connect ring routers in a circular manner
         for (int i = 0; i < ringRouters.size(); ++i)
         {
             auto routerA = ringRouters[i];
@@ -215,12 +220,23 @@ void TopologyBuilder::setupTopology()
             bindingManager.bind(routerA->getAvailablePort(), routerB->getAvailablePort(), routerA->getId(), routerB->getId());
         }
 
+        // Connect every second router in the ring to the hub
         for (int i = 0; i < ringRouters.size(); i += 2)
         {
             auto router = ringRouters[i];
             PortBindingManager bindingManager;
             bindingManager.bind(router->getAvailablePort(), hubRouter->getAvailablePort(), router->getId(), hubRouter->getId());
         }
+    }
+}
+
+int TopologyBuilder::getASIdForRouter(int routerId) const {
+    auto it = m_routerToASMap.find(routerId);
+    if (it != m_routerToASMap.end()) {
+        return it->second;
+    } else {
+        qWarning() << "AS ID not found for Router" << routerId;
+        return -1;
     }
 }
 
