@@ -90,6 +90,8 @@ void TopologyController::connectToOtherAS(const std::vector<QSharedPointer<Auton
 
 void TopologyController::initiateDHCPPhase() {
     const auto &routers = m_builder->getRouters();
+    const auto &pcs = m_builder->getPCs();
+
     for (const auto &router : routers) {
         if (!router->isDHCPServer()) {
             qDebug() << "Router" << router->getId() << "sending DHCP request...";
@@ -99,7 +101,14 @@ void TopologyController::initiateDHCPPhase() {
             initiateDHCPIP(router);
         }
     }
-    qDebug() << "DHCP phase initiated.";
+    qDebug() << "DHCP phase initiated for routers.";
+
+    for (const auto &pc : pcs)
+    {
+        qDebug() << "PC" << pc->getId() << "sending DHCP request...";
+        pc->requestIPFromDHCP();
+    }
+    qDebug() << "DHCP phase initiated for pc's.";
 }
 
 void TopologyController::checkAssignedIP() {

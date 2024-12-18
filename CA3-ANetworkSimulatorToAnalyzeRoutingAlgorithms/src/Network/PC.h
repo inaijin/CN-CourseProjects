@@ -18,6 +18,8 @@ public:
 public Q_SLOTS:
     void initialize();
     void generatePacket();
+    void requestIPFromDHCP();
+    void processDHCPResponse(const PacketPtr_t &packet);
 
 private:
     PortPtr_t m_port;

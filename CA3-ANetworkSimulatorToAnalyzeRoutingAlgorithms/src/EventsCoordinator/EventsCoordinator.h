@@ -8,6 +8,7 @@
 #include <QSharedPointer>
 #include <vector>
 #include "../Network/Router.h"
+#include "../Network/PC.h"
 
 class DataGenerator;
 class Packet;
@@ -51,6 +52,7 @@ private:
 
     std::vector<QSharedPointer<Packet>> m_packetQueue;
     std::vector<QSharedPointer<Router>> m_routers;
+    std::vector<QSharedPointer<PC>> m_pcs;
 
     void synchronizeRoutersWithDHCP();
     int m_currentTime = 0;

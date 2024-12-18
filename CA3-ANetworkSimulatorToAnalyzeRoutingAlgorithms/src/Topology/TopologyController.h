@@ -21,6 +21,7 @@ public:
     void connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS);
     void initiateDHCPPhase();
     void checkAssignedIP();
+    void checkAssignedIPPC();
 
 private:
     QSharedPointer<TopologyBuilder> m_builder;

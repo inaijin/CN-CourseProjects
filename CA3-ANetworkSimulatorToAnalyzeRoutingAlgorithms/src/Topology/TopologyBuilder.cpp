@@ -90,8 +90,6 @@ void TopologyBuilder::createPCs()
         return;
     }
 
-    QString baseIP = QString("192.168.%1.").arg(asId * 100);
-
     for (const QJsonValue &gatewayValue : gateways)
     {
         QJsonObject gatewayObj = gatewayValue.toObject();
@@ -122,8 +120,7 @@ void TopologyBuilder::createPCs()
                 continue;
             }
 
-            QString pcIP = baseIP + QString::number(pcId);
-            auto pc = QSharedPointer<PC>::create(pcId, pcIP, nullptr);
+            auto pc = QSharedPointer<PC>::create(pcId, " ", nullptr); // Removed Pre DHCP IP Assignment
             QThread *pcThread = new QThread(this);
             pc->moveToThread(pcThread);
 

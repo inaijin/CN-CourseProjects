@@ -34,3 +34,30 @@ void PC::generatePacket()
     auto packet = QSharedPointer<Packet>::create(PacketType::Data, "Payload");
     m_port->sendPacket(packet);
 }
+
+void PC::requestIPFromDHCP()
+{
+    qDebug() << "PC" << m_id << "sending DHCP request...";
+    auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
+    m_port->sendPacket(packet);
+}
+
+void PC::processDHCPResponse(const PacketPtr_t &packet)
+{
+    if (!packet || packet->getPayload().isEmpty())
+        return;
+
+    if (packet->getPayload().contains("DHCP_OFFER"))
+    {
+        QStringList parts = packet->getPayload().split(":");
+        if (parts.size() >= 2)
+        {
+            m_ipAddress = parts[1];
+            qDebug() << "PC" << m_id << "received and assigned IP:" << m_ipAddress;
+        }
+        else
+        {
+            qWarning() << "PC" << m_id << "received malformed DHCP offer:" << packet->getPayload();
+        }
+    }
+}
