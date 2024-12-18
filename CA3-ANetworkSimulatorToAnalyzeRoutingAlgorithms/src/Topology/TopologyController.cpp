@@ -105,8 +105,15 @@ void TopologyController::initiateDHCPPhase() {
 
     for (const auto &pc : pcs)
     {
-        qDebug() << "PC" << pc->getId() << "sending DHCP request...";
-        pc->requestIPFromDHCP();
+        if (pc->getIPAddress() == " ")
+        {
+            qDebug() << "PC" << pc->getId() << "sending DHCP request...";
+            pc->requestIPFromDHCP();
+        }
+        else
+        {
+            qDebug() << "PC" << pc->getId() << "already has a valid IP:" << pc->getIPAddress();
+        }
     }
     qDebug() << "DHCP phase initiated for pc's.";
 }
@@ -115,5 +122,12 @@ void TopologyController::checkAssignedIP() {
     const auto &routers = m_builder->getRouters();
     for (const auto &router : routers) {
         qDebug() << "IP Router " << router->getId() << " is " << router->getIPAddress();
+    }
+}
+
+void TopologyController::checkAssignedIPPC() {
+    const auto &pcs = m_builder->getPCs();
+    for (const auto &pc : pcs) {
+        qDebug() << "IP pc " << pc->getId() << " is " << pc->getIPAddress();
     }
 }

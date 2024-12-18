@@ -68,3 +68,18 @@ void Network::checkAssignedIP() {
         }
     }
 }
+
+void Network::checkAssignedIPPC() {
+    for (const auto &asInstance : m_autonomousSystems)
+    {
+        auto topologyController = asInstance->getTopologyController();
+        if (topologyController)
+        {
+            topologyController->checkAssignedIPPC();
+        }
+        else
+        {
+            qWarning() << "TopologyController is not initialized for AS.";
+        }
+    }
+}

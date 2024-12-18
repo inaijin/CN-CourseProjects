@@ -37,15 +37,24 @@ void PC::generatePacket()
 
 void PC::requestIPFromDHCP()
 {
-    qDebug() << "PC" << m_id << "sending DHCP request...";
+    if (!m_ipAddress.isEmpty())
+    {
+        qDebug() << "PC" << m_id << "already has a valid IP:" << m_ipAddress;
+        return;
+    }
+
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
+    qDebug() << "PC" << m_id << "sending DHCP request with payload:" << packet->getPayload();
     m_port->sendPacket(packet);
 }
 
 void PC::processDHCPResponse(const PacketPtr_t &packet)
 {
     if (!packet || packet->getPayload().isEmpty())
+    {
+        qWarning() << "PC" << m_id << "received an empty or invalid packet.";
         return;
+    }
 
     if (packet->getPayload().contains("DHCP_OFFER"))
     {
@@ -57,7 +66,11 @@ void PC::processDHCPResponse(const PacketPtr_t &packet)
         }
         else
         {
-            qWarning() << "PC" << m_id << "received malformed DHCP offer:" << packet->getPayload();
+            qWarning() << "PC" << m_id << "received a malformed DHCP offer:" << packet->getPayload();
         }
+    }
+    else
+    {
+        qWarning() << "PC" << m_id << "received an unknown packet type:" << packet->getPayload();
     }
 }

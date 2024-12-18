@@ -21,6 +21,7 @@ public:
     void startSimulation();
     void initiateDHCPPhase();
     void checkAssignedIP();
+    void checkAssignedIPPC();
 
 private:
     QJsonObject m_config;

@@ -100,6 +100,7 @@ void Simulator::startSimulation()
 
     // Check the assigned IP's
     checkAssignedIP();
+    checkAssignedIPPC();
 
     // Start clock, events, etc. Complete In Future Phases
 }
@@ -116,6 +117,14 @@ void Simulator::initiateDHCPPhase()
 void Simulator::checkAssignedIP() {
     if (m_network) {
         m_network->checkAssignedIP();
+    } else {
+        qWarning() << "Failed to check IP: Network not initialized.";
+    }
+}
+
+void Simulator::checkAssignedIPPC() {
+    if (m_network) {
+        m_network->checkAssignedIPPC();
     } else {
         qWarning() << "Failed to check IP: Network not initialized.";
     }
