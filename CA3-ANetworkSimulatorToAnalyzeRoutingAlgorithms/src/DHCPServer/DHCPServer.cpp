@@ -45,11 +45,18 @@ void DHCPServer::assignIP(const PacketPtr_t &packet) {
 
     int clientId = parts[1].toInt();
 
-    if (m_asId == 1 && clientId > 16) {
-        qDebug() << "Router" << clientId << "Not In Our AS(1)";
-        return;
-    } else if (m_asId == 2 && clientId < 17) {
-        qDebug() << "Router" << clientId << "Not In Our AS(2)";
+    if (m_asId == 1) {
+        if (!((clientId >= 1 && clientId <= 16) || (clientId >= 24 && clientId <= 31))) {
+            qDebug() << "Client" << clientId << "Not In Our AS(1)";
+            return;
+        }
+    } else if (m_asId == 2) {
+        if (!((clientId >= 17 && clientId <= 23) || (clientId >= 32 && clientId <= 38))) {
+            qDebug() << "Client" << clientId << "Not In Our AS(2)";
+            return;
+        }
+    } else {
+        qWarning() << "Unsupported AS ID:" << m_asId;
         return;
     }
 

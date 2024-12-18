@@ -19,6 +19,7 @@ public:
     void initialize(const IdAssignment &idAssignment);
     void connectAutonomousSystems();
     void initiateDHCPPhase();
+    void initiateDHCPPhaseForPC();
     void checkAssignedIP();
     void checkAssignedIPPC();
 

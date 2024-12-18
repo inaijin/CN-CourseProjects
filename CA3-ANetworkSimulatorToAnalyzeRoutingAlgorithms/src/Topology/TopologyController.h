@@ -20,6 +20,7 @@ public:
     void validateTopology() const;
     void connectToOtherAS(const std::vector<QSharedPointer<AutonomousSystem>> &allAS);
     void initiateDHCPPhase();
+    void initiateDHCPPhaseForPC();
     void checkAssignedIP();
     void checkAssignedIPPC();
 

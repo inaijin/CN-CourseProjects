@@ -98,8 +98,16 @@ void Simulator::startSimulation()
 
     QThread::sleep(5);
 
+    if (m_network) {
+        m_network->initiateDHCPPhaseForPC();
+    }
+
+    QThread::sleep(5);
+
     // Check the assigned IP's
     checkAssignedIP();
+
+    // Check the assigned IP's for PCs
     checkAssignedIPPC();
 
     // Start clock, events, etc. Complete In Future Phases
