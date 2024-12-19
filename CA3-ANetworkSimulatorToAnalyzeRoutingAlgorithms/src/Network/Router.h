@@ -26,22 +26,22 @@ struct RouteEntry {
     qint64 lastUpdateTime;
     PortPtr_t learnedFromPort;
 
-    // RIP Timers
+    bool isDirect;
     int invalidTimer;
     int holdDownTimer;
     int flushTimer;
 
-    // Initialize timers
     RouteEntry(const QString &dest = "",
                const QString &m = "",
                const QString &nh = "",
                int met = -1,
                RoutingProtocol proto = RoutingProtocol::RIP,
                qint64 time = 0,
-               PortPtr_t fromPort = nullptr)
+               PortPtr_t fromPort = nullptr,
+               bool direct = false)
         : destination(dest), mask(m), nextHop(nh), metric(met),
         protocol(proto), lastUpdateTime(time), learnedFromPort(fromPort),
-        invalidTimer(180), holdDownTimer(0), flushTimer(0) {}
+        isDirect(direct), invalidTimer(0), holdDownTimer(0), flushTimer(0) {}
 };
 
 class Router : public Node, public QEnableSharedFromThis<Router>
@@ -67,6 +67,7 @@ public:
     QSharedPointer<DHCPServer> getDHCPServer();
     bool isDHCPServer() const;
     QString findBestRoute(const QString &destinationIP) const;
+    void addDirectRoute(const QString &destination, const QString &mask);
 
 public Q_SLOTS:
     void initialize();
@@ -79,7 +80,7 @@ public Q_SLOTS:
 
     // RIP specific methods
     void enableRIP();
-    void onTick(); // connected to EventsCoordinator tick signal
+    void onTick();
     void sendRIPUpdate();
     void processRIPUpdate(const PacketPtr_t  &packet);
     void handleRouteTimeouts();
@@ -97,15 +98,15 @@ private:
     QVector<RouteEntry> m_routingTable;
 
     // RIP-related fields
-    const int RIP_UPDATE_INTERVAL = 30;    // seconds
-    const int RIP_ROUTE_TIMEOUT   = 180;   // seconds
+    const int RIP_UPDATE_INTERVAL = 5;
+    const int RIP_ROUTE_TIMEOUT   = 180;
     const int RIP_INFINITY        = 16;
-    const int RIP_INVALID_TIMER = 180;
-    const int RIP_HOLDOWN_TIMER = 180;
-    const int RIP_FLUSH_TIMER = 240;
+    const int RIP_INVALID_TIMER = 20;
+    const int RIP_HOLDOWN_TIMER = 20;
+    const int RIP_FLUSH_TIMER = 30;
 
     qint64 m_lastRIPUpdateTime;
-    qint64 m_currentTime; // increments every tick
+    qint64 m_currentTime;
 
     void initializePorts();
     bool hasSeenPacket(const PacketPtr_t  &packet);

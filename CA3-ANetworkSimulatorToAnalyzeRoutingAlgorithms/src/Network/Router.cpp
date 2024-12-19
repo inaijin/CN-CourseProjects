@@ -106,18 +106,35 @@ void Router::processDHCPResponse(const PacketPtr_t &packet)
 {
     if (!packet || packet->getPayload().isEmpty()) return;
 
-    if (packet->getPayload().contains("DHCP_OFFER"))
-    {
+    if (packet->getPayload().contains("DHCP_OFFER")) {
         QStringList parts = packet->getPayload().split(":");
-        if (parts.size() >= 2)
-        {
-            m_assignedIP = parts[1];
-            m_hasValidIP = true;
-            qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
-        }
-        else
-        {
-            qWarning() << "Router" << m_id << "received malformed DHCP offer:" << packet->getPayload();
+        if (parts.size() == 3) {
+            QString offeredIP = parts[1];
+            int clientId = parts[2].toInt();
+
+            if (clientId == m_id) {
+                if (m_hasValidIP) {
+                    qDebug() << "Router" << m_id << "already has a valid IP:" << m_assignedIP;
+                    return;
+                }
+                qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
+                m_assignedIP = offeredIP;
+                m_ipAddress = m_assignedIP;
+                m_hasValidIP = true;
+                qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
+
+                addDirectRoute(m_assignedIP, "255.255.255.255");
+                qDebug() << "Router" << m_id << "added direct route for its own IP.";
+            } else {
+                if (!hasSeenPacket(packet)) {
+                    markPacketAsSeen(packet);
+                    forwardPacket(packet);
+                } else {
+                    qDebug() << "Router" << m_id << "already seen this DHCP offer, dropping to prevent loops.";
+                }
+            }
+        } else {
+            qWarning() << "Malformed DHCP_OFFER packet on Router" << m_id << "payload:" << packet->getPayload();
         }
     }
 }
@@ -190,6 +207,9 @@ void Router::processPacket(const PacketPtr_t &packet) {
                 m_ipAddress = m_assignedIP;
                 m_hasValidIP = true;
                 qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
+
+                addDirectRoute(m_assignedIP, "255.255.255.255");
+                qDebug() << "Router" << m_id << "added direct route for its own IP.";
             } else {
                 if (!hasSeenPacket(packet)) {
                     markPacketAsSeen(packet);
@@ -209,45 +229,64 @@ void Router::processPacket(const PacketPtr_t &packet) {
     }
 }
 
-void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol, PortPtr_t learnedFromPort)
-{
+void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol, PortPtr_t learnedFromPort) {
     qDebug() << "Router" << m_id << "addRoute called with:" << destination << mask << nextHop << metric;
+
     qint64 now = m_currentTime;
     bool updated = false;
 
     for (auto &entry : m_routingTable) {
+        if (entry.isDirect && entry.destination == destination && entry.mask == mask) {
+            qDebug() << "Router" << m_id << ": Ignoring learned route to" << destination << "because direct route exists.";
+            return;
+        }
+    }
+
+    int newInvalidTimer = RIP_INVALID_TIMER;
+
+    for (auto &entry : m_routingTable) {
         if (entry.destination == destination && entry.mask == mask) {
-            if (entry.holdDownTimer > 0) {
-                qDebug() << "Router" << m_id << "route is in hold-down, ignoring update for" << destination;
+            if (entry.isDirect) {
+                qDebug() << "Router" << m_id << "route is direct, ignoring learned route";
                 return;
             }
 
-            if (entry.metric <= metric) {
-                qDebug() << "Router" << m_id << "existing route is better or equal, not updating.";
+            if (entry.holdDownTimer > 0 && metric >= entry.metric) {
+                qDebug() << "Router" << m_id << ": in hold-down for" << destination << ", ignoring worse or equal metric route.";
                 return;
-            } else {
+            }
+
+            if (metric < entry.metric) {
                 entry.nextHop = nextHop;
                 entry.metric = metric;
                 entry.protocol = protocol;
                 entry.lastUpdateTime = now;
                 entry.learnedFromPort = learnedFromPort;
-                entry.invalidTimer = RIP_INVALID_TIMER;
+                entry.invalidTimer = newInvalidTimer;
                 entry.holdDownTimer = 0;
                 entry.flushTimer = 0;
                 qDebug() << "Router" << m_id << "updated route to" << destination << "with better metric" << metric;
-                updated = true;
-                break;
+            } else {
+                if (metric == entry.metric) {
+                    entry.invalidTimer = newInvalidTimer;
+                    entry.lastUpdateTime = now;
+                    qDebug() << "Router" << m_id << "refreshed route to" << destination << "same metric" << metric;
+                } else {
+                    entry.invalidTimer = newInvalidTimer;
+                    entry.lastUpdateTime = now;
+                    qDebug() << "Router" << m_id << "got worse metric route to" << destination << ", not changing metric but resetting invalid timer";
+                }
             }
+            updated = true;
+            break;
         }
     }
 
     if (!updated) {
-        RouteEntry newEntry(destination, mask, nextHop, metric, protocol, now, learnedFromPort);
-        newEntry.invalidTimer = RIP_INVALID_TIMER;
-        newEntry.holdDownTimer = 0;
-        newEntry.flushTimer = 0;
+        RouteEntry newEntry(destination, mask, nextHop, metric, protocol, now, learnedFromPort, false);
+        newEntry.invalidTimer = newInvalidTimer;
+        qDebug() << "Router" << m_id << "added new learned route to" << destination << "metric" << metric;
         m_routingTable.append(newEntry);
-        qDebug() << "Router" << m_id << "added new route to" << destination << "metric" << metric;
     }
 }
 
@@ -300,18 +339,17 @@ void Router::onTick()
     handleRouteTimeouts();
 }
 
-void Router::sendRIPUpdate()
-{
-    qDebug() << "Router" << m_id << "preparing RIP update. Current routes:" << m_routingTable.size();
-
+void Router::sendRIPUpdate() {
     for (auto &port : m_ports) {
         if (!port->isConnected()) continue;
 
         QString payload = "RIP_UPDATE:";
         int routeCount = 0;
         for (const auto &entry : m_routingTable) {
-            int advertisedMetric = (entry.learnedFromPort == port) ? RIP_INFINITY : entry.metric;
-
+            int advertisedMetric = entry.metric;
+            if (entry.learnedFromPort == port && !entry.isDirect) {
+                advertisedMetric = RIP_INFINITY;
+            }
             payload += entry.destination + "," + entry.mask + "," + QString::number(advertisedMetric) + "#";
             routeCount++;
         }
@@ -385,35 +423,47 @@ void Router::processRIPUpdate(const PacketPtr_t &packet)
     }
 }
 
-void Router::handleRouteTimeouts()
-{
+void Router::handleRouteTimeouts() {
     for (auto &entry : m_routingTable) {
+        if (entry.isDirect) continue;
+
         if (entry.invalidTimer > 0) {
             entry.invalidTimer--;
-            if (entry.invalidTimer == 0) {
-                qDebug() << "Router" << m_id << ": Route to" << entry.destination << "invalid, entering hold-down.";
+            if (entry.invalidTimer == 0 && entry.metric < RIP_INFINITY) {
                 entry.metric = RIP_INFINITY;
                 entry.holdDownTimer = RIP_HOLDOWN_TIMER;
+                qDebug() << "Router" << m_id << ": Route to" << entry.destination << "invalidated, starting hold-down.";
             }
-        } else if (entry.holdDownTimer > 0) {
+        }
+
+        if (entry.holdDownTimer > 0) {
             entry.holdDownTimer--;
-            if (entry.holdDownTimer == 0) {
-                if (entry.metric == RIP_INFINITY) {
-                    entry.flushTimer = RIP_FLUSH_TIMER;
-                    qDebug() << "Router" << m_id << ": Hold-down ended for" << entry.destination << "starting flush timer.";
-                }
+            if (entry.holdDownTimer == 0 && entry.metric == RIP_INFINITY) {
+                entry.flushTimer = RIP_FLUSH_TIMER;
+                qDebug() << "Router" << m_id << ": Hold-down ended for" << entry.destination << ", starting flush timer.";
             }
-        } else if (entry.flushTimer > 0) {
+        }
+
+        if (entry.flushTimer > 0) {
             entry.flushTimer--;
-            if (entry.flushTimer == 0) {
-                qDebug() << "Router" << m_id << ": Flush timer expired for" << entry.destination << "removing route.";
-            }
         }
     }
 
     for (int i = m_routingTable.size() - 1; i >= 0; i--) {
-        if (m_routingTable[i].flushTimer == 0 && m_routingTable[i].metric == RIP_INFINITY && m_routingTable[i].invalidTimer == 0) {
+        if (!m_routingTable[i].isDirect && m_routingTable[i].metric == RIP_INFINITY && m_routingTable[i].flushTimer == 0 && m_routingTable[i].holdDownTimer == 0 && m_routingTable[i].invalidTimer == 0) {
+            qDebug() << "Router" << m_id << ": Removing fully expired route to" << m_routingTable[i].destination;
             m_routingTable.removeAt(i);
         }
     }
+}
+
+void Router::addDirectRoute(const QString &destination, const QString &mask) {
+    qDebug() << "Router" << m_id << "adding stable direct route:" << destination << "/" << mask;
+    RouteEntry directRoute(destination, mask, "", 0, RoutingProtocol::RIP, m_currentTime, nullptr, true);
+    for (int i = m_routingTable.size() - 1; i >= 0; i--) {
+        if (m_routingTable[i].destination == destination && m_routingTable[i].mask == mask && m_routingTable[i].isDirect) {
+            m_routingTable.removeAt(i);
+        }
+    }
+    m_routingTable.append(directRoute);
 }

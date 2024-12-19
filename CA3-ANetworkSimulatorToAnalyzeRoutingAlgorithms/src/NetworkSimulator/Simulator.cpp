@@ -128,6 +128,7 @@ void Simulator::startSimulation()
         // Print all routing tables to see the results
         if (m_network) {
             m_network->printAllRoutingTables();
+            qTerminate();
         }
     });
 
