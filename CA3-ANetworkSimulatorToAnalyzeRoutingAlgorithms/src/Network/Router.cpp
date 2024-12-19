@@ -322,7 +322,7 @@ void Router::onTick()
     m_currentTime++;
     // qDebug() << "Router" << m_id << "tick:" << m_currentTime;
 
-    if (m_currentTime - m_lastRIPUpdateTime >= RIP_UPDATE_INTERVAL && m_hasValidIP) {
+    if (m_currentTime - m_lastRIPUpdateTime >= RIP_UPDATE_INTERVAL) {
         qDebug() << "Router" << m_id << "sending RIP update at time:" << m_currentTime;
         sendRIPUpdate();
         m_lastRIPUpdateTime = m_currentTime;
@@ -451,7 +451,7 @@ void Router::handleRouteTimeouts() {
 
 void Router::addDirectRoute(const QString &destination, const QString &mask) {
     qDebug() << "Router" << m_id << "adding stable direct route:" << destination << "/" << mask;
-    RouteEntry directRoute(destination, mask, "", 0, RoutingProtocol::RIP, m_currentTime, nullptr, true);
+    RouteEntry directRoute(destination, mask, destination, 0, RoutingProtocol::RIP, m_currentTime, nullptr, true);
     for (int i = m_routingTable.size() - 1; i >= 0; i--) {
         if (m_routingTable[i].destination == destination && m_routingTable[i].mask == mask && m_routingTable[i].isDirect) {
             m_routingTable.removeAt(i);
