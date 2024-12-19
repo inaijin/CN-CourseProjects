@@ -200,3 +200,54 @@ void Router::processPacket(const PacketPtr_t &packet) {
         qDebug() << "Router" << m_id << "received unknown/unsupported packet:" << payload << "Dropping it.";
     }
 }
+
+void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol)
+{
+    // Check if a route to the same destination with a better metric already exists
+    for (auto &entry : m_routingTable) {
+        if (entry.destination == destination && entry.mask == mask) {
+            if (entry.metric <= metric) {
+                return;
+            } else {
+                entry.nextHop = nextHop;
+                entry.metric = metric;
+                entry.protocol = protocol;
+                qDebug() << "Router" << m_id << ": Updated route to" << destination << "with better metric" << metric;
+                return;
+            }
+        }
+    }
+
+    // If no existing route or not better, add a new entry
+    RouteEntry newRoute(destination, mask, nextHop, metric, protocol);
+    m_routingTable.append(newRoute);
+    qDebug() << "Router" << m_id << ": Added new route to" << destination << "via" << nextHop << "metric =" << metric;
+}
+
+QString Router::findBestRoute(const QString &destinationIP) const
+{
+    int bestMetric = INT_MAX;
+    QString bestNextHop = "";
+
+    for (const auto &route : m_routingTable) {
+        if (route.destination == destinationIP && route.metric < bestMetric) {
+            bestMetric = route.metric;
+            bestNextHop = route.nextHop;
+        }
+    }
+
+    return bestNextHop;
+}
+
+void Router::printRoutingTable() const
+{
+    qDebug() << "Routing Table for Router" << m_id << ":";
+    for (const auto &entry : m_routingTable) {
+        QString protoStr = (entry.protocol == RoutingProtocol::RIP) ? "RIP" : "OSPF";
+        qDebug() << "Dest:" << entry.destination
+                 << "Mask:" << entry.mask
+                 << "NextHop:" << entry.nextHop
+                 << "Metric:" << entry.metric
+                 << "Protocol:" << protoStr;
+    }
+}

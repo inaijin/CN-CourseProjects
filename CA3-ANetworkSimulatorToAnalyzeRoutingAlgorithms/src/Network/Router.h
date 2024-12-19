@@ -11,6 +11,26 @@
 
 class UDP;
 
+enum class RoutingProtocol {
+    RIP,
+    OSPF
+};
+
+struct RouteEntry {
+    QString destination;
+    QString mask;
+    QString nextHop;
+    int metric;
+    RoutingProtocol protocol;
+
+    RouteEntry(const QString &dest = "",
+               const QString &m = "",
+               const QString &nh = "",
+               int met = -1,
+               RoutingProtocol proto = RoutingProtocol::RIP)
+        : destination(dest), mask(m), nextHop(nh), metric(met), protocol(proto) {}
+};
+
 class Router : public Node, public QEnableSharedFromThis<Router>
 {
     Q_OBJECT
@@ -32,11 +52,15 @@ public:
     void setDHCPServer(QSharedPointer<DHCPServer> dhcpServer);
     QSharedPointer<DHCPServer> getDHCPServer();
     bool isDHCPServer() const;
+    QString findBestRoute(const QString &destinationIP) const;
 
 public Q_SLOTS:
     void initialize();
     void processDHCPResponse(const PacketPtr_t &packet);
     QString getAssignedIP();
+
+    void addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol);
+    void printRoutingTable() const;
 
 private:
     std::vector<PortPtr_t> m_ports;
@@ -47,6 +71,7 @@ private:
     QString m_assignedIP;
 
     QSet<QString> m_seenPackets;
+    QVector<RouteEntry> m_routingTable;
 
     void initializePorts();
 
