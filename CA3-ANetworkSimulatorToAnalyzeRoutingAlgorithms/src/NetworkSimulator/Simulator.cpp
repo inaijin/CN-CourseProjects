@@ -124,12 +124,13 @@ void Simulator::startSimulation()
     }
 
     // Give some time for RIP updates to propagate
-    QThread::sleep(90);
+    QTimer::singleShot(90000, this, [this]() {
+        // Print all routing tables to see the results
+        if (m_network) {
+            m_network->printAllRoutingTables();
+        }
+    });
 
-    // Print all routing tables to see the results
-    if (m_network) {
-        m_network->printAllRoutingTables();
-    }
 }
 
 void Simulator::initiateDHCPPhase()
