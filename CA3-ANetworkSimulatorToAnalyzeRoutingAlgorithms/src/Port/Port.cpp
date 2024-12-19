@@ -77,3 +77,13 @@ void Port::receivePacket(const PacketPtr_t &data) {
     emit packetReceived(data);
     qDebug() << "Port::receivePacket() emitted packetReceived.";
 }
+
+void Port::setConnectedRouterId(int routerId) {
+    QMutexLocker locker(&m_mutex);
+    m_connectedRouterId = routerId;
+}
+
+int Port::getConnectedRouterId() const {
+    QMutexLocker locker(&m_mutex);
+    return m_connectedRouterId;
+}

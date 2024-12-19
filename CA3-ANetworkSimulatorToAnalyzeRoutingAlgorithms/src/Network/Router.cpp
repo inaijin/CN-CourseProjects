@@ -1,5 +1,6 @@
 #include "Router.h"
 #include "EventsCoordinator/EventsCoordinator.h"
+#include "../Topology/TopologyBuilder.h"
 #include <QDebug>
 #include <QThread>
 
@@ -41,6 +42,12 @@ void Router::initializePorts()
         m_ports.push_back(port);
     }
 }
+
+void Router::setTopologyBuilder(TopologyBuilder *builder) {
+    s_topologyBuilder = builder;
+}
+
+TopologyBuilder* Router::s_topologyBuilder = nullptr;
 
 PortPtr_t Router::getAvailablePort()
 {
@@ -232,58 +239,43 @@ void Router::processPacket(const PacketPtr_t &packet) {
 void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol, PortPtr_t learnedFromPort) {
     qDebug() << "Router" << m_id << "addRoute called with:" << destination << mask << nextHop << metric;
 
-    qint64 now = m_currentTime;
-    bool updated = false;
-
     for (auto &entry : m_routingTable) {
         if (entry.isDirect && entry.destination == destination && entry.mask == mask) {
-            qDebug() << "Router" << m_id << ": Ignoring learned route to" << destination << "because direct route exists.";
+            qDebug() << "Router" << m_id << ": Ignoring learned route to" << destination << "due to direct route.";
             return;
         }
     }
 
     int newInvalidTimer = RIP_INVALID_TIMER;
+    bool found = false;
 
     for (auto &entry : m_routingTable) {
-        if (entry.destination == destination && entry.mask == mask) {
-            if (entry.isDirect) {
-                qDebug() << "Router" << m_id << "route is direct, ignoring learned route";
-                return;
-            }
+        if (entry.destination == destination && entry.mask == mask && !entry.isDirect) {
 
             if (entry.holdDownTimer > 0 && metric >= entry.metric) {
-                qDebug() << "Router" << m_id << ": in hold-down for" << destination << ", ignoring worse or equal metric route.";
+                qDebug() << "Router" << m_id << ": hold-down active for" << destination << ", ignoring equal or worse route.";
                 return;
             }
 
             if (metric < entry.metric) {
+                qDebug() << "Router" << m_id << "updated route to" << destination << "with better metric" << metric;
                 entry.nextHop = nextHop;
                 entry.metric = metric;
                 entry.protocol = protocol;
-                entry.lastUpdateTime = now;
+                entry.lastUpdateTime = m_currentTime;
                 entry.learnedFromPort = learnedFromPort;
                 entry.invalidTimer = newInvalidTimer;
                 entry.holdDownTimer = 0;
                 entry.flushTimer = 0;
-                qDebug() << "Router" << m_id << "updated route to" << destination << "with better metric" << metric;
             } else {
-                if (metric == entry.metric) {
-                    entry.invalidTimer = newInvalidTimer;
-                    entry.lastUpdateTime = now;
-                    qDebug() << "Router" << m_id << "refreshed route to" << destination << "same metric" << metric;
-                } else {
-                    entry.invalidTimer = newInvalidTimer;
-                    entry.lastUpdateTime = now;
-                    qDebug() << "Router" << m_id << "got worse metric route to" << destination << ", not changing metric but resetting invalid timer";
-                }
+                qDebug() << "Router" << m_id << ": got equal or worse metric (" << metric << ") for" << destination << ", ignoring update.";
             }
-            updated = true;
-            break;
+            return;
         }
     }
 
-    if (!updated) {
-        RouteEntry newEntry(destination, mask, nextHop, metric, protocol, now, learnedFromPort, false);
+    if (!found) {
+        RouteEntry newEntry(destination, mask, nextHop, metric, protocol, m_currentTime, learnedFromPort, false);
         newEntry.invalidTimer = newInvalidTimer;
         qDebug() << "Router" << m_id << "added new learned route to" << destination << "metric" << metric;
         m_routingTable.append(newEntry);
@@ -466,4 +458,55 @@ void Router::addDirectRoute(const QString &destination, const QString &mask) {
         }
     }
     m_routingTable.append(directRoute);
+}
+
+void Router::setupDirectNeighborRoutes() {
+    auto neighbors = getDirectlyConnectedRouters();
+    for (auto &nbr : neighbors) {
+        QString nbrIP = nbr->getIPAddress();
+        if (nbrIP.isEmpty()) {
+            qWarning() << "Router" << m_id << ": Neighbor" << nbr->getId() << "has no IP yet.";
+            continue;
+        }
+
+        qDebug() << "Router" << m_id << "adding direct neighbor route to" << nbrIP;
+        RouteEntry directNeighborRoute(nbrIP, "255.255.255.255", "", 1,
+                                       RoutingProtocol::RIP, m_currentTime, nullptr, true);
+
+        for (int i = m_routingTable.size() - 1; i >= 0; i--) {
+            if (m_routingTable[i].destination == nbrIP && !m_routingTable[i].isDirect) {
+                m_routingTable.removeAt(i);
+            }
+        }
+
+        bool alreadyExists = false;
+        for (auto &entry : m_routingTable) {
+            if (entry.isDirect && entry.destination == nbrIP) {
+                alreadyExists = true;
+                break;
+            }
+        }
+
+        if (!alreadyExists) {
+            m_routingTable.append(directNeighborRoute);
+        }
+    }
+}
+
+std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters() {
+    std::vector<QSharedPointer<Router>> neighbors;
+
+    for (auto &port : m_ports) {
+        if (port->isConnected()) {
+            int remoteId = port->getConnectedRouterId();
+            if (remoteId > 0 && remoteId != m_id && s_topologyBuilder) {
+                QSharedPointer<Router> nbr = s_topologyBuilder->findRouterById(remoteId);
+                if (nbr) {
+                    neighbors.push_back(nbr);
+                }
+            }
+        }
+    }
+
+    return neighbors;
 }

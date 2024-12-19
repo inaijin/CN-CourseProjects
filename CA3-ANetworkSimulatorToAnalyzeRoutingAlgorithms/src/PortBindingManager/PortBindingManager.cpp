@@ -23,6 +23,9 @@ void PortBindingManager::bind(const QSharedPointer<Port> &port1, const QSharedPo
     port1->setConnected(true);
     port2->setConnected(true);
 
+    port1->setConnectedRouterId(router2Id);
+    port2->setConnectedRouterId(router1Id);
+
     m_bindings.insert(port1, port2);
     m_bindings.insert(port2, port1);
 

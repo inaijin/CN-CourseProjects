@@ -23,6 +23,8 @@ public:
     const QJsonObject &getConfig() const;
     int getASIdForRouter(int routerId) const;
 
+    QSharedPointer<Router> findRouterById(int routerId) const;
+
 private:
     QJsonObject m_config;
     QString m_topologyType;

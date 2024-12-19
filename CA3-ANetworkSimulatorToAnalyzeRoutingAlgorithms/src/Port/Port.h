@@ -25,6 +25,9 @@ public:
     uint64_t getNumberOfPacketsSent() const;
     uint64_t getNumberOfPacketsReceived() const;
 
+    void setConnectedRouterId(int routerId);
+    int getConnectedRouterId() const;
+
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data);
     void packetReceived(const PacketPtr_t &data);
@@ -41,6 +44,7 @@ private:
     bool     m_isConnected;
 
     mutable QMutex m_mutex;
+    int m_connectedRouterId = -1;
 };
 
 typedef QSharedPointer<Port> PortPtr_t;

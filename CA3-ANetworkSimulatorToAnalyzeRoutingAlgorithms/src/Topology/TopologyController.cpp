@@ -125,3 +125,14 @@ void TopologyController::checkAssignedIPPC() {
         qDebug() << "IP pc " << pc->getId() << " is " << pc->getIPAddress();
     }
 }
+
+QSharedPointer<Router> TopologyBuilder::findRouterById(int routerId) const {
+    auto it = std::find_if(m_routers.begin(), m_routers.end(),
+                           [routerId](const QSharedPointer<Router> &r) {
+                               return r->getId() == routerId;
+                           });
+    if (it != m_routers.end()) {
+        return *it;
+    }
+    return nullptr;
+}

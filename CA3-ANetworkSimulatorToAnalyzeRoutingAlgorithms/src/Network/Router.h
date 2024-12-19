@@ -11,6 +11,7 @@
 #include <QDateTime>
 
 class UDP;
+class TopologyBuilder;
 
 enum class RoutingProtocol {
     RIP,
@@ -69,6 +70,10 @@ public:
     QString findBestRoute(const QString &destinationIP) const;
     void addDirectRoute(const QString &destination, const QString &mask);
 
+    void setupDirectNeighborRoutes();
+    std::vector<QSharedPointer<Router>> getDirectlyConnectedRouters();
+    static void setTopologyBuilder(TopologyBuilder *builder);
+
 public Q_SLOTS:
     void initialize();
     void processDHCPResponse(const PacketPtr_t  &packet);
@@ -94,7 +99,7 @@ private:
     QString m_assignedIP;
 
     QSet<QString> m_seenPackets;
-
+    static TopologyBuilder *s_topologyBuilder;
     QVector<RouteEntry> m_routingTable;
 
     // RIP-related fields

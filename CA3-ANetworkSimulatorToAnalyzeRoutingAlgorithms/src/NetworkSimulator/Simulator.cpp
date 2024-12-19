@@ -113,6 +113,7 @@ void Simulator::startSimulation()
     // Now we know all routers have IP addresses assigned, so we can setup direct routes:
     if (m_network) {
         m_network->setupDirectRoutesForRouters();
+        m_network->finalizeRoutesAfterDHCP();
     }
 
     // Start the event coordinator clock so RIP ticks can begin

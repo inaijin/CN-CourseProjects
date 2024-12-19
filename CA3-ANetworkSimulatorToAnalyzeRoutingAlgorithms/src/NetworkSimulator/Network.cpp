@@ -141,3 +141,13 @@ void Network::setupDirectRoutesForRouters()
         }
     }
 }
+
+void Network::finalizeRoutesAfterDHCP() {
+    for (auto &asInstance : m_autonomousSystems) {
+        const auto &routers = asInstance->getRouters();
+        for (auto &router : routers) {
+            router->setupDirectNeighborRoutes();
+        }
+    }
+    qDebug() << "All routers have set direct neighbor routes.";
+}

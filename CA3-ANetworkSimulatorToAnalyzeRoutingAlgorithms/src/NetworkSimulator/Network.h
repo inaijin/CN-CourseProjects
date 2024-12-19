@@ -27,6 +27,8 @@ public:
     void printAllRoutingTables();
     void setupDirectRoutesForRouters();
 
+    void finalizeRoutesAfterDHCP();
+
 private:
     QJsonObject m_config;
     std::vector<QSharedPointer<AutonomousSystem>> m_autonomousSystems;

@@ -60,6 +60,7 @@ void TopologyBuilder::createRouters() {
         }
 
         auto router = QSharedPointer<Router>::create(routerId, "", portCount, nullptr);
+        router->setTopologyBuilder(this);
         QThread *routerThread = new QThread(this);
         router->moveToThread(routerThread);
 
