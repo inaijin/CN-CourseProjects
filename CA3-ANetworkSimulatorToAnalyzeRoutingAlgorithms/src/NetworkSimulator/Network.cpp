@@ -133,18 +133,11 @@ void Network::setupDirectRoutesForRouters()
                 continue;
             }
 
-            QStringList octets = routerIP.split(".");
-            if (octets.size() == 4) {
-                octets[3] = "0";
-                QString network = octets.join(".");
-                QString mask = "255.255.255.0";
-                int metric = 1;
+            QString mask = "255.255.255.255";
+            int metric = 0;
 
-                router->addRoute(network, mask, "", metric, RoutingProtocol::RIP);
-                qDebug() << "Network: Added direct route for Router" << router->getId() << ":" << network << "/" << mask << "metric" << metric;
-            } else {
-                qWarning() << "Invalid router IP format for Router" << router->getId() << routerIP;
-            }
+            router->addRoute(routerIP, mask, "", metric, RoutingProtocol::RIP);
+            qDebug() << "Network: Added host route for Router" << router->getId() << ":" << routerIP << "/" << mask << "metric" << metric;
         }
     }
 }

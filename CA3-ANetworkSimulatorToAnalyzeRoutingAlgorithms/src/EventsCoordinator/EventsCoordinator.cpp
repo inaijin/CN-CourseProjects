@@ -84,16 +84,16 @@ EventsCoordinator::setDataGenerator(DataGenerator *generator)
 void EventsCoordinator::onTick() {
     ++m_currentTime;
     emit tick();
-    qDebug() << "Tick emitted. Current time:" << m_currentTime;
+    // qDebug() << "Tick emitted. Current time:" << m_currentTime;
 
-    for (const auto &router : m_routers) {
-        if (router->isDHCPServer()) {
-            router->getDHCPServer()->tick(m_currentTime);
-        }
-    }
+    // for (const auto &router : m_routers) {
+    //     if (router->isDHCPServer()) {
+    //         router->getDHCPServer()->tick(m_currentTime);
+    //     }
+    // }
 
     if (m_packetQueue.empty()) {
-        qDebug() << "No packets left to emit.";
+        // qDebug() << "No packets left to emit.";
         return;
     }
 
@@ -112,7 +112,7 @@ EventsCoordinator::onPacketsGenerated(const std::vector<QSharedPointer<Packet>> 
 
 void EventsCoordinator::addRouter(const QSharedPointer<Router> &router) {
     m_routers.push_back(router);
-    connect(this, &EventsCoordinator::tick, router.data(), &Router::requestIPFromDHCP);
+    // connect(this, &EventsCoordinator::tick, router.data(), &Router::requestIPFromDHCP);
 }
 
 void EventsCoordinator::run() {
