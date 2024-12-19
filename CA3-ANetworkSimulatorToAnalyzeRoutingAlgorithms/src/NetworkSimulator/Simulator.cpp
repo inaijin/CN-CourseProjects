@@ -116,7 +116,7 @@ void Simulator::startSimulation()
     }
 
     // Start the event coordinator clock so RIP ticks can begin
-    EventsCoordinator::instance()->startClock(std::chrono::milliseconds(1000));
+    EventsCoordinator::instance()->startClock(std::chrono::milliseconds(100));
 
     // Enable RIP on all routers
     if (m_network) {

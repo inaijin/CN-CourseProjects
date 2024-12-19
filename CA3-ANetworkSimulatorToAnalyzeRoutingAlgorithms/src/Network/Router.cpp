@@ -277,7 +277,7 @@ void Router::enableRIP()
 void Router::onTick()
 {
     m_currentTime++;
-    qDebug() << "Router" << m_id << "tick:" << m_currentTime;
+    // qDebug() << "Router" << m_id << "tick:" << m_currentTime;
 
     if (m_currentTime - m_lastRIPUpdateTime >= RIP_UPDATE_INTERVAL && m_hasValidIP) {
         qDebug() << "Router" << m_id << "sending RIP update at time:" << m_currentTime;
