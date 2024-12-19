@@ -1,4 +1,5 @@
 #include "Simulator.h"
+#include "EventsCoordinator/EventsCoordinator.h"
 #include <QFile>
 #include <QJsonDocument>
 #include <QDebug>
@@ -108,6 +109,8 @@ void Simulator::startSimulation()
     // Check the assigned IP's of Routers and PCs
     checkAssignedIP();
     checkAssignedIPPC();
+
+    EventsCoordinator::instance()->startClock(std::chrono::milliseconds(1000));
 
     // Now enable RIP on all routers:
     if (m_network) {

@@ -211,19 +211,21 @@ void Router::processPacket(const PacketPtr_t &packet) {
 
 void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol)
 {
-    bool updated = false;
+    qDebug() << "Router" << m_id << "addRoute called with:" << destination << mask << nextHop << metric;
     qint64 now = m_currentTime;
+    bool updated = false;
 
     for (auto &entry : m_routingTable) {
         if (entry.destination == destination && entry.mask == mask) {
             if (entry.metric <= metric) {
+                qDebug() << "Router" << m_id << "existing route is better or equal, not updating.";
                 return;
             } else {
                 entry.nextHop = nextHop;
                 entry.metric = metric;
                 entry.protocol = protocol;
                 entry.lastUpdateTime = now;
-                qDebug() << "Router" << m_id << ": Updated route to" << destination << "metric" << metric;
+                qDebug() << "Router" << m_id << "updated route to" << destination << "with better metric" << metric;
                 updated = true;
                 break;
             }
@@ -233,7 +235,7 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
     if (!updated) {
         RouteEntry newEntry(destination, mask, nextHop, metric, protocol, now);
         m_routingTable.append(newEntry);
-        qDebug() << "Router" << m_id << ": Added route to" << destination << "metric" << metric;
+        qDebug() << "Router" << m_id << "added new route to" << destination << "metric" << metric;
     }
 }
 
@@ -275,8 +277,10 @@ void Router::enableRIP()
 void Router::onTick()
 {
     m_currentTime++;
+    qDebug() << "Router" << m_id << "tick:" << m_currentTime;
 
     if (m_currentTime - m_lastRIPUpdateTime >= RIP_UPDATE_INTERVAL && m_hasValidIP) {
+        qDebug() << "Router" << m_id << "sending RIP update at time:" << m_currentTime;
         sendRIPUpdate();
         m_lastRIPUpdateTime = m_currentTime;
     }
@@ -286,19 +290,23 @@ void Router::onTick()
 
 void Router::sendRIPUpdate()
 {
+    qDebug() << "Router" << m_id << "preparing RIP update. Current routes:" << m_routingTable.size();
+    for (const auto &entry : m_routingTable) {
+        qDebug() << "  Route:" << entry.destination << "metric:" << entry.metric;
+    }
+
     QString payload = "RIP_UPDATE:";
     int routeCount = 0;
-    for (auto &entry : m_routingTable) {
+    for (const auto &entry : m_routingTable) {
         if (entry.metric < RIP_INFINITY) {
             payload += entry.destination + "," + entry.mask + "," + QString::number(entry.metric) + "#";
             routeCount++;
         }
     }
-
     payload += m_ipAddress;
 
     if (routeCount == 0) {
-        payload = "RIP_UPDATE:" + m_ipAddress;
+        qDebug() << "Router" << m_id << "has no routes to send in RIP update.";
     }
 
     auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
@@ -307,17 +315,20 @@ void Router::sendRIPUpdate()
     for (auto &port : m_ports) {
         if (port->isConnected()) {
             port->sendPacket(updatePacket);
+            qDebug() << "Router" << m_id << "sent RIP update via Port" << port->getPortNumber();
         }
     }
-
-    qDebug() << "Router" << m_id << "sent RIP update with" << routeCount << "routes.";
 }
 
-void Router::processRIPUpdate(const QSharedPointer<Packet> &packet)
+void Router::processRIPUpdate(const PacketPtr_t &packet)
 {
+    qDebug() << "Router" << m_id << "processing RIP update packet.";
     QString payload = packet->getPayload();
     auto parts = payload.split(":");
-    if (parts.size() < 2) return;
+    if (parts.size() < 2) {
+        qWarning() << "Router" << m_id << "received malformed RIP update:" << payload;
+        return;
+    }
 
     QString data = parts[1];
     auto routesAndSender = data.split("#");
@@ -326,17 +337,24 @@ void Router::processRIPUpdate(const QSharedPointer<Packet> &packet)
     QString senderIP = routesAndSender.last();
     routesAndSender.removeLast();
 
+    qDebug() << "Router" << m_id << "RIP update from" << senderIP << "with" << routesAndSender.size() << "routes.";
     for (const auto &routeStr : routesAndSender) {
         if (routeStr.isEmpty()) continue;
         auto fields = routeStr.split(",");
-        if (fields.size() < 3) continue;
+        if (fields.size() < 3) {
+            qWarning() << "Router" << m_id << "RIP route entry malformed:" << routeStr;
+            continue;
+        }
 
         QString dest = fields[0];
         QString mask = fields[1];
         int recvMetric = fields[2].toInt();
-
         int newMetric = recvMetric + 1;
+
+        qDebug() << "Router" << m_id << "processing route" << dest << "/" << mask << "from" << senderIP << "metric" << newMetric;
+
         if (newMetric >= RIP_INFINITY) {
+            qDebug() << "Router" << m_id << "received unreachable route for" << dest << "skipping.";
             continue;
         }
 

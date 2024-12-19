@@ -56,6 +56,7 @@ public:
     void setDHCPServer(QSharedPointer<DHCPServer> dhcpServer);
     QSharedPointer<DHCPServer> getDHCPServer();
     bool isDHCPServer() const;
+    QString findBestRoute(const QString &destinationIP) const;
 
 public Q_SLOTS:
     void initialize();
@@ -63,7 +64,6 @@ public Q_SLOTS:
 
     // Routing table methods
     void addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol);
-    QString findBestRoute(const QString &destinationIP) const;
     void printRoutingTable() const;
 
     // RIP specific methods
