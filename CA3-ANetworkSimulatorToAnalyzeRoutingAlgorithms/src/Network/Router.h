@@ -47,10 +47,10 @@ public:
 
     void startRouter();
     void requestIPFromDHCP();
-    void forwardPacket(const QSharedPointer<Packet> &packet);
+    void forwardPacket(const PacketPtr_t  &packet);
     void logPortStatuses() const;
-    void processPacket(const QSharedPointer<Packet> &packet);
-    void setIP(QString IP);
+    void processPacket(const PacketPtr_t  &packet);
+    void setIP(QString IP) { m_ipAddress = IP; }
     QString getAssignedIP();
 
     void setDHCPServer(QSharedPointer<DHCPServer> dhcpServer);
@@ -59,7 +59,7 @@ public:
 
 public Q_SLOTS:
     void initialize();
-    void processDHCPResponse(const QSharedPointer<Packet> &packet);
+    void processDHCPResponse(const PacketPtr_t  &packet);
 
     // Routing table methods
     void addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol);
@@ -70,7 +70,7 @@ public Q_SLOTS:
     void enableRIP();
     void onTick(); // connected to EventsCoordinator tick signal
     void sendRIPUpdate();
-    void processRIPUpdate(const QSharedPointer<Packet> &packet);
+    void processRIPUpdate(const PacketPtr_t  &packet);
     void handleRouteTimeouts(qint64 currentTime);
 
 private:
@@ -94,8 +94,8 @@ private:
     qint64 m_currentTime; // increments every tick
 
     void initializePorts();
-    bool hasSeenPacket(const QSharedPointer<Packet> &packet);
-    void markPacketAsSeen(const QSharedPointer<Packet> &packet);
+    bool hasSeenPacket(const PacketPtr_t  &packet);
+    void markPacketAsSeen(const PacketPtr_t  &packet);
 };
 
 #endif // ROUTER_H

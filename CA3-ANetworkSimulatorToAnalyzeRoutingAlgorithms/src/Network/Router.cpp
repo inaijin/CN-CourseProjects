@@ -1,9 +1,14 @@
 #include "Router.h"
+#include "EventsCoordinator/EventsCoordinator.h"
 #include <QDebug>
 #include <QThread>
 
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
-    : Node(id, ipAddress, NodeType::Router, parent), m_portCount(portCount), m_hasValidIP(false), m_assignedIP("")
+    : Node(id, ipAddress, NodeType::Router, parent),
+    m_portCount(portCount),
+    m_hasValidIP(false),
+    m_lastRIPUpdateTime(0),
+    m_currentTime(0)
 {
     if (m_portCount <= 0)
     {
@@ -196,6 +201,9 @@ void Router::processPacket(const PacketPtr_t &packet) {
         } else {
             qWarning() << "Malformed DHCP_OFFER packet on Router" << m_id << "payload:" << payload;
         }
+    }
+    else if (payload.startsWith("RIP_UPDATE")) {
+        processRIPUpdate(packet);
     } else {
         qDebug() << "Router" << m_id << "received unknown/unsupported packet:" << payload << "Dropping it.";
     }
@@ -203,7 +211,9 @@ void Router::processPacket(const PacketPtr_t &packet) {
 
 void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol)
 {
-    // Check if a route to the same destination with a better metric already exists
+    bool updated = false;
+    qint64 now = m_currentTime;
+
     for (auto &entry : m_routingTable) {
         if (entry.destination == destination && entry.mask == mask) {
             if (entry.metric <= metric) {
@@ -212,16 +222,19 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
                 entry.nextHop = nextHop;
                 entry.metric = metric;
                 entry.protocol = protocol;
-                qDebug() << "Router" << m_id << ": Updated route to" << destination << "with better metric" << metric;
-                return;
+                entry.lastUpdateTime = now;
+                qDebug() << "Router" << m_id << ": Updated route to" << destination << "metric" << metric;
+                updated = true;
+                break;
             }
         }
     }
 
-    // If no existing route or not better, add a new entry
-    RouteEntry newRoute(destination, mask, nextHop, metric, protocol);
-    m_routingTable.append(newRoute);
-    qDebug() << "Router" << m_id << ": Added new route to" << destination << "via" << nextHop << "metric =" << metric;
+    if (!updated) {
+        RouteEntry newEntry(destination, mask, nextHop, metric, protocol, now);
+        m_routingTable.append(newEntry);
+        qDebug() << "Router" << m_id << ": Added route to" << destination << "metric" << metric;
+    }
 }
 
 QString Router::findBestRoute(const QString &destinationIP) const
@@ -248,6 +261,97 @@ void Router::printRoutingTable() const
                  << "Mask:" << entry.mask
                  << "NextHop:" << entry.nextHop
                  << "Metric:" << entry.metric
-                 << "Protocol:" << protoStr;
+                 << "Protocol:" << protoStr
+                 << "LastUpdated:" << entry.lastUpdateTime;
+    }
+}
+
+void Router::enableRIP()
+{
+    connect(EventsCoordinator::instance(), &EventsCoordinator::tick, this, &Router::onTick);
+    qDebug() << "RIP enabled on Router" << m_id;
+}
+
+void Router::onTick()
+{
+    m_currentTime++;
+
+    if (m_currentTime - m_lastRIPUpdateTime >= RIP_UPDATE_INTERVAL && m_hasValidIP) {
+        sendRIPUpdate();
+        m_lastRIPUpdateTime = m_currentTime;
+    }
+
+    handleRouteTimeouts(m_currentTime);
+}
+
+void Router::sendRIPUpdate()
+{
+    QString payload = "RIP_UPDATE:";
+    int routeCount = 0;
+    for (auto &entry : m_routingTable) {
+        if (entry.metric < RIP_INFINITY) {
+            payload += entry.destination + "," + entry.mask + "," + QString::number(entry.metric) + "#";
+            routeCount++;
+        }
+    }
+
+    payload += m_ipAddress;
+
+    if (routeCount == 0) {
+        payload = "RIP_UPDATE:" + m_ipAddress;
+    }
+
+    auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
+    updatePacket->setTTL(10);
+
+    for (auto &port : m_ports) {
+        if (port->isConnected()) {
+            port->sendPacket(updatePacket);
+        }
+    }
+
+    qDebug() << "Router" << m_id << "sent RIP update with" << routeCount << "routes.";
+}
+
+void Router::processRIPUpdate(const QSharedPointer<Packet> &packet)
+{
+    QString payload = packet->getPayload();
+    auto parts = payload.split(":");
+    if (parts.size() < 2) return;
+
+    QString data = parts[1];
+    auto routesAndSender = data.split("#");
+    if (routesAndSender.isEmpty()) return;
+
+    QString senderIP = routesAndSender.last();
+    routesAndSender.removeLast();
+
+    for (const auto &routeStr : routesAndSender) {
+        if (routeStr.isEmpty()) continue;
+        auto fields = routeStr.split(",");
+        if (fields.size() < 3) continue;
+
+        QString dest = fields[0];
+        QString mask = fields[1];
+        int recvMetric = fields[2].toInt();
+
+        int newMetric = recvMetric + 1;
+        if (newMetric >= RIP_INFINITY) {
+            continue;
+        }
+
+        addRoute(dest, mask, senderIP, newMetric, RoutingProtocol::RIP);
+    }
+}
+
+void Router::handleRouteTimeouts(qint64 currentTime)
+{
+    for (auto &entry : m_routingTable) {
+        if (entry.protocol == RoutingProtocol::RIP) {
+            if ((currentTime - entry.lastUpdateTime) > RIP_ROUTE_TIMEOUT && entry.metric < RIP_INFINITY) {
+                entry.metric = RIP_INFINITY;
+                qDebug() << "Router" << m_id << ": Route to" << entry.destination << "timed out, marking unreachable.";
+            }
+        }
     }
 }
