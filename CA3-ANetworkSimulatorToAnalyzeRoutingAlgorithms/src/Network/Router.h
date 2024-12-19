@@ -26,6 +26,12 @@ struct RouteEntry {
     qint64 lastUpdateTime;
     PortPtr_t learnedFromPort;
 
+    // RIP Timers
+    int invalidTimer;
+    int holdDownTimer;
+    int flushTimer;
+
+    // Initialize timers
     RouteEntry(const QString &dest = "",
                const QString &m = "",
                const QString &nh = "",
@@ -34,7 +40,8 @@ struct RouteEntry {
                qint64 time = 0,
                PortPtr_t fromPort = nullptr)
         : destination(dest), mask(m), nextHop(nh), metric(met),
-        protocol(proto), lastUpdateTime(time), learnedFromPort(fromPort) {}
+        protocol(proto), lastUpdateTime(time), learnedFromPort(fromPort),
+        invalidTimer(180), holdDownTimer(0), flushTimer(0) {}
 };
 
 class Router : public Node, public QEnableSharedFromThis<Router>
@@ -75,7 +82,7 @@ public Q_SLOTS:
     void onTick(); // connected to EventsCoordinator tick signal
     void sendRIPUpdate();
     void processRIPUpdate(const PacketPtr_t  &packet);
-    void handleRouteTimeouts(qint64 currentTime);
+    void handleRouteTimeouts();
 
 private:
     std::vector<PortPtr_t> m_ports;
@@ -93,6 +100,9 @@ private:
     const int RIP_UPDATE_INTERVAL = 30;    // seconds
     const int RIP_ROUTE_TIMEOUT   = 180;   // seconds
     const int RIP_INFINITY        = 16;
+    const int RIP_INVALID_TIMER = 180;
+    const int RIP_HOLDOWN_TIMER = 180;
+    const int RIP_FLUSH_TIMER = 240;
 
     qint64 m_lastRIPUpdateTime;
     qint64 m_currentTime; // increments every tick

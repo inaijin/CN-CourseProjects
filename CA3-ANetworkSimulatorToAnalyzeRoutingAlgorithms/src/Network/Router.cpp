@@ -217,17 +217,23 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
 
     for (auto &entry : m_routingTable) {
         if (entry.destination == destination && entry.mask == mask) {
-            // If existing route is better or equal, don't update
+            if (entry.holdDownTimer > 0) {
+                qDebug() << "Router" << m_id << "route is in hold-down, ignoring update for" << destination;
+                return;
+            }
+
             if (entry.metric <= metric) {
                 qDebug() << "Router" << m_id << "existing route is better or equal, not updating.";
                 return;
             } else {
-                // New route is better
                 entry.nextHop = nextHop;
                 entry.metric = metric;
                 entry.protocol = protocol;
                 entry.lastUpdateTime = now;
                 entry.learnedFromPort = learnedFromPort;
+                entry.invalidTimer = RIP_INVALID_TIMER;
+                entry.holdDownTimer = 0;
+                entry.flushTimer = 0;
                 qDebug() << "Router" << m_id << "updated route to" << destination << "with better metric" << metric;
                 updated = true;
                 break;
@@ -237,6 +243,9 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
 
     if (!updated) {
         RouteEntry newEntry(destination, mask, nextHop, metric, protocol, now, learnedFromPort);
+        newEntry.invalidTimer = RIP_INVALID_TIMER;
+        newEntry.holdDownTimer = 0;
+        newEntry.flushTimer = 0;
         m_routingTable.append(newEntry);
         qDebug() << "Router" << m_id << "added new route to" << destination << "metric" << metric;
     }
@@ -288,7 +297,7 @@ void Router::onTick()
         m_lastRIPUpdateTime = m_currentTime;
     }
 
-    handleRouteTimeouts(m_currentTime);
+    handleRouteTimeouts();
 }
 
 void Router::sendRIPUpdate()
@@ -339,6 +348,7 @@ void Router::processRIPUpdate(const PacketPtr_t &packet)
     QString senderIP = routesAndSender.last();
     routesAndSender.removeLast();
 
+    // Determine incoming port
     Port *incomingPort = qobject_cast<Port*>(sender());
     PortPtr_t incomingPortPtr;
     if (incomingPort) {
@@ -375,14 +385,35 @@ void Router::processRIPUpdate(const PacketPtr_t &packet)
     }
 }
 
-void Router::handleRouteTimeouts(qint64 currentTime)
+void Router::handleRouteTimeouts()
 {
     for (auto &entry : m_routingTable) {
-        if (entry.protocol == RoutingProtocol::RIP) {
-            if ((currentTime - entry.lastUpdateTime) > RIP_ROUTE_TIMEOUT && entry.metric < RIP_INFINITY) {
+        if (entry.invalidTimer > 0) {
+            entry.invalidTimer--;
+            if (entry.invalidTimer == 0) {
+                qDebug() << "Router" << m_id << ": Route to" << entry.destination << "invalid, entering hold-down.";
                 entry.metric = RIP_INFINITY;
-                qDebug() << "Router" << m_id << ": Route to" << entry.destination << "timed out, marking unreachable.";
+                entry.holdDownTimer = RIP_HOLDOWN_TIMER;
             }
+        } else if (entry.holdDownTimer > 0) {
+            entry.holdDownTimer--;
+            if (entry.holdDownTimer == 0) {
+                if (entry.metric == RIP_INFINITY) {
+                    entry.flushTimer = RIP_FLUSH_TIMER;
+                    qDebug() << "Router" << m_id << ": Hold-down ended for" << entry.destination << "starting flush timer.";
+                }
+            }
+        } else if (entry.flushTimer > 0) {
+            entry.flushTimer--;
+            if (entry.flushTimer == 0) {
+                qDebug() << "Router" << m_id << ": Flush timer expired for" << entry.destination << "removing route.";
+            }
+        }
+    }
+
+    for (int i = m_routingTable.size() - 1; i >= 0; i--) {
+        if (m_routingTable[i].flushTimer == 0 && m_routingTable[i].metric == RIP_INFINITY && m_routingTable[i].invalidTimer == 0) {
+            m_routingTable.removeAt(i);
         }
     }
 }
