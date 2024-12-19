@@ -23,6 +23,9 @@ public:
     void checkAssignedIP();
     void checkAssignedIPPC();
 
+    void enableRIPOnAllRouters();
+    void printAllRoutingTables();
+
 private:
     QJsonObject m_config;
     std::vector<QSharedPointer<AutonomousSystem>> m_autonomousSystems;

@@ -99,3 +99,25 @@ void Network::checkAssignedIPPC() {
         }
     }
 }
+
+void Network::enableRIPOnAllRouters()
+{
+    for (auto &asInstance : m_autonomousSystems) {
+        const auto &routers = asInstance->getRouters();
+        for (auto &router : routers) {
+            router->enableRIP();
+        }
+    }
+    qDebug() << "RIP enabled on all routers.";
+}
+
+void Network::printAllRoutingTables()
+{
+    qDebug() << "Printing all routing tables:";
+    for (auto &asInstance : m_autonomousSystems) {
+        const auto &routers = asInstance->getRouters();
+        for (auto &router : routers) {
+            router->printRoutingTable();
+        }
+    }
+}
