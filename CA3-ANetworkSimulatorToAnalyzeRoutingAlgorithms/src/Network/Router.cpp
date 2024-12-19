@@ -472,7 +472,7 @@ void Router::setupDirectNeighborRoutes() {
         }
 
         qDebug() << "Router" << m_id << "adding direct neighbor route to" << nbrIP;
-        RouteEntry directNeighborRoute(nbrIP, "255.255.255.255", "", 1,
+        RouteEntry directNeighborRoute(nbrIP, "255.255.255.255", nbrIP, 1,
                                        RoutingProtocol::RIP, m_currentTime, nullptr, true);
 
         for (int i = m_routingTable.size() - 1; i >= 0; i--) {
