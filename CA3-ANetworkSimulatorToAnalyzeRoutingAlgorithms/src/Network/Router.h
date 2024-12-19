@@ -8,6 +8,7 @@
 #include "../Port/Port.h"
 #include "../DHCPServer/DHCPServer.h"
 #include <QSet>
+#include <QDateTime>
 
 class UDP;
 
@@ -22,13 +23,15 @@ struct RouteEntry {
     QString nextHop;
     int metric;
     RoutingProtocol protocol;
+    qint64 lastUpdateTime; // Timestamp of last update in seconds (simulation time)
 
     RouteEntry(const QString &dest = "",
                const QString &m = "",
                const QString &nh = "",
                int met = -1,
-               RoutingProtocol proto = RoutingProtocol::RIP)
-        : destination(dest), mask(m), nextHop(nh), metric(met), protocol(proto) {}
+               RoutingProtocol proto = RoutingProtocol::RIP,
+               qint64 time = 0)
+        : destination(dest), mask(m), nextHop(nh), metric(met), protocol(proto), lastUpdateTime(time) {}
 };
 
 class Router : public Node, public QEnableSharedFromThis<Router>
@@ -44,23 +47,31 @@ public:
 
     void startRouter();
     void requestIPFromDHCP();
-    void forwardPacket(const PacketPtr_t &packet);
+    void forwardPacket(const QSharedPointer<Packet> &packet);
     void logPortStatuses() const;
-    void processPacket(const PacketPtr_t &packet);
-    void setIP(QString IP) { m_ipAddress = IP; }
+    void processPacket(const QSharedPointer<Packet> &packet);
+    void setIP(QString IP);
+    QString getAssignedIP();
 
     void setDHCPServer(QSharedPointer<DHCPServer> dhcpServer);
     QSharedPointer<DHCPServer> getDHCPServer();
     bool isDHCPServer() const;
-    QString findBestRoute(const QString &destinationIP) const;
 
 public Q_SLOTS:
     void initialize();
-    void processDHCPResponse(const PacketPtr_t &packet);
-    QString getAssignedIP();
+    void processDHCPResponse(const QSharedPointer<Packet> &packet);
 
+    // Routing table methods
     void addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol);
+    QString findBestRoute(const QString &destinationIP) const;
     void printRoutingTable() const;
+
+    // RIP specific methods
+    void enableRIP();
+    void onTick(); // connected to EventsCoordinator tick signal
+    void sendRIPUpdate();
+    void processRIPUpdate(const QSharedPointer<Packet> &packet);
+    void handleRouteTimeouts(qint64 currentTime);
 
 private:
     std::vector<PortPtr_t> m_ports;
@@ -71,12 +82,20 @@ private:
     QString m_assignedIP;
 
     QSet<QString> m_seenPackets;
+
     QVector<RouteEntry> m_routingTable;
 
-    void initializePorts();
+    // RIP-related fields
+    const int RIP_UPDATE_INTERVAL = 30;    // seconds
+    const int RIP_ROUTE_TIMEOUT   = 180;   // seconds
+    const int RIP_INFINITY        = 16;
 
-    bool hasSeenPacket(const PacketPtr_t &packet);
-    void markPacketAsSeen(const PacketPtr_t &packet);
+    qint64 m_lastRIPUpdateTime;
+    qint64 m_currentTime; // increments every tick
+
+    void initializePorts();
+    bool hasSeenPacket(const QSharedPointer<Packet> &packet);
+    void markPacketAsSeen(const QSharedPointer<Packet> &packet);
 };
 
 #endif // ROUTER_H
