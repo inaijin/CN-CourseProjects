@@ -2,6 +2,7 @@
 #include "TopologyBuilder.h"
 #include "../Network/Router.h"
 #include "../Network/AutonomousSystem.h"
+#include "../Globals/RouterRegistry.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include <QDebug>
 #include <QJsonArray>
@@ -45,6 +46,8 @@ void TopologyController::initiateDHCPIP(const QSharedPointer<Router> &router) {
 
     QString assignedIP = ipPrefix + QString::number(router->getId());
     router->setIP(assignedIP);
+    router->addDirectRoute(assignedIP, "255.255.255.255");
+    qDebug() << "Router" << router->getId() << "added direct route for its own IP.";
 
     qDebug() << "DHCP Server Router" << router->getId()
              << "assigned IP:" << assignedIP;
@@ -127,12 +130,5 @@ void TopologyController::checkAssignedIPPC() {
 }
 
 QSharedPointer<Router> TopologyBuilder::findRouterById(int routerId) const {
-    auto it = std::find_if(m_routers.begin(), m_routers.end(),
-                           [routerId](const QSharedPointer<Router> &r) {
-                               return r->getId() == routerId;
-                           });
-    if (it != m_routers.end()) {
-        return *it;
-    }
-    return nullptr;
+    return RouterRegistry::findRouterById(routerId);
 }

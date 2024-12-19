@@ -1,6 +1,7 @@
 #include "TopologyBuilder.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include "../DHCPServer/DHCPServer.h"
+#include "../Globals/RouterRegistry.h"
 #include <QDebug>
 #include <stdexcept>
 #include <QJsonArray>
@@ -60,7 +61,6 @@ void TopologyBuilder::createRouters() {
         }
 
         auto router = QSharedPointer<Router>::create(routerId, "", portCount, nullptr);
-        router->setTopologyBuilder(this);
         QThread *routerThread = new QThread(this);
         router->moveToThread(routerThread);
 
@@ -68,10 +68,21 @@ void TopologyBuilder::createRouters() {
         connect(routerThread, &QThread::finished, router.data(), &QObject::deleteLater);
 
         routerThread->start();
+        qDebug() << "PUSH SHOD OWO " << router->getId();
         m_routers.push_back(router);
         qDebug() << "Created Router with ID:" << routerId;
 
         m_routerToASMap[routerId] = asId;
+    }
+
+    RouterRegistry::addRouters(m_routers);
+
+    for (auto &router : m_routers) {
+        qDebug() << "  Router ID:" << router->getId();
+    }
+
+    for (auto &router : m_routers) {
+        router->setTopologyBuilder(this);
     }
 }
 
