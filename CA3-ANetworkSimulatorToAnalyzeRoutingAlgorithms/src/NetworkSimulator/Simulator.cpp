@@ -94,40 +94,42 @@ void Simulator::startSimulation()
 {
     qDebug() << "Simulation initialized. Network topology is set up.";
 
-    // Initiate DHCP Phase for Routers
+    // Initiate DHCP Phase for routers
     initiateDHCPPhase();
-
     QThread::sleep(5);
 
     // Initiate DHCP Phase for PCs
     if (m_network) {
         m_network->initiateDHCPPhaseForPC();
     }
-
     QThread::sleep(5);
 
-    // Check the assigned IP's of Routers and PCs
+    // Check the assigned IP's
     checkAssignedIP();
+
+    // Check the assigned IP's for PCs
     checkAssignedIPPC();
 
+    // Now we know all routers have IP addresses assigned, so we can setup direct routes:
+    if (m_network) {
+        m_network->setupDirectRoutesForRouters();
+    }
+
+    // Start the event coordinator clock so RIP ticks can begin
     EventsCoordinator::instance()->startClock(std::chrono::milliseconds(1000));
 
-    // Now enable RIP on all routers:
+    // Enable RIP on all routers
     if (m_network) {
         m_network->enableRIPOnAllRouters();
     }
 
-    // Let the simulation run for a while so routers can exchange RIP updates.
-    // For example, wait another 30 seconds (assuming tick = 1s) or so:
-    QThread::sleep(30);
+    // Give some time for RIP updates to propagate
+    QThread::sleep(35);
 
-    // Now print all routing tables to verify routes have been learned:
+    // Print all routing tables to see the results
     if (m_network) {
         m_network->printAllRoutingTables();
     }
-
-    // More logic can be added as needed.
-    // For example, start clocks, events, etc.
 }
 
 void Simulator::initiateDHCPPhase()

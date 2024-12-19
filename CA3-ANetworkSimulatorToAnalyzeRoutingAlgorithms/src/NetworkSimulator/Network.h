@@ -25,6 +25,7 @@ public:
 
     void enableRIPOnAllRouters();
     void printAllRoutingTables();
+    void setupDirectRoutesForRouters();
 
 private:
     QJsonObject m_config;

@@ -121,3 +121,30 @@ void Network::printAllRoutingTables()
         }
     }
 }
+
+void Network::setupDirectRoutesForRouters()
+{
+    for (auto &asInstance : m_autonomousSystems) {
+        const auto &routers = asInstance->getRouters();
+        for (auto &router : routers) {
+            QString routerIP = router->getIPAddress();
+            if (routerIP.isEmpty()) {
+                qWarning() << "Router" << router->getId() << "has no IP assigned yet, skipping direct route setup.";
+                continue;
+            }
+
+            QStringList octets = routerIP.split(".");
+            if (octets.size() == 4) {
+                octets[3] = "0";
+                QString network = octets.join(".");
+                QString mask = "255.255.255.0";
+                int metric = 1;
+
+                router->addRoute(network, mask, "", metric, RoutingProtocol::RIP);
+                qDebug() << "Network: Added direct route for Router" << router->getId() << ":" << network << "/" << mask << "metric" << metric;
+            } else {
+                qWarning() << "Invalid router IP format for Router" << router->getId() << routerIP;
+            }
+        }
+    }
+}
