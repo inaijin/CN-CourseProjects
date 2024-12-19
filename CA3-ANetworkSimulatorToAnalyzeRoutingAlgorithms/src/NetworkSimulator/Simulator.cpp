@@ -124,7 +124,7 @@ void Simulator::startSimulation()
     }
 
     // Give some time for RIP updates to propagate
-    QThread::sleep(35);
+    QThread::sleep(90);
 
     // Print all routing tables to see the results
     if (m_network) {

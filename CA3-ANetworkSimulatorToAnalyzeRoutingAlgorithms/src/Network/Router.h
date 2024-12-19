@@ -23,15 +23,18 @@ struct RouteEntry {
     QString nextHop;
     int metric;
     RoutingProtocol protocol;
-    qint64 lastUpdateTime; // Timestamp of last update in seconds (simulation time)
+    qint64 lastUpdateTime;
+    PortPtr_t learnedFromPort;
 
     RouteEntry(const QString &dest = "",
                const QString &m = "",
                const QString &nh = "",
                int met = -1,
                RoutingProtocol proto = RoutingProtocol::RIP,
-               qint64 time = 0)
-        : destination(dest), mask(m), nextHop(nh), metric(met), protocol(proto), lastUpdateTime(time) {}
+               qint64 time = 0,
+               PortPtr_t fromPort = nullptr)
+        : destination(dest), mask(m), nextHop(nh), metric(met),
+        protocol(proto), lastUpdateTime(time), learnedFromPort(fromPort) {}
 };
 
 class Router : public Node, public QEnableSharedFromThis<Router>
@@ -63,7 +66,8 @@ public Q_SLOTS:
     void processDHCPResponse(const PacketPtr_t  &packet);
 
     // Routing table methods
-    void addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol);
+    void addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric,
+                  RoutingProtocol protocol, PortPtr_t learnedFromPort = nullptr);
     void printRoutingTable() const;
 
     // RIP specific methods
