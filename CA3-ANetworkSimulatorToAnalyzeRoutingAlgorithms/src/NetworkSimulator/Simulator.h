@@ -22,9 +22,13 @@ public:
     void initiateDHCPPhase();
     void checkAssignedIP();
     void checkAssignedIPPC();
+    void initiatePacketSending();
 
 public slots:
     void onConvergenceDetected();
+
+signals:
+    void convergenceReached();
 
 private:
     QJsonObject m_config;

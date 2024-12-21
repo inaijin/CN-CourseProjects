@@ -100,18 +100,17 @@ void EventsCoordinator::onTick() {
         m_convergenceTickCounter++;
         qDebug() << "No routing table changes detected this tick. Convergence counter:" << m_convergenceTickCounter;
         if (m_convergenceTickCounter >= REQUIRED_STABLE_TICKS) {
-            qDebug() << "Network has converged. Stopping simulation.";
+            qDebug() << "Network has converged. Notifying simulation.";
             emit convergenceDetected();
-            QTimer::singleShot(0, this, [&]() {
-                emit tick();
-                QCoreApplication::quit();
-            });
+            // Stop the clock to prevent further ticks
+            stopClock();
         }
     } else {
         qDebug() << "Routing tables changed this tick. Resetting convergence counter.";
         m_convergenceTickCounter = 0;
     }
 
+    // Reset the flag for the next tick
     m_routingChangedThisTick = false;
 }
 

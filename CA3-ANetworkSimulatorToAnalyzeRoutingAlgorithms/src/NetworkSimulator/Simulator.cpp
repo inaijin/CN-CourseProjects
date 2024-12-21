@@ -142,7 +142,21 @@ void Simulator::onConvergenceDetected()
         m_network->printAllRoutingTables();
     }
 
-    QCoreApplication::quit();
+    qDebug() << "Proceeding with further steps.";
+
+    auto eventsCoordinator = EventsCoordinator::instance();
+    eventsCoordinator->quit();
+    eventsCoordinator->wait();
+
+    qDebug() << "EventsCoordinator stopped. Ready for next actions.";
+
+    // Now you can proceed with sending packets or other operations
+    initiatePacketSending();
+}
+
+void Simulator::initiatePacketSending()
+{
+    qDebug() << "Initiating packet sending based on updated routing tables.";
 }
 
 void Simulator::initiateDHCPPhase()
