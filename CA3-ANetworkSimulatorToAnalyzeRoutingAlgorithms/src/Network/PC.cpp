@@ -52,12 +52,44 @@ void PC::processPacket(const PacketPtr_t &packet)
     QString payload = packet->getPayload();
     qDebug() << "PC" << m_id << "received packet with payload:" << payload;
 
-    if (payload.contains("DHCP_OFFER")) {
-        // Payload format: DHCP_OFFER:IPADDRESS:clientId
+    if (packet->getType() == PacketType::Data) {
+        QStringList parts = payload.split(":");
+        if (parts.size() >= 3 && parts.at(0) == "Data") {
+            QString destinationIP = parts.at(1);
+            QString actualPayload = parts.at(2);
+
+            if (destinationIP == m_ipAddress) {
+                qDebug() << "PC" << m_id << "received data packet intended for itself.";
+
+                // Record packet reception metrics
+                if (m_metricsCollector) {
+                    m_metricsCollector->recordPacketReceived(packet->getPath().size(), std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
+                }
+
+                qDebug() << "PC" << m_id << "processing payload:" << actualPayload;
+            }
+            else {
+                qDebug() << "PC" << m_id << "received data packet not intended for it. Dropping.";
+
+                // Record packet drop
+                if (m_metricsCollector) {
+                    m_metricsCollector->recordPacketDropped();
+                }
+            }
+        }
+        else {
+            qWarning() << "Malformed Data packet on PC" << m_id << "payload:" << payload;
+            if (m_metricsCollector) {
+                m_metricsCollector->recordPacketDropped();
+            }
+        }
+    }
+    else if (payload.contains("DHCP_OFFER")) {
+        // DHCP_OFFER handling logic
         QStringList parts = payload.split(":");
         if (parts.size() == 3) {
-            QString offeredIP = parts[1];
-            int clientId = parts[2].toInt();
+            QString offeredIP = parts.at(1);
+            int clientId = parts.at(2).toInt();
 
             if (clientId == m_id) {
                 qDebug() << "PC" << m_id << "received DHCP offer:" << offeredIP << "Assigning IP.";
@@ -66,9 +98,15 @@ void PC::processPacket(const PacketPtr_t &packet)
             }
         } else {
             qWarning() << "Malformed DHCP_OFFER packet on PC" << m_id << "payload:" << payload;
+            if (m_metricsCollector) {
+                m_metricsCollector->recordPacketDropped();
+            }
         }
     } else {
         qDebug() << "PC" << m_id << "received unknown/unsupported packet, dropping it.";
+        if (m_metricsCollector) {
+            m_metricsCollector->recordPacketDropped();
+        }
     }
 }
 

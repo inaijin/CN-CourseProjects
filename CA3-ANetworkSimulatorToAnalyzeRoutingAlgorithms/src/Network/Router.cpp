@@ -280,14 +280,18 @@ void Router::processPacket(const PacketPtr_t &packet) {
     // Handle Data Packets
     else if (packet->getType() == PacketType::Data) {
         QStringList parts = payload.split(":");
-        if (parts.size() >= 2) {
+        if (parts.size() >= 3 && parts.at(0) == "Data") {
             QString destinationIP = parts.at(1);
+            QString actualPayload = parts.at(2);
 
             if (destinationIP == m_ipAddress) {
                 qDebug() << "Router" << m_id << "received packet intended for itself.";
+
                 if (m_metricsCollector) {
                     m_metricsCollector->recordPacketReceived(packet->getPath().size(), std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
                 }
+
+                qDebug() << "Router" << m_id << "processing payload:" << actualPayload;
             }
             else {
                 RouteEntry bestRoute = findBestRoute(destinationIP);
@@ -309,6 +313,7 @@ void Router::processPacket(const PacketPtr_t &packet) {
                 }
 
                 packet->addToPath(m_ipAddress);
+
                 if (m_metricsCollector) {
                     m_metricsCollector->recordRouterUsage(m_ipAddress);
                     m_metricsCollector->recordHopCount(packet->getPath().size());
@@ -321,14 +326,16 @@ void Router::processPacket(const PacketPtr_t &packet) {
                     if (m_metricsCollector) {
                         m_metricsCollector->recordPacketSent();
                     }
-                } else {
+                }
+                else {
                     qDebug() << "Router" << m_id << "has no valid outgoing port to forward the packet. Dropping packet.";
                     if (m_metricsCollector) {
                         m_metricsCollector->recordPacketDropped();
                     }
                 }
             }
-        } else {
+        }
+        else {
             qWarning() << "Malformed Data packet on Router" << m_id << "payload:" << payload;
             if (m_metricsCollector) {
                 m_metricsCollector->recordPacketDropped();

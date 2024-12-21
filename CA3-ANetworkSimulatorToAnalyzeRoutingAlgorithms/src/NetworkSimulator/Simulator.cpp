@@ -90,6 +90,8 @@ void Simulator::initializeNetwork()
     m_network = QSharedPointer<Network>::create(m_config);
     m_network->initialize(m_idAssignment);
 
+    m_metricsCollector = QSharedPointer<MetricsCollector>::create();
+
     auto allRouters = m_network->getAllRouters();
     auto eventsCoordinator = EventsCoordinator::instance();
     for (const auto &router : allRouters) {

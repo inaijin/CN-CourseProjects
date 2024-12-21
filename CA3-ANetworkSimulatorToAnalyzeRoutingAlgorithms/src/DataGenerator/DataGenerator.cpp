@@ -64,7 +64,10 @@ void DataGenerator::generatePackets() {
             int destIndex = m_generator() % possibleDestinations.size();
             QString destination = possibleDestinations[destIndex];
 
-            auto packet = QSharedPointer<Packet>::create(PacketType::Data, "GeneratedPayload");
+            QString actualPayload = "Hello from PC " + QString::number(sender->getId());
+            QString payload = "Data:" + destination + ":" + actualPayload;
+
+            QSharedPointer<Packet> packet = QSharedPointer<Packet>::create(PacketType::Data, payload, 64);
             packet->addToPath(sender->getIpAddress());
             packet->addToPath(destination);
             packets.push_back(packet);
