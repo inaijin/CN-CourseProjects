@@ -37,13 +37,15 @@ public:
 protected:
     void run() override;
 
-Q_SIGNALS:
+signals:
     void tick();
     void packetGenerated(QSharedPointer<Packet> packet);
+    void convergenceDetected();
 
-private Q_SLOTS:
+private slots:
     void onTick();
     void onPacketsGenerated(const std::vector<QSharedPointer<Packet>> &packets);
+    void onRoutingTableUpdated(int routerId);
 
 private:
     inline static EventsCoordinator *m_self = nullptr;
@@ -53,6 +55,10 @@ private:
     std::vector<QSharedPointer<Packet>> m_packetQueue;
     std::vector<QSharedPointer<Router>> m_routers;
     std::vector<QSharedPointer<PC>> m_pcs;
+
+    bool m_routingChangedThisTick;
+    int m_convergenceTickCounter;
+    const int REQUIRED_STABLE_TICKS = 20;
 
     void synchronizeRoutersWithDHCP();
     int m_currentTime = 0;

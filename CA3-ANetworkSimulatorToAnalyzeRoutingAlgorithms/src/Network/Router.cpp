@@ -279,6 +279,7 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
         newEntry.invalidTimer = newInvalidTimer;
         // qDebug() << "Router" << m_id << "added new learned route to" << destination << "metric" << metric;
         m_routingTable.append(newEntry);
+        emit routingTableUpdated(m_id);
     }
 }
 

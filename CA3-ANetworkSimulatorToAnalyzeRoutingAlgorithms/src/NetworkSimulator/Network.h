@@ -28,6 +28,7 @@ public:
     void setupDirectRoutesForRouters();
 
     void finalizeRoutesAfterDHCP();
+    std::vector<QSharedPointer<Router>> getAllRouters() const;
 
 private:
     QJsonObject m_config;

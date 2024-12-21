@@ -38,6 +38,15 @@ void Network::connectAutonomousSystems()
     }
 }
 
+std::vector<QSharedPointer<Router>> Network::getAllRouters() const {
+    std::vector<QSharedPointer<Router>> allRouters;
+    for (const auto &asInstance : m_autonomousSystems) {
+        auto routers = asInstance->getRouters();
+        allRouters.insert(allRouters.end(), routers.begin(), routers.end());
+    }
+    return allRouters;
+}
+
 void Network::initiateDHCPPhase()
 {
     for (const auto &asInstance : m_autonomousSystems)

@@ -23,6 +23,9 @@ public:
     void checkAssignedIP();
     void checkAssignedIPPC();
 
+public slots:
+    void onConvergenceDetected();
+
 private:
     QJsonObject m_config;
     QSharedPointer<Network> m_network;

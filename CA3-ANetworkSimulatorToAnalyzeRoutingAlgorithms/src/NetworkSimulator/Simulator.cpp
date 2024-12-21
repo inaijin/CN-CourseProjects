@@ -2,6 +2,7 @@
 #include "EventsCoordinator/EventsCoordinator.h"
 #include <QFile>
 #include <QJsonDocument>
+#include <QCoreApplication>
 #include <QDebug>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -88,6 +89,15 @@ void Simulator::initializeNetwork()
 {
     m_network = QSharedPointer<Network>::create(m_config);
     m_network->initialize(m_idAssignment);
+
+    auto allRouters = m_network->getAllRouters();
+    auto eventsCoordinator = EventsCoordinator::instance();
+    for (const auto &router : allRouters) {
+        eventsCoordinator->addRouter(router);
+        router->initialize();
+    }
+
+    connect(eventsCoordinator, &EventsCoordinator::convergenceDetected, this, &Simulator::onConvergenceDetected);
 }
 
 void Simulator::startSimulation()
@@ -123,16 +133,16 @@ void Simulator::startSimulation()
     if (m_network) {
         m_network->enableRIPOnAllRouters();
     }
+}
 
-    // Give some time for RIP updates to propagate
-    QTimer::singleShot(50000, this, [this]() {
-        // Print all routing tables to see the results
-        if (m_network) {
-            m_network->printAllRoutingTables();
-            qTerminate();
-        }
-    });
+void Simulator::onConvergenceDetected()
+{
+    qDebug() << "Convergence detected. Printing all routing tables:";
+    if (m_network) {
+        m_network->printAllRoutingTables();
+    }
 
+    QCoreApplication::quit();
 }
 
 void Simulator::initiateDHCPPhase()

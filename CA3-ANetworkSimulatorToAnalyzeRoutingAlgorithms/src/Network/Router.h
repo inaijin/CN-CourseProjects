@@ -75,7 +75,7 @@ public:
     static void setTopologyBuilder(TopologyBuilder *builder);
 
 signals:
-    void routingTableUpdated();
+    void routingTableUpdated(int routerId);
 
 public Q_SLOTS:
     void initialize();
