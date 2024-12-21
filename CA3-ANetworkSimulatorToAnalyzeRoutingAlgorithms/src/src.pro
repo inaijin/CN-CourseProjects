@@ -31,7 +31,8 @@ SOURCES += \
     $$PWD/Topology/TopologyController.cpp \
     $$PWD/Topology/TopologyBuilder.cpp \
     $$PWD/BroadCast/UDP.cpp \
-    $$PWD/Globals/RouterRegistry.cpp
+    $$PWD/Globals/RouterRegistry.cpp \
+    $$PWD/MetricsCollector/MetricsCollector.cpp
 
 HEADERS += \
     $$PWD/DHCPServer/DHCPServer.h \
@@ -59,4 +60,5 @@ HEADERS += \
     $$PWD/Globals/IdAssignment.h \
     $$PWD/BroadCast/UDP.h \
     $$PWD/Globals/RouterRegistry.h \
-    $$PWD/Logger/Logger.h
+    $$PWD/Logger/Logger.h \
+    $$PWD/MetricsCollector/MetricsCollector.h
