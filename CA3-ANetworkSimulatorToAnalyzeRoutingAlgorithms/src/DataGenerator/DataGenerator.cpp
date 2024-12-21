@@ -15,8 +15,9 @@ void DataGenerator::setLambda(double lambda) {
     m_distribution = std::poisson_distribution<int>(m_lambda);
 }
 
-void DataGenerator::setDestinations(const std::vector<QString> &destinations) {
-    m_destinations = destinations;
+void DataGenerator::setSenders(const std::vector<QSharedPointer<PC>> &senders) {
+    m_senders = senders;
+    qDebug() << "DataGenerator: Set" << m_senders.size() << "senders.";
 }
 
 std::vector<int> DataGenerator::generatePoissonLoads(int numSamples, int timeScale) {
@@ -31,8 +32,13 @@ std::vector<int> DataGenerator::generatePoissonLoads(int numSamples, int timeSca
 }
 
 void DataGenerator::generatePackets() {
-    const int numSamples = 150; // Number of packets to generate
-    const int timeScale = 100;  // Time scale for the distribution
+    if (m_senders.empty()) {
+        qWarning() << "DataGenerator: No senders set. Cannot generate packets.";
+        return;
+    }
+
+    const int numSamples = 150;
+    const int timeScale = 100;
     std::vector<int> loads = generatePoissonLoads(numSamples, timeScale);
     std::vector<QSharedPointer<Packet>> packets;
 
@@ -40,16 +46,27 @@ void DataGenerator::generatePackets() {
         int packetsForThisSecond = loads[second];
 
         for (int i = 0; i < packetsForThisSecond; ++i) {
-            if (m_destinations.empty()) {
-                qDebug() << "No destinations available for packet generation.";
-                return;
+            int senderIndex = m_generator() % m_senders.size();
+            QSharedPointer<PC> sender = m_senders[senderIndex];
+
+            std::vector<QString> possibleDestinations;
+            for (const auto &pc : m_senders) {
+                if (pc->getId() != sender->getId()) {
+                    possibleDestinations.push_back(pc->getIpAddress());
+                }
             }
 
-            QString destination = m_destinations[std::rand() % m_destinations.size()];
+            if (possibleDestinations.empty()) {
+                qWarning() << "DataGenerator: No valid destinations available.";
+                continue;
+            }
+
+            int destIndex = m_generator() % possibleDestinations.size();
+            QString destination = possibleDestinations[destIndex];
 
             auto packet = QSharedPointer<Packet>::create(PacketType::Data, "GeneratedPayload");
+            packet->addToPath(sender->getIpAddress());
             packet->addToPath(destination);
-
             packets.push_back(packet);
         }
     }

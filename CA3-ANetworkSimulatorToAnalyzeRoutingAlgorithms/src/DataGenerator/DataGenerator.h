@@ -7,6 +7,7 @@
 #include <vector>
 #include <QString>
 #include "../Packet/Packet.h"
+#include "../Network/PC.h"
 
 class DataGenerator : public QObject
 {
@@ -17,7 +18,7 @@ public:
     ~DataGenerator() override = default;
 
     void setLambda(double lambda);
-    void setDestinations(const std::vector<QString> &destinations);
+    void setSenders(const std::vector<QSharedPointer<PC>> &senders);
     void generatePackets();
 
 Q_SIGNALS:
@@ -27,7 +28,7 @@ private:
     double m_lambda;
     std::default_random_engine m_generator;
     std::poisson_distribution<int> m_distribution;
-    std::vector<QString> m_destinations;
+    std::vector<QSharedPointer<PC>> m_senders;
 
     std::vector<int> generatePoissonLoads(int numSamples, int timeScale);
 };

@@ -15,6 +15,8 @@ public:
 
     PortPtr_t getPort();
 
+    QString getIpAddress() const;
+
 public Q_SLOTS:
     void initialize();
     void generatePacket();

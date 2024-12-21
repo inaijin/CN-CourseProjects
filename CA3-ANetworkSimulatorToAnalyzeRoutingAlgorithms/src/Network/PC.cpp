@@ -71,3 +71,7 @@ void PC::processPacket(const PacketPtr_t &packet)
         qDebug() << "PC" << m_id << "received unknown/unsupported packet, dropping it.";
     }
 }
+
+QString PC::getIpAddress() const {
+    return m_ipAddress;
+}
