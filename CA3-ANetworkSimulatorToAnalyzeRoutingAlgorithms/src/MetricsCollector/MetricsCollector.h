@@ -18,6 +18,9 @@ public:
     void recordPacketReceived(int hopCount, const std::vector<QString> &path);
     void recordPacketDropped();
 
+    void recordRouterUsage(const QString &routerIP);
+    void recordHopCount(int hopCount);
+
     void printStatistics() const;
 
 private:

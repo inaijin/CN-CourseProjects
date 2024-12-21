@@ -12,6 +12,7 @@
 
 class UDP;
 class TopologyBuilder;
+class MetricsCollector;
 
 enum class RoutingProtocol {
     RIP,
@@ -73,6 +74,7 @@ public:
     void setupDirectNeighborRoutes();
     std::vector<QSharedPointer<Router>> getDirectlyConnectedRouters();
     static void setTopologyBuilder(TopologyBuilder *builder);
+    void setMetricsCollector(QSharedPointer<MetricsCollector> collector);
 
 signals:
     void routingTableUpdated(int routerId);
@@ -99,6 +101,7 @@ private:
     bool m_hasValidIP;
     QSharedPointer<DHCPServer> m_dhcpServer;
     QSharedPointer<UDP> m_udp;
+    QSharedPointer<MetricsCollector> m_metricsCollector;
     QString m_assignedIP;
 
     QSet<QString> m_seenPackets;

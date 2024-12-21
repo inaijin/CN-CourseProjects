@@ -29,6 +29,16 @@ void MetricsCollector::recordPacketDropped() {
     m_droppedPackets++;
 }
 
+void MetricsCollector::recordRouterUsage(const QString &routerIP) {
+    if (routerIP.startsWith("192.168.")) {
+        m_routerUsage[routerIP]++;
+    }
+}
+
+void MetricsCollector::recordHopCount(int hopCount) {
+    m_totalHops += hopCount;
+}
+
 void MetricsCollector::printStatistics() const {
     qDebug() << "---- Simulation Metrics ----";
     qDebug() << "Total Packets Sent:" << m_sentPackets;

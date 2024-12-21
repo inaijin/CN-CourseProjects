@@ -1,6 +1,7 @@
 #include "Router.h"
 #include "EventsCoordinator/EventsCoordinator.h"
 #include "../Topology/TopologyBuilder.h"
+#include "../MetricsCollector/MetricsCollector.h"
 #include <QDebug>
 #include <QThread>
 
@@ -64,6 +65,10 @@ PortPtr_t Router::getAvailablePort()
 std::vector<PortPtr_t> Router::getPorts()
 {
     return m_ports;
+}
+
+void Router::setMetricsCollector(QSharedPointer<MetricsCollector> collector) {
+    m_metricsCollector = collector;
 }
 
 void Router::initialize()
