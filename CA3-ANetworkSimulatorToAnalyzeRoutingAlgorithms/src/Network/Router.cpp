@@ -180,23 +180,15 @@ void Router::markPacketAsSeen(const PacketPtr_t &packet) {
     m_seenPackets.insert(packet->getPayload());
 }
 
-// Router.cpp
-
-#include "Router.h"
-// ... (other includes)
-#include "../Metrics/MetricsCollector.h" // Ensure MetricsCollector is included
-
 void Router::processPacket(const PacketPtr_t &packet) {
     if (!packet) return;
 
     QString payload = packet->getPayload();
     qDebug() << "Router" << m_id << "processing packet with payload:" << payload;
 
-    // Record that a packet has been received for potential metrics
     if (m_metricsCollector) {
-        // Assuming that only Data packets are considered for these metrics
         if (packet->getType() == PacketType::Data) {
-            m_metricsCollector->recordPacketReceived(packet->getPath().size(), packet->getPath().toStdVector());
+            m_metricsCollector->recordPacketReceived(packet->getPath().size(),std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
         }
     }
 
@@ -294,7 +286,7 @@ void Router::processPacket(const PacketPtr_t &packet) {
             if (destinationIP == m_ipAddress) {
                 qDebug() << "Router" << m_id << "received packet intended for itself.";
                 if (m_metricsCollector) {
-                    m_metricsCollector->recordPacketReceived(packet->getPath().size(), packet->getPath().toStdVector());
+                    m_metricsCollector->recordPacketReceived(packet->getPath().size(), std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
                 }
             }
             else {
