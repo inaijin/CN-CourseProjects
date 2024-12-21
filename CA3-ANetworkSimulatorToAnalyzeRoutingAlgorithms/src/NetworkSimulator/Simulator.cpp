@@ -125,7 +125,7 @@ void Simulator::startSimulation()
     }
 
     // Give some time for RIP updates to propagate
-    QTimer::singleShot(60000, this, [this]() {
+    QTimer::singleShot(50000, this, [this]() {
         // Print all routing tables to see the results
         if (m_network) {
             m_network->printAllRoutingTables();
