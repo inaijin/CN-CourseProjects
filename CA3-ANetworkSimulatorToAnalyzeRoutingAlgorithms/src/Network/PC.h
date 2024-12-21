@@ -4,6 +4,7 @@
 #include "Node.h"
 #include <QSharedPointer>
 #include "../Port/Port.h"
+#include "../MetricsCollector/MetricsCollector.h"
 
 class PC : public Node
 {
@@ -17,6 +18,8 @@ public:
 
     QString getIpAddress() const;
 
+    void setMetricsCollector(QSharedPointer<MetricsCollector> collector);
+
 public Q_SLOTS:
     void initialize();
     void generatePacket();
@@ -25,6 +28,7 @@ public Q_SLOTS:
 
 private:
     PortPtr_t m_port;
+    QSharedPointer<MetricsCollector> m_metricsCollector;
 };
 
 #endif // PC_H

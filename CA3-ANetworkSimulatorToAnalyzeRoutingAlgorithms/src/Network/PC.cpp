@@ -75,3 +75,7 @@ void PC::processPacket(const PacketPtr_t &packet)
 QString PC::getIpAddress() const {
     return m_ipAddress;
 }
+
+void PC::setMetricsCollector(QSharedPointer<MetricsCollector> collector) {
+    m_metricsCollector = collector;
+}

@@ -75,6 +75,7 @@ public:
     std::vector<QSharedPointer<Router>> getDirectlyConnectedRouters();
     static void setTopologyBuilder(TopologyBuilder *builder);
     void setMetricsCollector(QSharedPointer<MetricsCollector> collector);
+    RouteEntry findBestRoutePath(const QString &destinationIP) const;
 
 signals:
     void routingTableUpdated(int routerId);

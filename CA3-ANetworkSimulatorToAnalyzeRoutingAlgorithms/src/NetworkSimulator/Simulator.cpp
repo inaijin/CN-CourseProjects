@@ -95,6 +95,7 @@ void Simulator::initializeNetwork()
     for (const auto &router : allRouters) {
         eventsCoordinator->addRouter(router);
         router->initialize();
+        router->setMetricsCollector(m_metricsCollector);
     }
 
     connect(eventsCoordinator, &EventsCoordinator::convergenceDetected, this, &Simulator::onConvergenceDetected);
@@ -111,6 +112,10 @@ void Simulator::initializeNetwork()
     m_dataGenerator->setSenders(allPCs);
 
     m_metricsCollector = QSharedPointer<MetricsCollector>::create();
+
+    for (const auto &pc : allPCs) {
+        pc->setMetricsCollector(m_metricsCollector);
+    }
 
     connect(m_dataGenerator.data(), &DataGenerator::packetsGenerated, this, &Simulator::handleGeneratedPackets);
 

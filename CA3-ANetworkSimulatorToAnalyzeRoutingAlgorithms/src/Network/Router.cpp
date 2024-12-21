@@ -405,6 +405,22 @@ QString Router::findBestRoute(const QString &destinationIP) const
     return bestNextHop;
 }
 
+RouteEntry Router::findBestRoutePath(const QString &destinationIP) const {
+    RouteEntry bestRoute;
+    int minMetric = RIP_INFINITY;
+
+    for (const auto &route : m_routingTable) {
+        if (destinationIP.startsWith(route.destination)) {
+            if (route.metric < minMetric) {
+                minMetric = route.metric;
+                bestRoute = route;
+            }
+        }
+    }
+
+    return bestRoute;
+}
+
 void Router::printRoutingTable() const
 {
     qDebug() << "Routing Table for Router" << m_id << ":";
