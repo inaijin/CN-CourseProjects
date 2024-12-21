@@ -29,6 +29,7 @@ public:
 
     void finalizeRoutesAfterDHCP();
     std::vector<QSharedPointer<Router>> getAllRouters() const;
+    std::vector<QSharedPointer<AutonomousSystem>> getAutonomousSystems() const;
 
 private:
     QJsonObject m_config;

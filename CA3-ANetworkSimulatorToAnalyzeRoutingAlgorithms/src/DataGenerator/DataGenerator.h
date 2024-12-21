@@ -21,6 +21,8 @@ public:
     void setSenders(const std::vector<QSharedPointer<PC>> &senders);
     void generatePackets();
 
+    std::vector<QSharedPointer<PC>> getSenders() const;
+
 Q_SIGNALS:
     void packetsGenerated(const std::vector<QSharedPointer<Packet>> &packets);
 

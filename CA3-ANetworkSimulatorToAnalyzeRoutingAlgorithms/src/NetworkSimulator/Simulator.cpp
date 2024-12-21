@@ -98,6 +98,52 @@ void Simulator::initializeNetwork()
     }
 
     connect(eventsCoordinator, &EventsCoordinator::convergenceDetected, this, &Simulator::onConvergenceDetected);
+
+    m_dataGenerator = QSharedPointer<DataGenerator>::create();
+    m_dataGenerator->setLambda(1.0);
+
+    std::vector<QSharedPointer<PC>> allPCs;
+    for (const auto &asInstance : m_network->getAutonomousSystems()) {
+        auto pcs = asInstance->getPCs();
+        allPCs.insert(allPCs.end(), pcs.begin(), pcs.end());
+    }
+
+    m_dataGenerator->setSenders(allPCs);
+
+    connect(m_dataGenerator.data(), &DataGenerator::packetsGenerated, this, &Simulator::handleGeneratedPackets); // Implement handleGeneratedPackets
+
+    m_dataGenerator->generatePackets();
+}
+
+void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>> &packets)
+{
+    qDebug() << "Simulator received" << packets.size() << "generated packets.";
+
+    for (const auto &packet : packets) {
+        QString senderIP = packet->getPath().at(0);
+        QString destinationIP = packet->getPath().at(1);
+
+        QSharedPointer<PC> sender = nullptr;
+        for (const auto &pc : m_dataGenerator->getSenders()) {
+            if (pc->getIpAddress() == senderIP) {
+                sender = pc;
+                break;
+            }
+        }
+
+        if (!sender) {
+            qWarning() << "Simulator: Sender PC with IP" << senderIP << "not found.";
+            continue;
+        }
+
+        auto port = sender->getPort();
+        if (port) {
+            port->sendPacket(packet);
+            qDebug() << "Simulator: Packet sent from PC" << sender->getId() << "to" << destinationIP;
+        } else {
+            qWarning() << "Simulator: Sender PC" << sender->getId() << "has no available port.";
+        }
+    }
 }
 
 void Simulator::startSimulation()

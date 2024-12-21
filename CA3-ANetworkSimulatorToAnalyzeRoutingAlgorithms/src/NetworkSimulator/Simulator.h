@@ -7,6 +7,7 @@
 #include <QString>
 #include "Network.h"
 #include "IdAssignment.h"
+#include "DataGenerator/DataGenerator.h"
 
 class Simulator : public QObject
 {
@@ -23,6 +24,7 @@ public:
     void checkAssignedIP();
     void checkAssignedIPPC();
     void initiatePacketSending();
+    void handleGeneratedPackets(const std::vector<QSharedPointer<Packet>> &packets);
 
 public slots:
     void onConvergenceDetected();
@@ -33,6 +35,7 @@ signals:
 private:
     QJsonObject m_config;
     QSharedPointer<Network> m_network;
+    QSharedPointer<DataGenerator> m_dataGenerator;
     IdAssignment m_idAssignment;
 
     void preAssignIDs();

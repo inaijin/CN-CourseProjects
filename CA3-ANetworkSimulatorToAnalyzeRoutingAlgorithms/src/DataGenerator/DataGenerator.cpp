@@ -75,3 +75,7 @@ void DataGenerator::generatePackets() {
 
     qDebug() << packets.size() << "packets generated and emitted over a timescale of" << timeScale << "seconds.";
 }
+
+std::vector<QSharedPointer<PC>> DataGenerator::getSenders() const {
+    return m_senders;
+}

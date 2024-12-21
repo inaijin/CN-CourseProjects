@@ -160,3 +160,7 @@ void Network::finalizeRoutesAfterDHCP() {
     }
     qDebug() << "All routers have set direct neighbor routes.";
 }
+
+std::vector<QSharedPointer<AutonomousSystem>> Network::getAutonomousSystems() const {
+    return m_autonomousSystems;
+}
