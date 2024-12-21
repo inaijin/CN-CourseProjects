@@ -118,8 +118,6 @@ void Simulator::initializeNetwork()
     }
 
     connect(m_dataGenerator.data(), &DataGenerator::packetsGenerated, this, &Simulator::handleGeneratedPackets);
-
-    m_dataGenerator->generatePackets();
 }
 
 void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>> &packets)
@@ -215,13 +213,24 @@ void Simulator::onConvergenceDetected()
     // Now we can proceed with sending packets or other operations
     initiatePacketSending();
 
-    // Now we can print our statistics
-    m_metricsCollector->printStatistics();
+    // Print metrics after some delay to allow packet processing
+    QTimer::singleShot(5000, this, [this]() {
+        if (m_metricsCollector) {
+            m_metricsCollector->printStatistics();
+        }
+    });
 }
 
 void Simulator::initiatePacketSending()
 {
     qDebug() << "Initiating packet sending based on updated routing tables.";
+
+    if (m_dataGenerator) {
+        m_dataGenerator->generatePackets();
+        qDebug() << "DataGenerator has been instructed to generate packets.";
+    } else {
+        qWarning() << "DataGenerator not initialized. Cannot generate packets.";
+    }
 }
 
 void Simulator::initiateDHCPPhase()
