@@ -58,4 +58,5 @@ HEADERS += \
     $$PWD/Topology/TopologyBuilder.h \
     $$PWD/Globals/IdAssignment.h \
     $$PWD/BroadCast/UDP.h \
-    $$PWD/Globals/RouterRegistry.h
+    $$PWD/Globals/RouterRegistry.h \
+    $$PWD/Logger/Logger.h

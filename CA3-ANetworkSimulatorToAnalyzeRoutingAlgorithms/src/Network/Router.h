@@ -74,6 +74,9 @@ public:
     std::vector<QSharedPointer<Router>> getDirectlyConnectedRouters();
     static void setTopologyBuilder(TopologyBuilder *builder);
 
+signals:
+    void routingTableUpdated();
+
 public Q_SLOTS:
     void initialize();
     void processDHCPResponse(const PacketPtr_t  &packet);
