@@ -68,7 +68,6 @@ void TopologyBuilder::createRouters() {
         connect(routerThread, &QThread::finished, router.data(), &QObject::deleteLater);
 
         routerThread->start();
-        qDebug() << "PUSH SHOD OWO " << router->getId();
         m_routers.push_back(router);
         qDebug() << "Created Router with ID:" << routerId;
 

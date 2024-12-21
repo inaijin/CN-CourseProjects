@@ -462,7 +462,6 @@ void Router::addDirectRoute(const QString &destination, const QString &mask) {
 
 void Router::setupDirectNeighborRoutes() {
     auto neighbors = getDirectlyConnectedRouters();
-    qDebug() << "Check e Omadan";
     for (auto &nbr : neighbors) {
         QString nbrIP = nbr->getIPAddress();
         qDebug() << "neighbor IP " << nbrIP;
@@ -501,20 +500,12 @@ std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters() {
     for (auto &port : m_ports) {
         if (port->isConnected()) {
             int remoteId = port->getConnectedRouterId();
-            qDebug() << "router double Begaii " << port->getConnectedRouterId() << "AND " << m_id << "AND " << s_topologyBuilder;
-            for (auto &router : s_topologyBuilder->getRouters()) {
-                qDebug() << "  Router ID:" << router->getId();
-            }
             if (remoteId > 0 && remoteId != m_id && s_topologyBuilder) {
-                qDebug() << "raft";
                 QSharedPointer<Router> nbr = nullptr;
                 if (remoteId < 24) {
                     nbr = s_topologyBuilder->findRouterById(remoteId);
-                    qDebug() << "WTF " << nbr;
                 }
-                // qDebug() << "NEIGHOBR is " << nbr->getId();
                 if (nbr) {
-                    qDebug() << "push Shod";
                     neighbors.push_back(nbr);
                 }
             }

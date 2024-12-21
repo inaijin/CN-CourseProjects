@@ -146,7 +146,6 @@ void Network::finalizeRoutesAfterDHCP() {
     for (auto &asInstance : m_autonomousSystems) {
         const auto &routers = asInstance->getRouters();
         for (auto &router : routers) {
-            qDebug() << "Router " << "begaii " << router->getId();
             router->setupDirectNeighborRoutes();
         }
     }
