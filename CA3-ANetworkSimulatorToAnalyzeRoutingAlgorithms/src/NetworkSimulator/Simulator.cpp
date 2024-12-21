@@ -110,7 +110,9 @@ void Simulator::initializeNetwork()
 
     m_dataGenerator->setSenders(allPCs);
 
-    connect(m_dataGenerator.data(), &DataGenerator::packetsGenerated, this, &Simulator::handleGeneratedPackets); // Implement handleGeneratedPackets
+    m_metricsCollector = QSharedPointer<MetricsCollector>::create();
+
+    connect(m_dataGenerator.data(), &DataGenerator::packetsGenerated, this, &Simulator::handleGeneratedPackets);
 
     m_dataGenerator->generatePackets();
 }
@@ -120,6 +122,12 @@ void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>>
     qDebug() << "Simulator received" << packets.size() << "generated packets.";
 
     for (const auto &packet : packets) {
+        if (packet->getPath().size() < 2) {
+            qWarning() << "Simulator: Packet" << packet->getId() << "has insufficient path information.";
+            m_metricsCollector->recordPacketDropped();
+            continue;
+        }
+
         QString senderIP = packet->getPath().at(0);
         QString destinationIP = packet->getPath().at(1);
 
@@ -133,15 +141,18 @@ void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>>
 
         if (!sender) {
             qWarning() << "Simulator: Sender PC with IP" << senderIP << "not found.";
+            m_metricsCollector->recordPacketDropped();
             continue;
         }
 
         auto port = sender->getPort();
         if (port) {
             port->sendPacket(packet);
-            qDebug() << "Simulator: Packet sent from PC" << sender->getId() << "to" << destinationIP;
+            qDebug() << "Simulator: Packet" << packet->getId() << "sent from PC" << sender->getId() << "to" << destinationIP;
+            m_metricsCollector->recordPacketSent();
         } else {
             qWarning() << "Simulator: Sender PC" << sender->getId() << "has no available port.";
+            m_metricsCollector->recordPacketDropped();
         }
     }
 }
@@ -196,8 +207,11 @@ void Simulator::onConvergenceDetected()
 
     qDebug() << "EventsCoordinator stopped. Ready for next actions.";
 
-    // Now you can proceed with sending packets or other operations
+    // Now we can proceed with sending packets or other operations
     initiatePacketSending();
+
+    // Now we can print our statistics
+    m_metricsCollector->printStatistics();
 }
 
 void Simulator::initiatePacketSending()

@@ -8,6 +8,7 @@
 #include "Network.h"
 #include "IdAssignment.h"
 #include "DataGenerator/DataGenerator.h"
+#include "../MetricsCollector/MetricsCollector.h"
 
 class Simulator : public QObject
 {
@@ -24,10 +25,10 @@ public:
     void checkAssignedIP();
     void checkAssignedIPPC();
     void initiatePacketSending();
-    void handleGeneratedPackets(const std::vector<QSharedPointer<Packet>> &packets);
 
 public slots:
     void onConvergenceDetected();
+    void handleGeneratedPackets(const std::vector<QSharedPointer<Packet>> &packets);
 
 signals:
     void convergenceReached();
@@ -36,6 +37,7 @@ private:
     QJsonObject m_config;
     QSharedPointer<Network> m_network;
     QSharedPointer<DataGenerator> m_dataGenerator;
+    QSharedPointer<MetricsCollector> m_metricsCollector;
     IdAssignment m_idAssignment;
 
     void preAssignIDs();
