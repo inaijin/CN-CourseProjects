@@ -296,7 +296,7 @@ void Router::processPacket(const PacketPtr_t &packet) {
                 qDebug() << "Router" << m_id << "processing payload:" << actualPayload;
             }
             else {
-                RouteEntry bestRoute = findBestRoute(destinationIP);
+                RouteEntry bestRoute = findBestRoutePath(destinationIP);
                 if (bestRoute.destination.isEmpty()) {
                     qDebug() << "Router" << m_id << "has no route to destination IP:" << destinationIP << ". Dropping packet.";
                     if (m_metricsCollector) {
