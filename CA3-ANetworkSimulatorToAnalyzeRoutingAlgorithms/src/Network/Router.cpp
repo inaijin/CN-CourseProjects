@@ -181,73 +181,36 @@ void Router::markPacketAsSeen(const PacketPtr_t &packet) {
 }
 
 void Router::processPacket(const PacketPtr_t &packet) {
-    if (!packet) return;
+    try {
+        if (!packet) return;
 
-    QString payload = packet->getPayload();
-    qDebug() << "Router" << m_id << "processing packet with payload:" << payload;
+        QString payload = packet->getPayload();
+        qDebug() << "Router" << m_id << "processing packet with payload:" << payload;
+        qDebug() << "Router" << m_id << "received packet type:" << static_cast<int>(packet->getType());
 
-    if (m_metricsCollector) {
-        if (packet->getType() == PacketType::Data) {
-            m_metricsCollector->recordPacketReceived(packet->getPath().size(),std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
-        }
-    }
-
-    // Check and handle TTL
-    if (packet->getTTL() <= 0) {
-        qDebug() << "Router" << m_id << "dropping packet due to TTL = 0.";
         if (m_metricsCollector) {
-            m_metricsCollector->recordPacketDropped();
-        }
-        return;
-    }
-
-    // Handle DHCP Requests
-    if (payload.contains("DHCP_REQUEST")) {
-        if (isDHCPServer()) {
-            if (m_dhcpServer) {
-                m_dhcpServer->receivePacket(packet);
-                if (m_metricsCollector) {
-                    m_metricsCollector->recordPacketSent();
-                }
-            }
-        } else {
-            if (!hasSeenPacket(packet)) {
-                markPacketAsSeen(packet);
-                forwardPacket(packet);
-                if (m_metricsCollector) {
-                    m_metricsCollector->recordPacketSent();
-                }
-            } else {
-                qDebug() << "Router" << m_id << "already seen this DHCP request, dropping to prevent loops.";
-                if (m_metricsCollector) {
-                    m_metricsCollector->recordPacketDropped();
-                }
+            if (packet->getType() == PacketType::Data) {
+                m_metricsCollector->recordPacketReceived(packet->getPath().size(),std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
             }
         }
-    }
-    // Handle DHCP Offers
-    else if (payload.contains("DHCP_OFFER")) {
-        QStringList parts = payload.split(":");
-        if (parts.size() == 3) {
-            QString offeredIP = parts[1];
-            int clientId = parts[2].toInt();
 
-            if (clientId == m_id) {
-                if (m_hasValidIP) {
-                    qDebug() << "Router" << m_id << "already has a valid IP:" << m_assignedIP;
-                    return;
-                }
-                qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
-                m_assignedIP = offeredIP;
-                m_ipAddress = m_assignedIP;
-                m_hasValidIP = true;
-                qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
+        // Check and handle TTL
+        if (packet->getTTL() <= 0) {
+            qDebug() << "Router" << m_id << "dropping packet due to TTL = 0.";
+            if (m_metricsCollector) {
+                m_metricsCollector->recordPacketDropped();
+            }
+            return;
+        }
 
-                addDirectRoute(m_assignedIP, "255.255.255.255");
-                qDebug() << "Router" << m_id << "added direct route for its own IP.";
-
-                if (m_metricsCollector) {
-                    m_metricsCollector->recordPacketSent();
+        // Handle DHCP Requests
+        if (payload.contains("DHCP_REQUEST")) {
+            if (isDHCPServer()) {
+                if (m_dhcpServer) {
+                    m_dhcpServer->receivePacket(packet);
+                    if (m_metricsCollector) {
+                        m_metricsCollector->recordPacketSent();
+                    }
                 }
             } else {
                 if (!hasSeenPacket(packet)) {
@@ -257,93 +220,176 @@ void Router::processPacket(const PacketPtr_t &packet) {
                         m_metricsCollector->recordPacketSent();
                     }
                 } else {
-                    qDebug() << "Router" << m_id << "already seen this DHCP offer, dropping to prevent loops.";
+                    qDebug() << "Router" << m_id << "already seen this DHCP request, dropping to prevent loops.";
                     if (m_metricsCollector) {
                         m_metricsCollector->recordPacketDropped();
                     }
                 }
-            }
-        } else {
-            qWarning() << "Malformed DHCP_OFFER packet on Router" << m_id << "payload:" << payload;
-            if (m_metricsCollector) {
-                m_metricsCollector->recordPacketDropped();
             }
         }
-    }
-    // Handle RIP Updates
-    else if (payload.startsWith("RIP_UPDATE")) {
-        processRIPUpdate(packet);
-        if (m_metricsCollector) {
-            m_metricsCollector->recordPacketSent();
-        }
-    }
-    // Handle Data Packets
-    else if (packet->getType() == PacketType::Data) {
-        QStringList parts = payload.split(":");
-        if (parts.size() >= 3 && parts.at(0) == "Data") {
-            QString destinationIP = parts.at(1);
-            QString actualPayload = parts.at(2);
+        // Handle DHCP Offers
+        else if (payload.contains("DHCP_OFFER")) {
+            QStringList parts = payload.split(":");
+            if (parts.size() == 3) {
+                QString offeredIP = parts[1];
+                int clientId = parts[2].toInt();
 
-            if (destinationIP == m_ipAddress) {
-                qDebug() << "Router" << m_id << "received packet intended for itself.";
-
-                if (m_metricsCollector) {
-                    m_metricsCollector->recordPacketReceived(packet->getPath().size(), std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
-                }
-
-                qDebug() << "Router" << m_id << "processing payload:" << actualPayload;
-            }
-            else {
-                RouteEntry bestRoute = findBestRoute(destinationIP);
-                if (bestRoute.destination.isEmpty()) {
-                    qDebug() << "Router" << m_id << "has no route to destination IP:" << destinationIP << ". Dropping packet.";
-                    if (m_metricsCollector) {
-                        m_metricsCollector->recordPacketDropped();
+                if (clientId == m_id) {
+                    if (m_hasValidIP) {
+                        qDebug() << "Router" << m_id << "already has a valid IP:" << m_assignedIP;
+                        return;
                     }
-                    return;
-                }
+                    qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
+                    m_assignedIP = offeredIP;
+                    m_ipAddress = m_assignedIP;
+                    m_hasValidIP = true;
+                    qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
 
-                packet->decrementTTL();
-                if (packet->getTTL() <= 0) {
-                    qDebug() << "Router" << m_id << "dropping packet due to TTL = 0 after decrement.";
-                    if (m_metricsCollector) {
-                        m_metricsCollector->recordPacketDropped();
-                    }
-                    return;
-                }
+                    addDirectRoute(m_assignedIP, "255.255.255.255");
+                    qDebug() << "Router" << m_id << "added direct route for its own IP.";
 
-                packet->addToPath(m_ipAddress);
-
-                if (m_metricsCollector) {
-                    m_metricsCollector->recordRouterUsage(m_ipAddress);
-                    m_metricsCollector->recordHopCount(packet->getPath().size());
-                }
-
-                PortPtr_t outPort = bestRoute.learnedFromPort;
-                if (outPort && outPort->isConnected()) {
-                    outPort->sendPacket(packet);
-                    qDebug() << "Router" << m_id << "forwarded packet to next hop via Port" << outPort->getPortNumber();
                     if (m_metricsCollector) {
                         m_metricsCollector->recordPacketSent();
                     }
+                } else {
+                    if (!hasSeenPacket(packet)) {
+                        markPacketAsSeen(packet);
+                        forwardPacket(packet);
+                        if (m_metricsCollector) {
+                            m_metricsCollector->recordPacketSent();
+                        }
+                    } else {
+                        qDebug() << "Router" << m_id << "already seen this DHCP offer, dropping to prevent loops.";
+                        if (m_metricsCollector) {
+                            m_metricsCollector->recordPacketDropped();
+                        }
+                    }
+                }
+            } else {
+                qWarning() << "Malformed DHCP_OFFER packet on Router" << m_id << "payload:" << payload;
+                if (m_metricsCollector) {
+                    m_metricsCollector->recordPacketDropped();
+                }
+            }
+        }
+        // Handle RIP Updates
+        else if (payload.startsWith("RIP_UPDATE")) {
+            processRIPUpdate(packet);
+            if (m_metricsCollector) {
+                m_metricsCollector->recordPacketSent();
+            }
+        }
+        // Handle Data Packets
+        else if (packet->getType() == PacketType::Data) {
+            qDebug() << "checkEvenEnter";
+            // Payload format: Data:DestinationIP:ActualPayload
+            QStringList parts = payload.split(":");
+            if (parts.size() >= 3 && parts.at(0) == "Data") {
+                QString destinationIP = parts.at(1);
+                QString actualPayload = parts.at(2);
+
+                if (destinationIP == m_ipAddress) {
+                    qDebug() << "Router" << m_id << "received packet intended for itself.";
+
+                    // Record packet reception metrics
+                    if (m_metricsCollector) {
+                        m_metricsCollector->recordPacketReceived(packet->getPath().size(),std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
+                    }
+
+                    // Optionally, process the payload as needed
+                    qDebug() << "Router" << m_id << "processing payload:" << actualPayload;
                 }
                 else {
-                    qDebug() << "Router" << m_id << "has no valid outgoing port to forward the packet. Dropping packet.";
-                    if (m_metricsCollector) {
-                        m_metricsCollector->recordPacketDropped();
+                    // **Loop Prevention: Check if this router has already processed the packet**
+                    if (packet->getPath().contains(m_ipAddress)) {
+                        qDebug() << "Router" << m_id << "detected a loop. Dropping packet.";
+                        if (m_metricsCollector) {
+                            m_metricsCollector->recordPacketDropped();
+                        }
+                        return;
                     }
+
+                    // Find the best route for the destination
+                    RouteEntry bestRoute = findBestRoutePath(destinationIP);
+                    if (bestRoute.destination.isEmpty()) {
+                        qDebug() << "Router" << m_id << "has no route to destination IP:" << destinationIP << ". Dropping packet.";
+                        if (m_metricsCollector) {
+                            m_metricsCollector->recordPacketDropped();
+                        }
+                        return;
+                    }
+
+                    // Decrement TTL
+                    packet->decrementTTL();
+                    if (packet->getTTL() <= 0) {
+                        qDebug() << "Router" << m_id << "dropping packet due to TTL = 0 after decrement.";
+                        if (m_metricsCollector) {
+                            m_metricsCollector->recordPacketDropped();
+                        }
+                        return;
+                    }
+
+                    // Add this router to the packet's path
+                    packet->addToPath(m_ipAddress);
+
+                    // **Additional Hop Count Check: Prevent packets from exceeding a maximum number of hops**
+                    const int MAX_HOPS = 64;
+                    if (packet->getPath().size() > MAX_HOPS) {
+                        qDebug() << "Router" << m_id << "dropping packet due to exceeding maximum hop count.";
+                        if (m_metricsCollector) {
+                            m_metricsCollector->recordPacketDropped();
+                        }
+                        return;
+                    }
+
+                    // Record router usage and hop count
+                    if (m_metricsCollector) {
+                        m_metricsCollector->recordRouterUsage(m_ipAddress);
+                        m_metricsCollector->recordHopCount(packet->getPath().size());
+                    }
+
+                    // Forward the packet through the appropriate port
+                    qDebug() << "checkBefore";
+                    PortPtr_t outPort = bestRoute.learnedFromPort;
+                    if (outPort && outPort->isConnected()) {
+                        outPort->sendPacket(packet);
+                        qDebug() << "Router" << m_id << "forwarded packet to next hop via Port" << outPort->getPortNumber();
+                        if (m_metricsCollector) {
+                            m_metricsCollector->recordPacketSent();
+                        }
+                    }
+                    else {
+                        qDebug() << "Router" << m_id << "has no valid outgoing port to forward the packet. Dropping packet.";
+                        if (m_metricsCollector) {
+                            m_metricsCollector->recordPacketDropped();
+                        }
+                    }
+                    qDebug() << "checkAfter";
+                }
+            }
+            else {
+                qWarning() << "Malformed Data packet on Router" << m_id << "payload:" << payload;
+                if (m_metricsCollector) {
+                    m_metricsCollector->recordPacketDropped();
                 }
             }
         }
         else {
-            qWarning() << "Malformed Data packet on Router" << m_id << "payload:" << payload;
+            qDebug() << "Router" << m_id << "received unknown/unsupported packet:" << payload << "Dropping it.";
             if (m_metricsCollector) {
                 m_metricsCollector->recordPacketDropped();
             }
         }
     }
-    else {
-        qDebug() << "Router" << m_id << "received unknown/unsupported packet:" << payload << "Dropping it.";
+    catch (const std::exception &e) {
+        qCritical() << "Router" << m_id << "encountered an exception:" << e.what();
+        // Handle exception, possibly by dropping the packet
+        if (m_metricsCollector) {
+            m_metricsCollector->recordPacketDropped();
+        }
+    }
+    catch (...) {
+        qCritical() << "Router" << m_id << "encountered an unknown exception.";
         if (m_metricsCollector) {
             m_metricsCollector->recordPacketDropped();
         }

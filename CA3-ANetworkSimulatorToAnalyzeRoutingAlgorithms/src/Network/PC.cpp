@@ -45,6 +45,8 @@ void PC::requestIPFromDHCP()
     m_port->sendPacket(packet);
 }
 
+// PC.cpp
+
 void PC::processPacket(const PacketPtr_t &packet)
 {
     if (!packet) return;
@@ -53,6 +55,7 @@ void PC::processPacket(const PacketPtr_t &packet)
     qDebug() << "PC" << m_id << "received packet with payload:" << payload;
 
     if (packet->getType() == PacketType::Data) {
+        // Payload format: Data:DestinationIP:ActualPayload
         QStringList parts = payload.split(":");
         if (parts.size() >= 3 && parts.at(0) == "Data") {
             QString destinationIP = parts.at(1);
@@ -66,6 +69,7 @@ void PC::processPacket(const PacketPtr_t &packet)
                     m_metricsCollector->recordPacketReceived(packet->getPath().size(), std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
                 }
 
+                // Process the payload as needed
                 qDebug() << "PC" << m_id << "processing payload:" << actualPayload;
             }
             else {
@@ -85,7 +89,7 @@ void PC::processPacket(const PacketPtr_t &packet)
         }
     }
     else if (payload.contains("DHCP_OFFER")) {
-        // DHCP_OFFER handling logic
+        // Existing DHCP_OFFER handling logic
         QStringList parts = payload.split(":");
         if (parts.size() == 3) {
             QString offeredIP = parts.at(1);
@@ -102,7 +106,8 @@ void PC::processPacket(const PacketPtr_t &packet)
                 m_metricsCollector->recordPacketDropped();
             }
         }
-    } else {
+    }
+    else {
         qDebug() << "PC" << m_id << "received unknown/unsupported packet, dropping it.";
         if (m_metricsCollector) {
             m_metricsCollector->recordPacketDropped();
