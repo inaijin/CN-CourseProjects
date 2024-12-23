@@ -44,7 +44,6 @@ void DataGenerator::generatePackets() {
 
     for (int second = 0; second < timeScale; ++second) {
         int packetsForThisSecond = loads[second];
-        qDebug() << "Time:" << second << "Generating" << packetsForThisSecond << "packets.";
 
         for (int i = 0; i < packetsForThisSecond; ++i) {
             int senderIndex = m_generator() % m_senders.size();
@@ -65,12 +64,10 @@ void DataGenerator::generatePackets() {
             int destIndex = m_generator() % possibleDestinations.size();
             QString destination = possibleDestinations[destIndex];
 
-            // Create the payload in the expected format
             QString actualPayload = "Hello from PC " + QString::number(sender->getId());
             QString payload = "Data:" + destination + ":" + actualPayload;
 
-            // Create the packet with the correct type and payload
-            QSharedPointer<Packet> packet = QSharedPointer<Packet>::create(PacketType::Data, payload, 64); // Setting TTL to 64
+            QSharedPointer<Packet> packet = QSharedPointer<Packet>::create(PacketType::Data, payload, 64);
             packet->addToPath(sender->getIpAddress());
             packet->addToPath(destination);
             packets.push_back(packet);

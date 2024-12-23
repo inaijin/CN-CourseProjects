@@ -14,7 +14,7 @@ public:
     ~MetricsCollector() override = default;
 
     void recordPacketSent();
-    void recordPacketReceived(int hopCount,  const QVector<QString> &path);
+    void recordPacketReceived(int hopCount, const QVector<QString> &path);
     void recordPacketDropped();
 
     void recordRouterUsage(const QString &routerIP);
