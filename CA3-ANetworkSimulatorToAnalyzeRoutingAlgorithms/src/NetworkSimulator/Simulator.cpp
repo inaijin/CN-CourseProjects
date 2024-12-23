@@ -113,8 +113,6 @@ void Simulator::initializeNetwork()
 
     m_dataGenerator->setSenders(allPCs);
 
-    m_metricsCollector = QSharedPointer<MetricsCollector>::create();
-
     for (const auto &pc : allPCs) {
         pc->setMetricsCollector(m_metricsCollector);
     }

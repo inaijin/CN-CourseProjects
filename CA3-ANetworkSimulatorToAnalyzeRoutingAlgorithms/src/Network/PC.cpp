@@ -67,8 +67,7 @@ void PC::processPacket(const PacketPtr_t &packet)
 
                 // Record packet reception metrics
                 if (m_metricsCollector) {
-                    m_metricsCollector->recordPacketReceived(packet->getPath().size(),
-                                                             packet->getPath());
+                    m_metricsCollector->recordPacketReceived(packet->getPath());
                 }
 
                 qDebug() << "PC" << m_id << "processing payload:" << actualPayload;
@@ -103,15 +102,9 @@ void PC::processPacket(const PacketPtr_t &packet)
             }
         } else {
             qWarning() << "Malformed DHCP_OFFER packet on PC" << m_id << "payload:" << payload;
-            if (m_metricsCollector) {
-                m_metricsCollector->recordPacketDropped();
-            }
         }
     } else {
         qDebug() << "PC" << m_id << "received unknown/unsupported packet, dropping it.";
-        if (m_metricsCollector) {
-            m_metricsCollector->recordPacketDropped();
-        }
     }
 }
 

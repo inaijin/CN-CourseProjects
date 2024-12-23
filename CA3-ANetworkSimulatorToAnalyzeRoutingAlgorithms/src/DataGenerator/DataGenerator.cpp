@@ -1,4 +1,5 @@
 #include "DataGenerator.h"
+#include <QTimer>
 #include <QDebug>
 
 DataGenerator::DataGenerator(QObject *parent) :
@@ -42,6 +43,8 @@ void DataGenerator::generatePackets() {
     std::vector<int> loads = generatePoissonLoads(numSamples, timeScale);
     std::vector<QSharedPointer<Packet>> packets;
 
+    QMap<QString, QMap<QString, int>> distributionMap; // Origin -> (Destination -> Count)
+
     for (int second = 0; second < timeScale; ++second) {
         int packetsForThisSecond = loads[second];
 
@@ -71,12 +74,27 @@ void DataGenerator::generatePackets() {
             packet->addToPath(sender->getIpAddress());
             packet->addToPath(destination);
             packets.push_back(packet);
+
+            distributionMap[sender->getIpAddress()][destination]++;
         }
     }
 
     emit packetsGenerated(packets);
 
     qDebug() << packets.size() << "packets generated and emitted over a timescale of" << timeScale << "seconds.";
+
+    QTimer::singleShot(4000, this, [distributionMap]() {
+        qDebug() << "---- Packet Distribution ----";
+        for (auto itOrigin = distributionMap.constBegin(); itOrigin != distributionMap.constEnd(); ++itOrigin) {
+            QString origin = itOrigin.key();
+            for (auto itDest = itOrigin.value().constBegin(); itDest != itOrigin.value().constEnd(); ++itDest) {
+                QString destination = itDest.key();
+                int count = itDest.value();
+                qDebug() << "Origin:" << origin << "-> Destination:" << destination << " | Packets:" << count;
+            }
+        }
+        qDebug() << "------------------------------";
+    });
 }
 
 std::vector<QSharedPointer<PC>> DataGenerator::getSenders() const {

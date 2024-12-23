@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMap>
+#include <QMutex>
 #include <QString>
 
 class MetricsCollector : public QObject
@@ -14,15 +15,18 @@ public:
     ~MetricsCollector() override = default;
 
     void recordPacketSent();
-    void recordPacketReceived(int hopCount, const QVector<QString> &path);
+    void recordPacketReceived(const QVector<QString> &path);
     void recordPacketDropped();
 
     void recordRouterUsage(const QString &routerIP);
     void recordHopCount(int hopCount);
 
     void printStatistics() const;
+    void increamentHops();
 
 private:
+    mutable QMutex m_mutex;
+
     int m_sentPackets;
     int m_receivedPackets;
     int m_droppedPackets;
