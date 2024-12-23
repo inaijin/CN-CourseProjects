@@ -149,6 +149,7 @@ void TopologyBuilder::createPCs()
             }
 
             bindingManager.bind(routerPort, pc->getPort(), gatewayNodeId, pcId);
+            routerPort->connectToPC(pc);
 
             qDebug() << "PC" << pcId << "bound to Router" << gatewayNodeId;
         }

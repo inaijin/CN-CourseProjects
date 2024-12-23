@@ -212,15 +212,15 @@ void Simulator::onConvergenceDetected()
 
     qDebug() << "EventsCoordinator stopped. Ready for next actions.";
 
-    // Now we can proceed with sending packets or other operations
-    initiatePacketSending();
+    // // Now we can proceed with sending packets or other operations
+    // initiatePacketSending();
 
-    // Print metrics after some delay to allow packet processing
-    QTimer::singleShot(5000, this, [this]() {
-        if (m_metricsCollector) {
-            m_metricsCollector->printStatistics();
-        }
-    });
+    // // Print metrics after some delay to allow packet processing
+    // QTimer::singleShot(5000, this, [this]() {
+    //     if (m_metricsCollector) {
+    //         m_metricsCollector->printStatistics();
+    //     }
+    // });
 }
 
 void Simulator::initiatePacketSending()

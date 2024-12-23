@@ -13,6 +13,7 @@
 class UDP;
 class TopologyBuilder;
 class MetricsCollector;
+class PC;
 
 enum class RoutingProtocol {
     RIP,
@@ -77,6 +78,7 @@ public:
     void setMetricsCollector(QSharedPointer<MetricsCollector> collector);
     RouteEntry findBestRoutePath(const QString &destinationIP) const;
 
+    void addConnectedPC(QSharedPointer<PC> pc, PortPtr_t port);
 signals:
     void routingTableUpdated(int routerId);
 
@@ -123,6 +125,7 @@ private:
     void initializePorts();
     bool hasSeenPacket(const PacketPtr_t  &packet);
     void markPacketAsSeen(const PacketPtr_t  &packet);
+    std::vector<QSharedPointer<PC>> m_connectedPCs;
 };
 
 #endif // ROUTER_H

@@ -20,6 +20,9 @@ public:
 
     void setMetricsCollector(QSharedPointer<MetricsCollector> collector);
 
+signals:
+    void packetSent(const PacketPtr_t &data);
+
 public Q_SLOTS:
     void initialize();
     void generatePacket();

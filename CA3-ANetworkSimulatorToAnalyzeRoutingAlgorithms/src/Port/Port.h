@@ -5,6 +5,8 @@
 #include <QObject>
 #include <QMutex>
 
+class PC;
+
 class Port : public QObject
 {
     Q_OBJECT
@@ -28,6 +30,9 @@ public:
     void setConnectedRouterId(int routerId);
     int getConnectedRouterId() const;
 
+    void connectToPC(QSharedPointer<PC> pc);
+    QSharedPointer<PC> getConnectedPC() const;
+
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data);
     void packetReceived(const PacketPtr_t &data);
@@ -43,6 +48,7 @@ private:
     QString  m_routerIP;
     bool     m_isConnected;
 
+    QSharedPointer<PC> m_connectedPC;
     mutable QMutex m_mutex;
     int m_connectedRouterId = -1;
 };

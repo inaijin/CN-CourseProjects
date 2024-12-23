@@ -2,6 +2,7 @@
 #include "EventsCoordinator/EventsCoordinator.h"
 #include "../Topology/TopologyBuilder.h"
 #include "../MetricsCollector/MetricsCollector.h"
+#include "../Network/PC.h"
 #include <QDebug>
 #include <QThread>
 
@@ -41,6 +42,12 @@ void Router::initializePorts()
         port->setPortNumber(static_cast<uint8_t>(i + 1));
         port->setRouterIP(m_ipAddress);
         m_ports.push_back(port);
+
+        QSharedPointer<PC> connectedPC = port->getConnectedPC();
+        if (connectedPC)
+        {
+            addConnectedPC(connectedPC, port);
+        }
     }
 }
 
@@ -92,6 +99,15 @@ void Router::forwardPacket(const PacketPtr_t &packet) {
             qDebug() << "Router" << m_id << "forwarded packet via Port" << port->getPortNumber();
         }
     }
+}
+
+void Router::addConnectedPC(QSharedPointer<PC> pc, PortPtr_t port)
+{
+    m_connectedPCs.push_back(pc);
+    QString pcIP = pc->getIpAddress();
+    qDebug() << "Router" << m_id << "adding route for connected PC:" << pcIP;
+
+    addRoute(pcIP, "255.255.255.255", m_ipAddress, 1, RoutingProtocol::RIP, port);
 }
 
 void Router::logPortStatuses() const
@@ -487,7 +503,7 @@ void Router::sendRIPUpdate() {
         auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
         updatePacket->setTTL(10);
         port->sendPacket(updatePacket);
-        // qDebug() << "Router" << m_id << "sent RIP update via Port" << port->getPortNumber() << "with" << routeCount << "routes";
+        qDebug() << "Router" << m_id << "sent RIP update via Port" << port->getPortNumber() << "with" << routeCount << "routes";
     }
 }
 
@@ -633,7 +649,8 @@ std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters() {
     for (auto &port : m_ports) {
         if (port->isConnected()) {
             int remoteId = port->getConnectedRouterId();
-            if (remoteId > 0 && remoteId != m_id && s_topologyBuilder) {
+            QSharedPointer<PC> pc = port->getConnectedPC();
+            if (remoteId > 0 && remoteId != m_id && s_topologyBuilder && remoteId < 24) {
                 QSharedPointer<Router> nbr = nullptr;
                 if (remoteId < 24) {
                     nbr = s_topologyBuilder->findRouterById(remoteId);
@@ -641,6 +658,8 @@ std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters() {
                 if (nbr) {
                     neighbors.push_back(nbr);
                 }
+            } else if (!pc.isNull()) {
+                neighbors.push_back(QSharedPointer<Router>::create(pc->getId(), pc->getIpAddress()));
             }
         }
     }

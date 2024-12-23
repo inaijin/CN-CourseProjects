@@ -36,6 +36,8 @@ void PC::generatePacket()
     qDebug() << "PC" << m_id << "is generating a packet.";
     auto packet = QSharedPointer<Packet>::create(PacketType::Data, "Payload");
     m_port->sendPacket(packet);
+
+    emit packetSent(packet);
 }
 
 void PC::requestIPFromDHCP()
@@ -43,6 +45,8 @@ void PC::requestIPFromDHCP()
     qDebug() << "PC" << m_id << "requesting IP via DHCP.";
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
     m_port->sendPacket(packet);
+
+    emit packetSent(packet);
 }
 
 void PC::processPacket(const PacketPtr_t &packet)

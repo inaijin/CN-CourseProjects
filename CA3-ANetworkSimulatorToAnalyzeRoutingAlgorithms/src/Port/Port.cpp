@@ -1,4 +1,5 @@
 #include "Port.h"
+#include "../Network/PC.h"
 #include <QDebug>
 
 Port::Port(QObject *parent) :
@@ -7,7 +8,8 @@ Port::Port(QObject *parent) :
     m_numberOfPacketsSent(0),
     m_numberOfPacketsReceived(0),
     m_routerIP(""),
-    m_isConnected(false)
+    m_isConnected(false),
+    m_connectedPC(nullptr)
 {}
 
 Port::~Port() {}
@@ -86,4 +88,30 @@ void Port::setConnectedRouterId(int routerId) {
 int Port::getConnectedRouterId() const {
     QMutexLocker locker(&m_mutex);
     return m_connectedRouterId;
+}
+
+void Port::connectToPC(QSharedPointer<PC> pc)
+{
+    QMutexLocker locker(&m_mutex);
+    if (m_connectedPC) {
+        qWarning() << "Port" << m_number << "is already connected to PC with IP" << m_connectedPC->getIpAddress();
+        return;
+    }
+
+    m_connectedPC = pc;
+    m_isConnected = true; // Mark as connected
+
+    qDebug() << "Port" << m_number << "connected to PC with IP" << pc->getIpAddress();
+
+    // Connect signals: When the port receives a packet, send it to the PC
+    connect(this, &Port::packetReceived, pc.data(), &PC::processPacket);
+    // If PC needs to send packets through the port, connect PC's send signal to port's sendPacket slot
+    connect(pc.data(), &PC::packetSent, this, &Port::sendPacket);
+}
+
+// New method to get connected PC
+QSharedPointer<PC> Port::getConnectedPC() const
+{
+    QMutexLocker locker(&m_mutex);
+    return m_connectedPC;
 }
