@@ -14,7 +14,7 @@ void MetricsCollector::recordPacketSent() {
     m_sentPackets++;
 }
 
-void MetricsCollector::recordPacketReceived(int hopCount, const std::vector<QString> &path) {
+void MetricsCollector::recordPacketReceived(int hopCount, const QVector<QString> &path) {
     m_receivedPackets++;
     m_totalHops += hopCount;
 

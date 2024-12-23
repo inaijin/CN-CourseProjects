@@ -66,7 +66,8 @@ void PC::processPacket(const PacketPtr_t &packet)
 
                 // Record packet reception metrics
                 if (m_metricsCollector) {
-                    m_metricsCollector->recordPacketReceived(packet->getPath().size(), std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
+                    m_metricsCollector->recordPacketReceived(packet->getPath().size(),
+                                                             packet->getPath());
                 }
 
                 // Process the payload as needed

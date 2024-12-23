@@ -190,7 +190,8 @@ void Router::processPacket(const PacketPtr_t &packet) {
 
         if (m_metricsCollector) {
             if (packet->getType() == PacketType::Data) {
-                m_metricsCollector->recordPacketReceived(packet->getPath().size(),std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
+                m_metricsCollector->recordPacketReceived(packet->getPath().size(),
+                                                         packet->getPath());
             }
         }
 
@@ -293,7 +294,8 @@ void Router::processPacket(const PacketPtr_t &packet) {
 
                     // Record packet reception metrics
                     if (m_metricsCollector) {
-                        m_metricsCollector->recordPacketReceived(packet->getPath().size(),std::vector<QString>(packet->getPath().begin(), packet->getPath().end()));
+                        m_metricsCollector->recordPacketReceived(packet->getPath().size(),
+                                                                 packet->getPath());
                     }
 
                     // Optionally, process the payload as needed

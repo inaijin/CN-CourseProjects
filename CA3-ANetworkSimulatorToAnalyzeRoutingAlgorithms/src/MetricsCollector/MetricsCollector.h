@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QMap>
 #include <QString>
-#include <vector>
 
 class MetricsCollector : public QObject
 {
@@ -15,7 +14,7 @@ public:
     ~MetricsCollector() override = default;
 
     void recordPacketSent();
-    void recordPacketReceived(int hopCount, const std::vector<QString> &path);
+    void recordPacketReceived(int hopCount,  const QVector<QString> &path);
     void recordPacketDropped();
 
     void recordRouterUsage(const QString &routerIP);

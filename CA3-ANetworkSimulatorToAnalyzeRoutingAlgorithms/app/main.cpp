@@ -25,5 +25,3 @@ int main(int argc, char* argv[])
 
     return app.exec();
 }
-
-// Fix Crashing ISSUE
