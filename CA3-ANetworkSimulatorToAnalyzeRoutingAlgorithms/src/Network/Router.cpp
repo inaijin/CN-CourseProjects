@@ -338,6 +338,13 @@ void Router::processPacket(const PacketPtr_t &packet) {
                 }
 
                 PortPtr_t outPort = bestRoute.learnedFromPort;
+                if (outPort == nullptr) {
+                    qDebug() << "Why Port NULL ?? " << "Dest:" << bestRoute.destination
+                                                    << "Mask:" << bestRoute.mask
+                                                    << "NextHop:" << bestRoute.nextHop
+                                                    << "Metric:" << bestRoute.metric
+                                                    << "LastUpdated:" << bestRoute.lastUpdateTime;
+                }
                 if (outPort && outPort->isConnected()) {
                     outPort->sendPacket(packet);
                     qDebug() << "Router" << m_id << "forwarded packet to next hop via Port" << outPort->getPortNumber();
