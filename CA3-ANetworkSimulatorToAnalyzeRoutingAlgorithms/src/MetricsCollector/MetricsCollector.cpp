@@ -15,6 +15,7 @@ void MetricsCollector::recordPacketSent() {
 }
 
 void MetricsCollector::recordPacketReceived(int hopCount, const QVector<QString> &path) {
+    qDebug() << "chera naraft !!!";
     m_receivedPackets++;
     m_totalHops += hopCount;
 

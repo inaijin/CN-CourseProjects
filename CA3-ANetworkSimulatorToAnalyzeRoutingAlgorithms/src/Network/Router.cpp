@@ -301,6 +301,7 @@ void Router::processPacket(const PacketPtr_t &packet) {
             QString destinationIP = parts.at(1);
             QString actualPayload = parts.at(2);
 
+            qDebug() << "what is happening " << destinationIP << " " << m_ipAddress;
             if (destinationIP == m_ipAddress) {
                 qDebug() << "Router" << m_id << "received packet intended for itself.";
 
@@ -318,6 +319,21 @@ void Router::processPacket(const PacketPtr_t &packet) {
                     if (m_metricsCollector) {
                         m_metricsCollector->recordPacketDropped();
                     }
+                    return;
+                }
+
+                if (bestRoute.destination == bestRoute.nextHop) {
+                    qDebug() << "AJIBE " << destinationIP << " " << m_ipAddress;
+                    qDebug() << "Router" << m_id << "received packet intended for its PC.";
+
+                    if (m_metricsCollector) {
+                        qDebug() << "check raftan asli";
+                        m_metricsCollector->recordPacketReceived(packet->getPath().size(),
+                                                                 packet->getPath());
+                    }
+
+                    qDebug() << "PC" << destinationIP << "processing payload:" << actualPayload;
+
                     return;
                 }
 
