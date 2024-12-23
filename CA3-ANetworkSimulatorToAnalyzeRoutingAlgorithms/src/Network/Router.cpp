@@ -419,7 +419,7 @@ RouteEntry Router::findBestRoutePath(const QString &destinationIP) const {
     int minMetric = RIP_INFINITY;
 
     for (const auto &route : m_routingTable) {
-        if (destinationIP.startsWith(route.destination)) {
+        if (destinationIP == route.destination) {
             if (route.metric < minMetric) {
                 minMetric = route.metric;
                 bestRoute = route;
