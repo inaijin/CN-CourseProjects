@@ -9,6 +9,7 @@
 #include "../DHCPServer/DHCPServer.h"
 #include <QSet>
 #include <QDateTime>
+#include <QTimer>
 
 class UDP;
 class TopologyBuilder;
@@ -45,6 +46,19 @@ struct RouteEntry {
         : destination(dest), mask(m), nextHop(nh), metric(met),
         protocol(proto), lastUpdateTime(time), learnedFromPort(fromPort),
         isDirect(direct), invalidTimer(0), holdDownTimer(0), flushTimer(0) {}
+};
+
+struct OSPFNeighbor {
+    QString ipAddress;
+    int cost;
+    qint64 lastHelloReceived;
+};
+
+struct OSPFLSA {
+    QString originRouterIP;
+    QVector<QString> links;
+    qint64 sequenceNumber;
+    qint64 age;
 };
 
 class Router : public Node, public QEnableSharedFromThis<Router>
@@ -98,6 +112,15 @@ public Q_SLOTS:
     void processRIPUpdate(const PacketPtr_t  &packet);
     void handleRouteTimeouts();
 
+    // OSPF-specific methods
+    void enableOSPF();
+    void sendOSPFHello();
+    void processOSPFHello(const PacketPtr_t &packet, const PortPtr_t &incomingPort);
+    void sendLSA();
+    void processLSA(const PacketPtr_t &packet, const PortPtr_t &incomingPort);
+    void runDijkstra();
+    void updateRoutingTable();
+
 private:
     std::vector<PortPtr_t> m_ports;
     int m_portCount;
@@ -118,6 +141,24 @@ private:
     const int RIP_INVALID_TIMER = 20;
     const int RIP_HOLDOWN_TIMER = 20;
     const int RIP_FLUSH_TIMER = 30;
+
+    // OSPF data structures
+    QMap<QString, OSPFNeighbor> m_neighbors;
+    QMap<QString, OSPFLSA> m_lsdb;
+    QTimer *m_helloTimer;
+    QTimer *m_lsaTimer;
+    qint64 m_lsaSequenceNumber;
+
+    // Dijkstra algorithm helpers
+    QMap<QString, int> m_distance;
+    QMap<QString, QString> m_previous;
+
+    const int OSPF_HELLO_INTERVAL = 10;
+    const int OSPF_LSA_INTERVAL = 30;
+    const int OSPF_LSA_AGE_LIMIT = 120;
+
+    void initializeOSPF();
+    void handleLSAExpiration();
 
     qint64 m_lastRIPUpdateTime;
     qint64 m_currentTime;

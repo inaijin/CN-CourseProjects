@@ -10,6 +10,8 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
     : Node(id, ipAddress, NodeType::Router, parent),
     m_portCount(portCount),
     m_hasValidIP(false),
+    m_lsdb(),
+    m_lsaSequenceNumber(0),
     m_lastRIPUpdateTime(0),
     m_currentTime(0)
 {
@@ -17,6 +19,12 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
     {
         m_portCount = 6;
     }
+
+    m_helloTimer = new QTimer(this);
+    connect(m_helloTimer, &QTimer::timeout, this, &Router::sendOSPFHello);
+
+    m_lsaTimer = new QTimer(this);
+    connect(m_lsaTimer, &QTimer::timeout, this, &Router::sendLSA);
 
     initializePorts();
 
@@ -263,6 +271,16 @@ void Router::processPacket(const PacketPtr_t &packet) {
     // Handle RIP Updates
     else if (payload.startsWith("RIP_UPDATE")) {
         processRIPUpdate(packet);
+    }
+    // Handle OSPF Updates
+    else if (packet->getType() == PacketType::OSPFHello) {
+         processOSPFHello(packet, incomingPort);
+    }
+    else if (packet->getType() == PacketType::Custom) {
+        if (payload.startsWith("LSA:"))
+        {
+            processLSA(packet, incomingPort);
+        }
     }
     // Handle Data Packets
     else if (packet->getType() == PacketType::Data) {
@@ -647,4 +665,286 @@ std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters() {
     }
 
     return neighbors;
+}
+
+void Router::enableOSPF()
+{
+    initializeOSPF();
+    qDebug() << "OSPF enabled on Router" << m_id;
+}
+
+void Router::initializeOSPF()
+{
+    sendOSPFHello();
+
+    m_helloTimer->start(OSPF_HELLO_INTERVAL * 1000);
+    m_lsaTimer->start(OSPF_LSA_INTERVAL * 1000);
+
+    connect(EventsCoordinator::instance(), &EventsCoordinator::tick, this, &Router::handleLSAExpiration);
+}
+
+void Router::sendOSPFHello()
+{
+    qDebug() << "Router" << m_id << "sending OSPF Hello packets.";
+
+    for (const auto &port : m_ports)
+    {
+        if (!port->isConnected()) continue;
+
+        QString helloPayload = "OSPF_HELLO:" + m_ipAddress;
+        auto helloPacket = QSharedPointer<Packet>::create(PacketType::OSPFHello, helloPayload, 10);
+
+        port->sendPacket(helloPacket);
+        qDebug() << "Router" << m_id << "sent OSPF Hello via Port" << port->getPortNumber();
+    }
+}
+
+void Router::processOSPFHello(const PacketPtr_t &packet, const PortPtr_t &incomingPort)
+{
+    if (!packet) return;
+
+    QString payload = packet->getPayload();
+    QStringList parts = payload.split(":");
+    if (parts.size() != 2 || parts[0] != "OSPF_HELLO")
+    {
+        qWarning() << "Router" << m_id << "received malformed OSPF Hello packet.";
+        return;
+    }
+
+    QString neighborIP = parts[1];
+    qDebug() << "Router" << m_id << "received OSPF Hello from" << neighborIP;
+
+    if (!m_neighbors.contains(neighborIP))
+    {
+        OSPFNeighbor neighbor;
+        neighbor.ipAddress = neighborIP;
+        neighbor.cost = 1;
+        neighbor.lastHelloReceived = QDateTime::currentSecsSinceEpoch();
+
+        m_neighbors.insert(neighborIP, neighbor);
+
+        qDebug() << "Router" << m_id << "added new OSPF neighbor:" << neighborIP;
+
+        sendLSA();
+    }
+    else
+    {
+        m_neighbors[neighborIP].lastHelloReceived = QDateTime::currentSecsSinceEpoch();
+    }
+}
+
+void Router::sendLSA()
+{
+    qDebug() << "Router" << m_id << "sending LSA.";
+
+    QString lsaPayload = "LSA:" + m_ipAddress + ":";
+
+    for (const auto &neighbor : m_neighbors)
+    {
+        lsaPayload += neighbor.ipAddress + ",";
+    }
+
+    if (lsaPayload.endsWith(","))
+        lsaPayload.chop(1);
+
+    m_lsaSequenceNumber++;
+
+    auto lsaPacket = QSharedPointer<Packet>::create(PacketType::Custom, lsaPayload, 10); // TTL=10
+    lsaPacket->setSequenceNumber(m_lsaSequenceNumber);
+
+    OSPFLSA lsa;
+    lsa.originRouterIP = m_ipAddress;
+    lsa.links = QVector<QString>::fromStdVector(std::vector<QString>(m_neighbors.keys().begin(), m_neighbors.keys().end()));
+    lsa.sequenceNumber = m_lsaSequenceNumber;
+    lsa.age = 0;
+
+    m_lsdb.insert(m_ipAddress, lsa);
+
+    for (const auto &port : m_ports)
+    {
+        if (!port->isConnected()) continue;
+
+        port->sendPacket(lsaPacket);
+        qDebug() << "Router" << m_id << "sent LSA via Port" << port->getPortNumber();
+    }
+}
+
+void Router::processLSA(const PacketPtr_t &packet, const PortPtr_t &incomingPort)
+{
+    if (!packet) return;
+
+    QString payload = packet->getPayload();
+    QStringList parts = payload.split(":");
+    if (parts.size() < 3 || parts[0] != "LSA")
+    {
+        qWarning() << "Router" << m_id << "received malformed LSA packet.";
+        return;
+    }
+
+    QString originIP = parts[1];
+    QStringList linksList = parts[2].split(",");
+    QVector<QString> links = QVector<QString>::fromList(linksList);
+
+    int sequenceNumber = packet->getSequenceNumber();
+
+    if (!m_lsdb.contains(originIP) || m_lsdb[originIP].sequenceNumber < sequenceNumber)
+    {
+        OSPFLSA newLSA;
+        newLSA.originRouterIP = originIP;
+        newLSA.links = links;
+        newLSA.sequenceNumber = sequenceNumber;
+        newLSA.age = 0;
+
+        m_lsdb.insert(originIP, newLSA);
+        qDebug() << "Router" << m_id << "updated LSDB with LSA from" << originIP;
+
+        auto lsaPacket = QSharedPointer<Packet>::create(PacketType::Custom, payload, 10);
+        lsaPacket->setSequenceNumber(sequenceNumber);
+
+        for (const auto &port : m_ports)
+        {
+            if (!port->isConnected() || port == incomingPort) continue;
+
+            port->sendPacket(lsaPacket);
+            qDebug() << "Router" << m_id << "flooded LSA via Port" << port->getPortNumber();
+        }
+
+        runDijkstra();
+    }
+    else
+    {
+        qDebug() << "Router" << m_id << "received outdated LSA from" << originIP << ". Ignoring.";
+    }
+}
+
+void Router::runDijkstra()
+{
+    qDebug() << "Router" << m_id << "running Dijkstra algorithm.";
+
+    m_distance.clear();
+    m_previous.clear();
+    QSet<QString> unvisited;
+
+    for (const auto &lsa : m_lsdb)
+    {
+        m_distance[lsa.originRouterIP] = INT32_MAX;
+        unvisited.insert(lsa.originRouterIP);
+    }
+
+    m_distance[m_ipAddress] = 0;
+
+    while (!unvisited.isEmpty())
+    {
+        QString current;
+        int minDistance = INT32_MAX;
+        for (const auto &node : unvisited)
+        {
+            if (m_distance[node] < minDistance)
+            {
+                minDistance = m_distance[node];
+                current = node;
+            }
+        }
+
+        if (current.isEmpty() || minDistance == INT32_MAX)
+            break;
+
+        unvisited.remove(current);
+
+        if (!m_lsdb.contains(current))
+            continue;
+
+        const auto &currentLSA = m_lsdb[current];
+        for (const auto &neighborIP : currentLSA.links)
+        {
+            if (!m_distance.contains(neighborIP))
+                continue;
+
+            int altDistance = m_distance[current] + 1;
+            if (altDistance < m_distance[neighborIP])
+            {
+                m_distance[neighborIP] = altDistance;
+                m_previous[neighborIP] = current;
+            }
+        }
+    }
+
+    updateRoutingTable();
+}
+
+void Router::updateRoutingTable()
+{
+    qDebug() << "Router" << m_id << "updating routing table based on Dijkstra results.";
+
+    for (int i = m_routingTable.size() - 1; i >= 0; i--)
+    {
+        if (!m_routingTable[i].isDirect)
+        {
+            m_routingTable.removeAt(i);
+        }
+    }
+
+    for (const auto &dest : m_distance.keys())
+    {
+        if (dest == m_ipAddress)
+            continue;
+
+        QString nextHop = dest;
+        QString current = dest;
+
+        while (m_previous.contains(current))
+        {
+            nextHop = m_previous[current];
+            current = m_previous[current];
+            if (current == m_ipAddress)
+                break;
+        }
+
+        if (current != m_ipAddress)
+            continue;
+
+        PortPtr_t outPort = nullptr;
+        for (const auto &port : m_ports)
+        {
+            if (port->getConnectedRouterIP() == nextHop)
+            {
+                outPort = port;
+                break;
+            }
+        }
+
+        if (outPort)
+        {
+            addRoute(dest, "255.255.255.255", nextHop, m_distance[dest], RoutingProtocol::OSPF, outPort);
+            qDebug() << "Router" << m_id << "added OSPF route to" << dest << "via" << nextHop;
+        }
+    }
+
+    emit routingTableUpdated(m_id);
+}
+
+void Router::handleLSAExpiration()
+{
+    qint64 currentTime = QDateTime::currentSecsSinceEpoch();
+
+    for (auto &lsa : m_lsdb)
+    {
+        lsa.age += 1;
+    }
+
+    QStringList expiredLSAs;
+    for (const auto &originIP : m_lsdb.keys())
+    {
+        if (m_lsdb[originIP].age >= OSPF_LSA_AGE_LIMIT)
+        {
+            expiredLSAs.append(originIP);
+        }
+    }
+
+    for (const auto &originIP : expiredLSAs)
+    {
+        m_lsdb.remove(originIP);
+        qDebug() << "Router" << m_id << "removed expired LSA from" << originIP;
+        runDijkstra();
+    }
 }
