@@ -142,7 +142,7 @@ void Network::printAllRoutingTables()
     }
 }
 
-void Network::setupDirectRoutesForRouters()
+void Network::setupDirectRoutesForRouters(RoutingProtocol protocol)
 {
     for (auto &asInstance : m_autonomousSystems) {
         const auto &routers = asInstance->getRouters();
@@ -156,17 +156,17 @@ void Network::setupDirectRoutesForRouters()
             QString mask = "255.255.255.255";
             int metric = 0;
 
-            router->addRoute(routerIP, mask, "", metric, RoutingProtocol::RIP);
+            router->addRoute(routerIP, mask, "", metric, protocol);
             qDebug() << "Network: Added host route for Router" << router->getId() << ":" << routerIP << "/" << mask << "metric" << metric;
         }
     }
 }
 
-void Network::finalizeRoutesAfterDHCP() {
+void Network::finalizeRoutesAfterDHCP(RoutingProtocol protocol) {
     for (auto &asInstance : m_autonomousSystems) {
         const auto &routers = asInstance->getRouters();
         for (auto &router : routers) {
-            router->setupDirectNeighborRoutes();
+            router->setupDirectNeighborRoutes(protocol);
         }
     }
     qDebug() << "All routers have set direct neighbor routes.";

@@ -96,7 +96,7 @@ void Router::initialize()
 
 void Router::sendHelloPackets()
 {
-    qDebug() << "Router" << m_id << "sending OSPF Hello packets.";
+    // qDebug() << "Router" << m_id << "sending OSPF Hello packets.";
     // Implement the logic if needed
 }
 
@@ -107,9 +107,9 @@ void Router::onFinished()
 
 void Router::startTimers()
 {
-    QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Router::sendHelloPackets);
-    timer->start(HELLO_INTERVAL);
+    // QTimer *timer = new QTimer(this);
+    // connect(timer, &QTimer::timeout, this, &Router::sendHelloPackets);
+    // timer->start(HELLO_INTERVAL);
 }
 
 void Router::forwardPacket(const PacketPtr_t &packet) {
@@ -477,8 +477,7 @@ void Router::printRoutingTable() const
                  << "Mask:" << entry.mask
                  << "NextHop:" << entry.nextHop
                  << "Metric:" << entry.metric
-                 << "Protocol:" << protoStr
-                 << "LastUpdated:" << entry.lastUpdateTime;
+                 << "Protocol:" << protoStr;
     }
 }
 
@@ -631,7 +630,7 @@ void Router::addDirectRoute(const QString &destination, const QString &mask) {
     m_routingTable.append(directRoute);
 }
 
-void Router::setupDirectNeighborRoutes() {
+void Router::setupDirectNeighborRoutes(RoutingProtocol protocol) {
     auto neighbors = getDirectlyConnectedRouters();
     for (auto &nbr : neighbors) {
         QString nbrIP = nbr->getIPAddress();
@@ -643,7 +642,7 @@ void Router::setupDirectNeighborRoutes() {
 
         qDebug() << "Router" << m_id << "adding direct neighbor route to" << nbrIP;
         RouteEntry directNeighborRoute(nbrIP, "255.255.255.255", nbrIP, 1,
-                                       RoutingProtocol::RIP, m_currentTime, nullptr, true);
+                                       protocol, m_currentTime, nullptr, true);
 
         for (int i = m_routingTable.size() - 1; i >= 0; i--) {
             if (m_routingTable[i].destination == nbrIP && !m_routingTable[i].isDirect) {
@@ -754,6 +753,7 @@ void Router::processOSPFHello(const PacketPtr_t &packet)
     else
     {
         m_neighbors[neighborIP].lastHelloReceived = QDateTime::currentSecsSinceEpoch();
+        qDebug() << "Router" << m_id << "updated lastHelloReceived for neighbor:" << neighborIP;
     }
 }
 
@@ -904,35 +904,44 @@ void Router::updateRoutingTable()
 {
     qDebug() << "Router" << m_id << "updating routing table based on Dijkstra results.";
 
+    // Remove existing OSPF routes
     for (int i = m_routingTable.size() - 1; i >= 0; i--)
     {
-        if (!m_routingTable[i].isDirect)
+        if (m_routingTable[i].protocol == RoutingProtocol::OSPF)
         {
             m_routingTable.removeAt(i);
         }
     }
 
+    // Add new OSPF routes
     for (auto it = m_distance.constBegin(); it != m_distance.constEnd(); ++it)
     {
         const QString &dest = it.key();
 
         if (dest == m_ipAddress)
-            continue;
+            continue; // Skip self
 
-        QString nextHop = dest;
+        QString nextHop = "";
         QString current = dest;
 
+        // Traverse the path to find the immediate next hop
         while (m_previous.contains(current))
         {
-            nextHop = m_previous[current];
-            current = m_previous[current];
-            if (current == m_ipAddress)
+            if (m_previous[current] == m_ipAddress)
+            {
+                nextHop = current;
                 break;
+            }
+            current = m_previous[current];
         }
 
-        if (current != m_ipAddress)
-            continue;
+        if (nextHop.isEmpty())
+        {
+            qDebug() << "Router" << m_id << "could not determine nextHop for destination" << dest;
+            continue; // Cannot determine next hop, skip adding this route
+        }
 
+        // Find the port connected to nextHop
         PortPtr_t outPort = nullptr;
         for (const auto &port : m_ports)
         {
@@ -947,6 +956,10 @@ void Router::updateRoutingTable()
         {
             addRoute(dest, "255.255.255.255", nextHop, m_distance[dest], RoutingProtocol::OSPF, outPort);
             qDebug() << "Router" << m_id << "added OSPF route to" << dest << "via" << nextHop;
+        }
+        else
+        {
+            qDebug() << "Router" << m_id << "could not find a port connected to nextHop" << nextHop << "for destination" << dest;
         }
     }
 

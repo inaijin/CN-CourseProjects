@@ -88,7 +88,7 @@ public:
     QString findBestRoute(const QString &destinationIP) const;
     void addDirectRoute(const QString &destination, const QString &mask);
 
-    void setupDirectNeighborRoutes();
+    void setupDirectNeighborRoutes(RoutingProtocol protocol);
     std::vector<QSharedPointer<Router>> getDirectlyConnectedRouters();
     static void setTopologyBuilder(TopologyBuilder *builder);
     void setMetricsCollector(QSharedPointer<MetricsCollector> collector);

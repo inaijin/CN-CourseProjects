@@ -7,6 +7,7 @@
 #include <vector>
 #include "../Network/AutonomousSystem.h"
 #include "../Globals/IdAssignment.h"
+#include "../Network/Router.h"
 
 class Network : public QObject
 {
@@ -26,9 +27,9 @@ public:
     void enableRIPOnAllRouters();
     void enableOSPFOnAllRouters();
     void printAllRoutingTables();
-    void setupDirectRoutesForRouters();
+    void setupDirectRoutesForRouters(RoutingProtocol protocol);
 
-    void finalizeRoutesAfterDHCP();
+    void finalizeRoutesAfterDHCP(RoutingProtocol protocol);
     std::vector<QSharedPointer<Router>> getAllRouters() const;
     std::vector<QSharedPointer<AutonomousSystem>> getAutonomousSystems() const;
 
