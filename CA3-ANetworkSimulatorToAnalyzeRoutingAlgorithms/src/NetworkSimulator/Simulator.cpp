@@ -162,6 +162,7 @@ void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>>
 
 void Simulator::startSimulation()
 {
+    RoutingProtocol protocol = RoutingProtocol::OSPF;
     qDebug() << "Simulation initialized. Network topology is set up.";
 
     // Initiate DHCP Phase for routers
@@ -182,8 +183,8 @@ void Simulator::startSimulation()
 
     // Now we know all routers have IP addresses assigned, so we can setup direct routes:
     if (m_network) {
-        m_network->setupDirectRoutesForRouters(RoutingProtocol::OSPF);
-        m_network->finalizeRoutesAfterDHCP(RoutingProtocol::OSPF);
+        m_network->setupDirectRoutesForRouters(protocol);
+        m_network->finalizeRoutesAfterDHCP(protocol);
     }
 
     // Start the event coordinator clock so RIP ticks can begin
@@ -191,41 +192,38 @@ void Simulator::startSimulation()
 
     // Enable RIP on all routers
     if (m_network) {
-        m_network->enableOSPFOnAllRouters();
-        // m_network->enableRIPOnAllRouters();
-    }
-
-    QTimer::singleShot(5000, this, [this]() {
-        if (m_network) {
-           m_network->printAllRoutingTables();
+        if (protocol == RoutingProtocol::RIP) {
+            m_network->enableRIPOnAllRouters();
+        } else {
+            m_network->enableOSPFOnAllRouters();
         }
-    });
+    }
 }
 
 void Simulator::onConvergenceDetected()
 {
-    // qDebug() << "Convergence detected. Printing all routing tables:";
-    // if (m_network) {
-    //     m_network->printAllRoutingTables();
-    // }
+    qDebug() << "Convergence detected. Printing all routing tables:";
+    if (m_network) {
+        m_network->printAllRoutingTables();
+    }
 
-    // qDebug() << "Proceeding with further steps.";
+    qDebug() << "Proceeding with further steps.";
 
-    // auto eventsCoordinator = EventsCoordinator::instance();
-    // eventsCoordinator->quit();
-    // eventsCoordinator->wait();
+    auto eventsCoordinator = EventsCoordinator::instance();
+    eventsCoordinator->quit();
+    eventsCoordinator->wait();
 
-    // qDebug() << "EventsCoordinator stopped. Ready for next actions.";
+    qDebug() << "EventsCoordinator stopped. Ready for next actions.";
 
-    // // Now we can proceed with sending packets or other operations
-    // initiatePacketSending();
+    // Now we can proceed with sending packets or other operations
+    initiatePacketSending();
 
-    // // Print metrics after some delay to allow packet processing
-    // QTimer::singleShot(5000, this, [this]() {
-    //     if (m_metricsCollector) {
-    //         m_metricsCollector->printStatistics();
-    //     }
-    // });
+    // Print metrics after some delay to allow packet processing
+    QTimer::singleShot(5000, this, [this]() {
+        if (m_metricsCollector) {
+            m_metricsCollector->printStatistics();
+        }
+    });
 }
 
 void Simulator::initiatePacketSending()

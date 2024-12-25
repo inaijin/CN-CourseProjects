@@ -391,13 +391,15 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
     }
 }
 
-void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol, PortPtr_t learnedFromPort) {
+void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol, PortPtr_t learnedFromPort, bool vip) {
     // qDebug() << "Router" << m_id << "addRoute called with:" << destination << mask << nextHop << metric;
 
     for (auto &entry : m_routingTable) {
-        if (entry.isDirect && entry.destination == destination && entry.mask == mask) {
-            qDebug() << "Router" << m_id << ": Ignoring learned route to" << destination << "due to direct route.";
-            return;
+        if (!vip) {
+            if (entry.isDirect && entry.destination == destination && entry.mask == mask) {
+                qDebug() << "Router" << m_id << ": Ignoring learned route to" << destination << "due to direct route.";
+                return;
+            }
         }
     }
 
@@ -664,6 +666,29 @@ void Router::setupDirectNeighborRoutes(RoutingProtocol protocol) {
             m_routingTable.append(directNeighborRoute);
         }
     }
+    if (protocol == RoutingProtocol::OSPF) {
+        std::vector<QSharedPointer<Router>> connectedPCs = getDirectlyConnectedRouters();
+
+        for (auto &pc : connectedPCs) {
+            if (pc->getId() > 23) {
+                QString pcIP = pc->getIPAddress();
+                PortPtr_t learnedFromPort = nullptr;
+                for (auto &port : m_ports) {
+                    if (port->getConnectedPC() != nullptr && port->getConnectedPC()->getIpAddress() == pcIP)
+                        learnedFromPort = port;
+                }
+                qDebug() << "MEOW MEOW OMAD FOR ROUTER: " << m_id << "PC IP : " << pcIP;
+                addRoute(pcIP, "255.255.255.255", pcIP, 1, RoutingProtocol::OSPF, learnedFromPort, true);
+                RouteEntry directRoute(pcIP, "255.255.255.255", pcIP, 1, RoutingProtocol::OSPF, m_currentTime, nullptr, true, true);
+                for (int i = m_routingTable.size() - 1; i >= 0; i--) {
+                    if (m_routingTable[i].destination == pcIP && m_routingTable[i].mask == "255.255.255.255" && m_routingTable[i].isDirect) {
+                        m_routingTable.removeAt(i);
+                    }
+                }
+                m_routingTable.append(directRoute);
+            }
+        }
+    }
 }
 
 std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters() {
@@ -911,7 +936,7 @@ void Router::updateRoutingTable()
     // Remove existing OSPF routes
     for (int i = m_routingTable.size() - 1; i >= 0; i--)
     {
-        if (m_routingTable[i].protocol == RoutingProtocol::OSPF)
+        if (m_routingTable[i].protocol == RoutingProtocol::OSPF && !m_routingTable[i].vip)
         {
             m_routingTable.removeAt(i);
         }

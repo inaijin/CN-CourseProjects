@@ -32,6 +32,7 @@ struct RouteEntry {
     PortPtr_t learnedFromPort;
 
     bool isDirect;
+    bool vip;
     int invalidTimer;
     int holdDownTimer;
     int flushTimer;
@@ -43,10 +44,11 @@ struct RouteEntry {
                RoutingProtocol proto = RoutingProtocol::RIP,
                qint64 time = 0,
                PortPtr_t fromPort = nullptr,
-               bool direct = false)
+               bool direct = false,
+               bool vip = false)
         : destination(dest), mask(m), nextHop(nh), metric(met),
         protocol(proto), lastUpdateTime(time), learnedFromPort(fromPort),
-        isDirect(direct), invalidTimer(0), holdDownTimer(0), flushTimer(0) {}
+        isDirect(direct), vip(vip), invalidTimer(0), holdDownTimer(0), flushTimer(0) {}
 };
 
 struct OSPFNeighbor {
@@ -113,7 +115,7 @@ public Q_SLOTS:
 
     // Routing table methods
     void addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric,
-                  RoutingProtocol protocol, PortPtr_t learnedFromPort = nullptr);
+                  RoutingProtocol protocol, PortPtr_t learnedFromPort = nullptr, bool vip = false);
     void printRoutingTable() const;
 
     // RIP specific methods
