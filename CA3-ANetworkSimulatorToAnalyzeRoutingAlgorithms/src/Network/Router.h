@@ -61,6 +61,8 @@ struct OSPFLSA {
     qint64 age;
 };
 
+constexpr int HELLO_INTERVAL = 1000;
+
 class Router : public Node, public QEnableSharedFromThis<Router>
 {
     Q_OBJECT
@@ -93,8 +95,16 @@ public:
     RouteEntry findBestRoutePath(const QString &destinationIP) const;
 
     void addConnectedPC(QSharedPointer<PC> pc, PortPtr_t port);
+
+    void startTimers();
+
 signals:
     void routingTableUpdated(int routerId);
+    void finished();
+
+public slots:
+    void onFinished();
+    void sendHelloPackets();
 
 public Q_SLOTS:
     void initialize();

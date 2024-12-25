@@ -90,6 +90,26 @@ void Router::initialize()
 {
     qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress
              << ", running in thread" << (quintptr)QThread::currentThreadId();
+
+    startTimers();
+}
+
+void Router::sendHelloPackets()
+{
+    qDebug() << "Router" << m_id << "sending OSPF Hello packets.";
+    // Implement the logic if needed
+}
+
+void Router::onFinished()
+{
+    emit finished();
+}
+
+void Router::startTimers()
+{
+    QTimer *timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, &Router::sendHelloPackets);
+    timer->start(HELLO_INTERVAL);
 }
 
 void Router::forwardPacket(const PacketPtr_t &packet) {
@@ -213,8 +233,12 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
     // Check and handle TTL
     if (packet->getTTL() <= 0) {
         qDebug() << "Router" << m_id << "dropping packet due to TTL = 0.";
-        if (m_metricsCollector && !payload.contains("DHCP_REQUEST") && !payload.contains("DHCP_OFFER") &&
-           !payload.startsWith("RIP_UPDATE")) {
+        if (m_metricsCollector &&
+           !payload.contains("DHCP_REQUEST") &&
+           !payload.contains("DHCP_OFFER") &&
+           !payload.startsWith("RIP_UPDATE") &&
+           packet->getType() != PacketType::OSPFHello &&
+           packet->getType() != PacketType::OSPFLSA) {
             m_metricsCollector->recordPacketDropped();
         }
         return;
@@ -276,11 +300,9 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
     else if (packet->getType() == PacketType::OSPFHello) {
          processOSPFHello(packet);
     }
-    else if (packet->getType() == PacketType::Custom) {
-        if (payload.startsWith("LSA:"))
-        {
-            processLSA(packet, incomingPort);
-        }
+    // Handle OSPF LSA Packets
+    else if (packet->getType() == PacketType::OSPFLSA) {
+        processLSA(packet, incomingPort);
     }
     // Handle Data Packets
     else if (packet->getType() == PacketType::Data) {
@@ -691,6 +713,8 @@ void Router::sendOSPFHello()
     {
         if (!port->isConnected()) continue;
 
+        if (port->getConnectedRouterIP().isEmpty()) continue;
+
         QString helloPayload = "OSPF_HELLO:" + m_ipAddress;
         auto helloPacket = QSharedPointer<Packet>::create(PacketType::OSPFHello, helloPayload, 10);
 
@@ -749,7 +773,7 @@ void Router::sendLSA()
 
     m_lsaSequenceNumber++;
 
-    auto lsaPacket = QSharedPointer<Packet>::create(PacketType::Custom, lsaPayload, 10); // TTL=10
+    auto lsaPacket = QSharedPointer<Packet>::create(PacketType::OSPFLSA, lsaPayload, 10);
     lsaPacket->setSequenceNumber(m_lsaSequenceNumber);
 
     OSPFLSA lsa;
@@ -763,6 +787,8 @@ void Router::sendLSA()
     for (const auto &port : m_ports)
     {
         if (!port->isConnected()) continue;
+
+        if (port->getConnectedRouterIP().isEmpty()) continue;
 
         port->sendPacket(lsaPacket);
         qDebug() << "Router" << m_id << "sent LSA via Port" << port->getPortNumber();
@@ -798,12 +824,14 @@ void Router::processLSA(const PacketPtr_t &packet, const PortPtr_t &incomingPort
         m_lsdb.insert(originIP, newLSA);
         qDebug() << "Router" << m_id << "updated LSDB with LSA from" << originIP;
 
-        auto lsaPacket = QSharedPointer<Packet>::create(PacketType::Custom, payload, 10);
+        auto lsaPacket = QSharedPointer<Packet>::create(PacketType::OSPFLSA, payload, 10);
         lsaPacket->setSequenceNumber(sequenceNumber);
 
         for (const auto &port : m_ports)
         {
             if (!port->isConnected() || port == incomingPort) continue;
+
+            if (port->getConnectedRouterIP().isEmpty()) continue;
 
             port->sendPacket(lsaPacket);
             qDebug() << "Router" << m_id << "flooded LSA via Port" << port->getPortNumber();

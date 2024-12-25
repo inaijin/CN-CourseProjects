@@ -194,6 +194,12 @@ void Simulator::startSimulation()
         // m_network->enableOSPFOnAllRouters();
         m_network->enableRIPOnAllRouters();
     }
+
+//     QTimer::singleShot(5000, this, [this]() {
+//         if (m_network) {
+//            m_network->printAllRoutingTables();
+//         }
+//     });
 }
 
 void Simulator::onConvergenceDetected()

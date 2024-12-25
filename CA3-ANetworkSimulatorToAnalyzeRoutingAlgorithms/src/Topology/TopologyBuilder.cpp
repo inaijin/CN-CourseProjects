@@ -66,6 +66,8 @@ void TopologyBuilder::createRouters() {
 
         connect(routerThread, &QThread::started, router.data(), &Router::initialize);
         connect(routerThread, &QThread::finished, router.data(), &QObject::deleteLater);
+        connect(router.data(), &Router::finished, routerThread, &QThread::quit);
+        connect(router.data(), &Router::finished, routerThread, &QObject::deleteLater);
 
         routerThread->start();
         m_routers.push_back(router);

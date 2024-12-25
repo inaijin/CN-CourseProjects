@@ -12,6 +12,7 @@ enum class PacketType {
     Control,
     RIPUpdate,
     OSPFHello,
+    OSPFLSA,
     DHCPRequest,
     DHCPOffer,
     Custom
