@@ -20,13 +20,13 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
         m_portCount = 6;
     }
 
+    initializePorts();
+
     m_helloTimer = new QTimer(this);
     connect(m_helloTimer, &QTimer::timeout, this, &Router::sendOSPFHello);
 
     m_lsaTimer = new QTimer(this);
     connect(m_lsaTimer, &QTimer::timeout, this, &Router::sendLSA);
-
-    initializePorts();
 
     for (auto &port : m_ports) {
         connect(port.data(), &Port::packetReceived, this, [this, port](const PacketPtr_t &packet) {
@@ -55,6 +55,7 @@ void Router::initializePorts()
         if (connectedPC)
         {
             addConnectedPC(connectedPC, port);
+            port->setConnectedRouterIP(connectedPC->getIpAddress());
         }
     }
 }
@@ -473,6 +474,7 @@ void Router::printRoutingTable() const
     qDebug() << "Routing Table for Router" << m_id << ":";
     for (const auto &entry : m_routingTable) {
         QString protoStr = (entry.protocol == RoutingProtocol::RIP) ? "RIP" : "OSPF";
+        protoStr = (entry.protocol == RoutingProtocol::ITSELF) ? " " : protoStr;
         qDebug() << "Dest:" << entry.destination
                  << "Mask:" << entry.mask
                  << "NextHop:" << entry.nextHop
@@ -621,7 +623,7 @@ void Router::handleRouteTimeouts() {
 
 void Router::addDirectRoute(const QString &destination, const QString &mask) {
     qDebug() << "Router" << m_id << "adding stable direct route:" << destination << "/" << mask;
-    RouteEntry directRoute(destination, mask, destination, 0, RoutingProtocol::RIP, m_currentTime, nullptr, true);
+    RouteEntry directRoute(destination, mask, destination, 0, RoutingProtocol::ITSELF, m_currentTime, nullptr, true);
     for (int i = m_routingTable.size() - 1; i >= 0; i--) {
         if (m_routingTable[i].destination == destination && m_routingTable[i].mask == mask && m_routingTable[i].isDirect) {
             m_routingTable.removeAt(i);
@@ -680,6 +682,8 @@ std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters() {
                     neighbors.push_back(nbr);
                 }
             } else if (!pc.isNull()) {
+                qDebug() << "check e raftan UWUOWO";
+                port->setConnectedRouterIP(pc->getIpAddress());
                 neighbors.push_back(QSharedPointer<Router>::create(pc->getId(), pc->getIpAddress()));
             }
         }
@@ -935,6 +939,8 @@ void Router::updateRoutingTable()
             current = m_previous[current];
         }
 
+        qDebug() << "UWU OWO Next Hop Is " << nextHop;
+
         if (nextHop.isEmpty())
         {
             qDebug() << "Router" << m_id << "could not determine nextHop for destination" << dest;
@@ -945,10 +951,21 @@ void Router::updateRoutingTable()
         PortPtr_t outPort = nullptr;
         for (const auto &port : m_ports)
         {
+            // Check if the port is connected to a router with the nextHop IP
             if (port->getConnectedRouterIP() == nextHop)
             {
                 outPort = port;
                 break;
+            }
+            // Additionally, check if the port is connected to a PC with the nextHop IP
+            else
+            {
+                QSharedPointer<PC> connectedPC = port->getConnectedPC();
+                if (connectedPC && connectedPC->getIpAddress() == nextHop)
+                {
+                    outPort = port;
+                    break;
+                }
             }
         }
 
@@ -959,7 +976,7 @@ void Router::updateRoutingTable()
         }
         else
         {
-            qDebug() << "Router" << m_id << "could not find a port connected to nextHop" << nextHop << "for destination" << dest;
+            qDebug() << "Router" << m_id << "could not find outPort for destination" << dest << "via" << nextHop;
         }
     }
 

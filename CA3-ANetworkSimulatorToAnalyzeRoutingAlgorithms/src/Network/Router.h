@@ -18,7 +18,8 @@ class PC;
 
 enum class RoutingProtocol {
     RIP,
-    OSPF
+    OSPF,
+    ITSELF
 };
 
 struct RouteEntry {

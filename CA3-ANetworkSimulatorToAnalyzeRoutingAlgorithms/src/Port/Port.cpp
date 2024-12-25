@@ -12,7 +12,8 @@ Port::Port(QObject *parent) :
     m_numberOfPacketsReceived(0),
     m_routerIP(""),
     m_isConnected(false),
-    m_connectedPC(nullptr)
+    m_connectedPC(nullptr),
+    m_connectedRouterIP(" ")
 {}
 
 Port::~Port() {}
@@ -123,6 +124,10 @@ QString Port::getConnectedRouterIP() const
 {
     QMutexLocker locker(&m_mutex);
 
+    if (m_connectedRouterIP != " ") {
+        return m_connectedRouterIP;
+    }
+
     if (m_connectedPC)
         return QString();
 
@@ -154,4 +159,3 @@ QString Port::getConnectedRouterIP() const
     qWarning() << "Port::getConnectedRouterIP() - Router with ID" << m_connectedRouterId << "not found.";
     return QString();
 }
-

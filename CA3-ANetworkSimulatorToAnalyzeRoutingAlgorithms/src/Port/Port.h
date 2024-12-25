@@ -34,6 +34,7 @@ public:
     QSharedPointer<PC> getConnectedPC() const;
 
     QString getConnectedRouterIP() const;
+    void setConnectedRouterIP(const QString &ip) { m_connectedRouterIP = ip; }
 
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data);
@@ -51,6 +52,7 @@ private:
     bool     m_isConnected;
 
     QSharedPointer<PC> m_connectedPC;
+    QString m_connectedRouterIP;
     mutable QMutex m_mutex;
     int m_connectedRouterId = -1;
 };
