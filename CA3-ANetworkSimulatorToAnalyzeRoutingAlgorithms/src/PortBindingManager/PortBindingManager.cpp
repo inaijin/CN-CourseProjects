@@ -23,8 +23,23 @@ void PortBindingManager::bind(const QSharedPointer<Port> &port1, const QSharedPo
     port1->setConnected(true);
     port2->setConnected(true);
 
-    port1->setConnectedRouterId(router2Id);
-    port2->setConnectedRouterId(router1Id);
+    bool port1IsPC = port1->getConnectedPC() != nullptr;
+    bool port2IsPC = port2->getConnectedPC() != nullptr;
+
+    if (!port1IsPC && !port2IsPC) {
+        port1->setConnectedRouterId(router2Id);
+        port2->setConnectedRouterId(router1Id);
+    }
+    else if (port1IsPC && !port2IsPC) {
+        port2->setConnectedRouterId(router1Id);
+    }
+    else if (!port1IsPC && port2IsPC) {
+        port2->setConnectedRouterId(router1Id);
+    }
+    else {
+        qWarning() << "Attempting to bind two Ports connected to PCs. Binding skipped.";
+        return;
+    }
 
     m_bindings.insert(port1, port2);
     m_bindings.insert(port2, port1);

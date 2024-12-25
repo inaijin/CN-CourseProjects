@@ -739,7 +739,7 @@ void Router::sendLSA()
 
     QString lsaPayload = "LSA:" + m_ipAddress + ":";
 
-    for (const auto &neighbor : m_neighbors)
+    for (auto &neighbor : m_neighbors)
     {
         lsaPayload += neighbor.ipAddress + ",";
     }
@@ -825,7 +825,7 @@ void Router::runDijkstra()
     m_previous.clear();
     QSet<QString> unvisited;
 
-    for (const auto &lsa : m_lsdb)
+    for (auto &lsa : m_lsdb)
     {
         m_distance[lsa.originRouterIP] = INT32_MAX;
         unvisited.insert(lsa.originRouterIP);
@@ -884,8 +884,10 @@ void Router::updateRoutingTable()
         }
     }
 
-    for (const auto &dest : m_distance.keys())
+    for (auto it = m_distance.constBegin(); it != m_distance.constEnd(); ++it)
     {
+        const QString &dest = it.key();
+
         if (dest == m_ipAddress)
             continue;
 
@@ -931,11 +933,11 @@ void Router::handleLSAExpiration()
     }
 
     QStringList expiredLSAs;
-    for (const auto &originIP : m_lsdb.keys())
+    for (auto it = m_lsdb.constBegin(); it != m_lsdb.constEnd(); ++it)
     {
-        if (m_lsdb[originIP].age >= OSPF_LSA_AGE_LIMIT)
+        if (it.value().age >= OSPF_LSA_AGE_LIMIT)
         {
-            expiredLSAs.append(originIP);
+            expiredLSAs.append(it.key());
         }
     }
 

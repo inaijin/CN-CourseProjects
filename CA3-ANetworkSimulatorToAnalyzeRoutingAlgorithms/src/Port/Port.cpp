@@ -122,6 +122,10 @@ QSharedPointer<PC> Port::getConnectedPC() const
 QString Port::getConnectedRouterIP() const
 {
     QMutexLocker locker(&m_mutex);
+
+    if (m_connectedPC)
+        return QString();
+
     if (m_connectedRouterId == -1)
         return QString();
 
@@ -137,13 +141,17 @@ QString Port::getConnectedRouterIP() const
         return QString();
     }
 
-    auto allRouters = network->getAllRouters();
-    for (const auto &router : allRouters) {
-        if (router->getId() == m_connectedRouterId) {
-            return router->getIPAddress();
+    const auto &autonomousSystems = network->getAutonomousSystems();
+    for (const auto &asInstance : autonomousSystems) {
+        const auto &routers = asInstance->getRouters();
+        for (const auto &router : routers) {
+            if (router->getId() == m_connectedRouterId) {
+                return router->getIPAddress();
+            }
         }
     }
 
     qWarning() << "Port::getConnectedRouterIP() - Router with ID" << m_connectedRouterId << "not found.";
     return QString();
 }
+
