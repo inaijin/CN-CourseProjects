@@ -191,7 +191,8 @@ void Simulator::startSimulation()
 
     // Enable RIP on all routers
     if (m_network) {
-        m_network->enableRIPOnAllRouters();
+        m_network->enableOSPFOnAllRouters();
+        // m_network->enableRIPOnAllRouters();
     }
 }
 

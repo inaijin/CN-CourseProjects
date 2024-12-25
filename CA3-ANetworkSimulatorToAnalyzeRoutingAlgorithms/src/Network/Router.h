@@ -76,7 +76,7 @@ public:
     void requestIPFromDHCP();
     void forwardPacket(const PacketPtr_t  &packet);
     void logPortStatuses() const;
-    void processPacket(const PacketPtr_t  &packet);
+    void processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingPort);
     void setIP(QString IP) { m_ipAddress = IP; }
     QString getAssignedIP();
 
@@ -115,7 +115,7 @@ public Q_SLOTS:
     // OSPF-specific methods
     void enableOSPF();
     void sendOSPFHello();
-    void processOSPFHello(const PacketPtr_t &packet, const PortPtr_t &incomingPort);
+    void processOSPFHello(const PacketPtr_t &packet);
     void sendLSA();
     void processLSA(const PacketPtr_t &packet, const PortPtr_t &incomingPort);
     void runDijkstra();

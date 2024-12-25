@@ -33,6 +33,8 @@ public:
     void connectToPC(QSharedPointer<PC> pc);
     QSharedPointer<PC> getConnectedPC() const;
 
+    QString getConnectedRouterIP() const;
+
 Q_SIGNALS:
     void packetSent(const PacketPtr_t &data);
     void packetReceived(const PacketPtr_t &data);

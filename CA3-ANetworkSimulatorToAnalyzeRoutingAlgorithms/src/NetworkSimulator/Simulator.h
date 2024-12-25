@@ -25,6 +25,7 @@ public:
     void checkAssignedIP();
     void checkAssignedIPPC();
     void initiatePacketSending();
+    QSharedPointer<Network> getNetwork() { return m_network; }
 
 public slots:
     void onConvergenceDetected();

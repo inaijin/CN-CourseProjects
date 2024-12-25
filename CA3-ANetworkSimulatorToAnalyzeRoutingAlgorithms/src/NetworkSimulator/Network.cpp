@@ -120,6 +120,17 @@ void Network::enableRIPOnAllRouters()
     qDebug() << "RIP enabled on all routers.";
 }
 
+void Network::enableOSPFOnAllRouters()
+{
+    for (auto &asInstance : m_autonomousSystems) {
+        const auto &routers = asInstance->getRouters();
+        for (auto &router : routers) {
+            router->enableOSPF();
+        }
+    }
+    qDebug() << "OSPF enabled on all routers.";
+}
+
 void Network::printAllRoutingTables()
 {
     qDebug() << "Printing all routing tables:";

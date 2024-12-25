@@ -24,6 +24,7 @@ public:
     void checkAssignedIPPC();
 
     void enableRIPOnAllRouters();
+    void enableOSPFOnAllRouters();
     void printAllRoutingTables();
     void setupDirectRoutesForRouters();
 

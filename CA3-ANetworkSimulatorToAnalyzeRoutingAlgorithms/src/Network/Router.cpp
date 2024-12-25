@@ -29,8 +29,8 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
     initializePorts();
 
     for (auto &port : m_ports) {
-        connect(port.data(), &Port::packetReceived, this, [this](const PacketPtr_t &packet) {
-            processPacket(packet);
+        connect(port.data(), &Port::packetReceived, this, [this, port](const PacketPtr_t &packet) {
+            processPacket(packet, port);
         });
     }
 
@@ -135,7 +135,7 @@ void Router::requestIPFromDHCP() {
     auto packet = QSharedPointer<Packet>::create(PacketType::Control, QString("DHCP_REQUEST:%1").arg(m_id));
     qDebug() << "Router" << m_id << "created DHCP request with payload:" << packet->getPayload();
 
-    processPacket(packet);
+    processPacket(packet, nullptr);
 }
 
 void Router::processDHCPResponse(const PacketPtr_t &packet)
@@ -204,7 +204,7 @@ void Router::markPacketAsSeen(const PacketPtr_t &packet) {
     m_seenPackets.insert(packet->getPayload());
 }
 
-void Router::processPacket(const PacketPtr_t &packet) {
+void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingPort) {
     if (!packet) return;
 
     QString payload = packet->getPayload();
@@ -274,7 +274,7 @@ void Router::processPacket(const PacketPtr_t &packet) {
     }
     // Handle OSPF Updates
     else if (packet->getType() == PacketType::OSPFHello) {
-         processOSPFHello(packet, incomingPort);
+         processOSPFHello(packet);
     }
     else if (packet->getType() == PacketType::Custom) {
         if (payload.startsWith("LSA:"))
@@ -699,7 +699,7 @@ void Router::sendOSPFHello()
     }
 }
 
-void Router::processOSPFHello(const PacketPtr_t &packet, const PortPtr_t &incomingPort)
+void Router::processOSPFHello(const PacketPtr_t &packet)
 {
     if (!packet) return;
 
@@ -754,7 +754,7 @@ void Router::sendLSA()
 
     OSPFLSA lsa;
     lsa.originRouterIP = m_ipAddress;
-    lsa.links = QVector<QString>::fromStdVector(std::vector<QString>(m_neighbors.keys().begin(), m_neighbors.keys().end()));
+    lsa.links = QVector<QString>::fromList(m_neighbors.keys());
     lsa.sequenceNumber = m_lsaSequenceNumber;
     lsa.age = 0;
 
@@ -925,8 +925,6 @@ void Router::updateRoutingTable()
 
 void Router::handleLSAExpiration()
 {
-    qint64 currentTime = QDateTime::currentSecsSinceEpoch();
-
     for (auto &lsa : m_lsdb)
     {
         lsa.age += 1;
