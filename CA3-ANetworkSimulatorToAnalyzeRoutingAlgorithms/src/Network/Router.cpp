@@ -973,6 +973,27 @@ void Router::updateRoutingTable()
         {
             addRoute(dest, "255.255.255.255", nextHop, m_distance[dest], RoutingProtocol::OSPF, outPort);
             qDebug() << "Router" << m_id << "added OSPF route to" << dest << "via" << nextHop;
+
+            static const QRegularExpression regex(R"(\.([a-zA-Z0-9_]+)$)");
+            QString id = "";
+            bool ok;
+
+            QRegularExpressionMatch match1 = regex.match(dest);
+            if (match1.hasMatch()) {
+                id = match1.captured(1);
+                qDebug() << "Extracted ID from Dest: " << id;
+            } else {
+                qDebug() << "No ID found !!!";
+            }
+
+            QSharedPointer<Router> destRouter = s_topologyBuilder->findRouterById(id.toInt(&ok));
+            std::vector<QSharedPointer<Router>> connectedPCs = destRouter->getDirectlyConnectedRouters();
+            for (auto &pc : connectedPCs) {
+                if (pc->getId() > 23) {
+                    QString pcIP = pc->getIPAddress();
+                    addRoute(pcIP, "255.255.255.255", nextHop, m_distance[dest] + 1, RoutingProtocol::OSPF, outPort);
+                }
+            }
         }
         else
         {
