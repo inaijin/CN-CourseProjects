@@ -17,7 +17,7 @@ public:
     explicit Network(const QJsonObject &config, QObject *parent = nullptr);
     ~Network();
 
-    void initialize(const IdAssignment &idAssignment);
+    void initialize(const IdAssignment &idAssignment, const bool torus);
     void connectAutonomousSystems();
     void initiateDHCPPhase();
     void initiateDHCPPhaseForPC();
@@ -37,7 +37,7 @@ private:
     QJsonObject m_config;
     std::vector<QSharedPointer<AutonomousSystem>> m_autonomousSystems;
 
-    void createAutonomousSystems(const IdAssignment &idAssignment);
+    void createAutonomousSystems(const IdAssignment &idAssignment, bool torus);
 };
 
 #endif // NETWORK_H

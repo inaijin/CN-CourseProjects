@@ -13,19 +13,19 @@ Network::~Network()
     // Cleanup if necessary
 }
 
-void Network::initialize(const IdAssignment &idAssignment)
+void Network::initialize(const IdAssignment &idAssignment, const bool torus)
 {
-    createAutonomousSystems(idAssignment);
+    createAutonomousSystems(idAssignment, torus);
     connectAutonomousSystems();
 }
 
-void Network::createAutonomousSystems(const IdAssignment &idAssignment)
+void Network::createAutonomousSystems(const IdAssignment &idAssignment, const bool torus)
 {
     QJsonArray asArray = m_config.value("Autonomous_systems").toArray();
     for (const QJsonValue &asValue : asArray)
     {
         QJsonObject asObject = asValue.toObject();
-        auto asInstance = QSharedPointer<AutonomousSystem>::create(asObject, idAssignment);
+        auto asInstance = QSharedPointer<AutonomousSystem>::create(asObject, idAssignment, torus);
         m_autonomousSystems.push_back(asInstance);
     }
 }

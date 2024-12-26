@@ -87,8 +87,10 @@ void Simulator::preAssignIDs()
 
 void Simulator::initializeNetwork()
 {
+    bool torus = false;
+
     m_network = QSharedPointer<Network>::create(m_config);
-    m_network->initialize(m_idAssignment);
+    m_network->initialize(m_idAssignment, torus);
 
     m_metricsCollector = QSharedPointer<MetricsCollector>::create();
 
@@ -162,7 +164,7 @@ void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>>
 
 void Simulator::startSimulation()
 {
-    RoutingProtocol protocol = RoutingProtocol::OSPF;
+    RoutingProtocol protocol = RoutingProtocol::RIP;
     qDebug() << "Simulation initialized. Network topology is set up.";
 
     // Initiate DHCP Phase for routers

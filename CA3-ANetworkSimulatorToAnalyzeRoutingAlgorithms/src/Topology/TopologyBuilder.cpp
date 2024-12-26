@@ -17,9 +17,14 @@ TopologyBuilder::TopologyBuilder(const QJsonObject &config, const IdAssignment &
 
 TopologyBuilder::~TopologyBuilder() {}
 
-void TopologyBuilder::buildTopology() {
+void TopologyBuilder::buildTopology(bool torus) {
     createRouters();
     setupTopology();
+
+    if (torus) {
+        makeMeshTorus();
+    }
+
     createPCs();
     configureDHCPServers();
 }
@@ -165,7 +170,7 @@ void TopologyBuilder::setupTopology()
         int rows = 4;
         int columns = 4;
 
-        QSet<QPair<int, int>> connectedPairs;
+        m_connectedPairs.clear();
 
         for (int i = 0; i < static_cast<int>(m_routers.size()); ++i)
         {
@@ -186,7 +191,7 @@ void TopologyBuilder::setupTopology()
             for (int neighborId : neighbors)
             {
                 QPair<int, int> pair = qMakePair(qMin(routerId, neighborId), qMax(routerId, neighborId));
-                if (connectedPairs.contains(pair))
+                if (m_connectedPairs.contains(pair))
                     continue;
 
                 auto neighborIt = std::find_if(m_routers.begin(), m_routers.end(),
@@ -196,7 +201,7 @@ void TopologyBuilder::setupTopology()
                 {
                     PortBindingManager bindingManager;
                     bindingManager.bind(m_routers[i]->getAvailablePort(), (*neighborIt)->getAvailablePort(), routerId, neighborId);
-                    connectedPairs.insert(pair);
+                    m_connectedPairs.insert(pair);
                 }
             }
         }
@@ -291,6 +296,74 @@ void TopologyBuilder::configureDHCPServers() {
                      << "on Router ID:" << routerId;
         } else {
             qWarning() << "DHCP Server Router ID not found:" << routerId;
+        }
+    }
+}
+
+void TopologyBuilder::makeMeshTorus()
+{
+    int rows = 4;
+    int columns = 4;
+    int totalRouters = rows * columns;
+
+    if (m_routers.size() != static_cast<size_t>(totalRouters)) {
+        qWarning() << "Cannot create torus: Expected" << totalRouters << "routers, but found" << m_routers.size();
+        return;
+    }
+
+    // Assuming routers are ordered row-major starting from index 0
+    for (int row = 0; row < rows; ++row) {
+        for (int col = 0; col < columns; ++col) {
+            int currentIndex = row * columns + col;
+            int currentRouterId = m_routers[currentIndex]->getId();
+
+            // Calculate wrap-around neighbors
+            int wrapRow = (row + rows - 1) % rows; // Up neighbor (wrap around)
+            int wrapCol = (col + columns - 1) % columns; // Left neighbor (wrap around)
+
+            // Neighbor in the previous row (wrap vertically)
+            int neighborRow = wrapRow;
+            int neighborCol = col;
+            int neighborIndex = neighborRow * columns + neighborCol;
+            int neighborRouterId = m_routers[neighborIndex]->getId();
+
+            QPair<int, int> pair1 = qMakePair(qMin(currentRouterId, neighborRouterId), qMax(currentRouterId, neighborRouterId));
+            if (!m_connectedPairs.contains(pair1)) {
+                // Bind ports between currentRouter and neighborRouter
+                PortBindingManager bindingManager;
+                auto portA = m_routers[currentIndex]->getAvailablePort();
+                auto portB = m_routers[neighborIndex]->getAvailablePort();
+
+                if (portA && portB) {
+                    bindingManager.bind(portA, portB, currentRouterId, neighborRouterId);
+                    m_connectedPairs.insert(pair1);
+                    qDebug() << "Torus Connection: Router" << currentRouterId << "connected to Router" << neighborRouterId;
+                } else {
+                    qWarning() << "Failed to bind ports for torus connection between Router" << currentRouterId << "and Router" << neighborRouterId;
+                }
+            }
+
+            // Neighbor in the previous column (wrap horizontally)
+            neighborRow = row;
+            neighborCol = wrapCol;
+            neighborIndex = neighborRow * columns + neighborCol;
+            neighborRouterId = m_routers[neighborIndex]->getId();
+
+            QPair<int, int> pair2 = qMakePair(qMin(currentRouterId, neighborRouterId), qMax(currentRouterId, neighborRouterId));
+            if (!m_connectedPairs.contains(pair2)) {
+                // Bind ports between currentRouter and neighborRouter
+                PortBindingManager bindingManager;
+                auto portA = m_routers[currentIndex]->getAvailablePort();
+                auto portB = m_routers[neighborIndex]->getAvailablePort();
+
+                if (portA && portB) {
+                    bindingManager.bind(portA, portB, currentRouterId, neighborRouterId);
+                    m_connectedPairs.insert(pair2);
+                    qDebug() << "Torus Connection: Router" << currentRouterId << "connected to Router" << neighborRouterId;
+                } else {
+                    qWarning() << "Failed to bind ports for torus connection between Router" << currentRouterId << "and Router" << neighborRouterId;
+                }
+            }
         }
     }
 }
