@@ -59,13 +59,14 @@ void TopologyBuilder::createRouters() {
 
     for (int i = 0; i < nodeCount; ++i) {
         int routerId = range.routerStartId + i;
+        bool isBroken = false;
 
         if (std::find(brokenRouters.begin(), brokenRouters.end(), routerId) != brokenRouters.end()) {
-            qWarning() << "Skipping broken router with ID:" << routerId;
-            continue;
+            qWarning() << "Marking router as broken: router with ID:" << routerId;
+            isBroken = true;
         }
 
-        auto router = QSharedPointer<Router>::create(routerId, "", portCount, nullptr);
+        auto router = QSharedPointer<Router>::create(routerId, "", portCount, nullptr, isBroken);
         QThread *routerThread = new QThread(this);
         router->moveToThread(routerThread);
 

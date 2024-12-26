@@ -53,7 +53,7 @@ void MetricsCollector::printStatistics() const {
     qDebug() << "Total Packets Received:" << m_receivedPackets;
     qDebug() << "Total Packets Dropped:" << m_droppedPackets;
 
-    double lossRate = (m_sentPackets > 0) ? 100 - (((double)m_sentPackets / m_receivedPackets) * 100.0) : 0.0;
+    double lossRate = (m_sentPackets > 0) ? 100 - (((double)m_receivedPackets / m_sentPackets) * 100.0) : 0.0;
     qDebug() << "Packet Loss Rate:" << lossRate << "%";
 
     double averageHopCount = (m_receivedPackets > 0) ? ((double)m_totalHops / m_receivedPackets) : 0.0;

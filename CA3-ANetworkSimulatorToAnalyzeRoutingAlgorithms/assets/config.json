@@ -22,7 +22,7 @@
             "as_gateways": [14, 15, 16],
             "user_gateways": [1, 2, 3, 4],
             "dhcpServers": [5],
-            "broken_routers": [],
+            "broken_routers": [7, 14],
             "gateways": [
                 {
                     "node": 1,
@@ -50,8 +50,8 @@
             "node_count": 7,
             "as_gateways": [17, 18, 19],
             "user_gateways": [20, 21, 22],
-            "dhcpServers": [22],
-            "broken_routers": [],
+            "dhcpServers": [23],
+            "broken_routers": [22],
             "gateways": [
                 {
                     "node": 20,

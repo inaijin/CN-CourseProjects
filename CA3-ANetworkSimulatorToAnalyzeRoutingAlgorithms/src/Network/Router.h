@@ -71,7 +71,7 @@ class Router : public Node, public QEnableSharedFromThis<Router>
     Q_OBJECT
 
 public:
-    explicit Router(int id, const QString &ipAddress, int portCount = 6, QObject *parent = nullptr);
+    explicit Router(int id, const QString &ipAddress, int portCount = 6, QObject *parent = nullptr, bool isBroken = false);
     ~Router() override;
 
     PortPtr_t getAvailablePort();
@@ -97,6 +97,7 @@ public:
     void setMetricsCollector(QSharedPointer<MetricsCollector> collector);
     RouteEntry findBestRoutePath(const QString &destinationIP) const;
 
+    bool isBroken() { return m_isBroken; }
     void addConnectedPC(QSharedPointer<PC> pc, PortPtr_t port);
 
     void startTimers();
@@ -178,6 +179,7 @@ private:
 
     void initializePorts();
     bool hasSeenPacket(const PacketPtr_t  &packet);
+    bool m_isBroken;
     void markPacketAsSeen(const PacketPtr_t  &packet);
     std::vector<QSharedPointer<PC>> m_connectedPCs;
 };

@@ -95,12 +95,14 @@ void TopologyController::initiateDHCPPhase() {
     const auto &routers = m_builder->getRouters();
 
     for (const auto &router : routers) {
-        if (!router->isDHCPServer()) {
-            qDebug() << "Router" << router->getId() << "sending DHCP request...";
-            router->requestIPFromDHCP();
-        } else {
-            qDebug() << "Router" << router->getId() << "is a DHCP server.";
-            initiateDHCPIP(router);
+        if (!router->isBroken()) {
+            if (!router->isDHCPServer()) {
+                qDebug() << "Router" << router->getId() << "sending DHCP request...";
+                router->requestIPFromDHCP();
+            } else {
+                qDebug() << "Router" << router->getId() << "is a DHCP server.";
+                initiateDHCPIP(router);
+            }
         }
     }
     qDebug() << "DHCP phase initiated for routers.";

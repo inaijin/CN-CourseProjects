@@ -6,14 +6,15 @@
 #include <QDebug>
 #include <QThread>
 
-Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent)
+Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent, bool isBroken)
     : Node(id, ipAddress, NodeType::Router, parent),
     m_portCount(portCount),
     m_hasValidIP(false),
     m_lsdb(),
     m_lsaSequenceNumber(0),
     m_lastRIPUpdateTime(0),
-    m_currentTime(0)
+    m_currentTime(0),
+    m_isBroken(isBroken)
 {
     if (m_portCount <= 0)
     {
@@ -226,6 +227,11 @@ void Router::markPacketAsSeen(const PacketPtr_t &packet) {
 }
 
 void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingPort) {
+    if (m_isBroken) {
+        m_metricsCollector->recordPacketDropped();
+        return;
+    }
+
     if (!packet) return;
 
     QString payload = packet->getPayload();
@@ -703,7 +709,7 @@ std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters() {
                 if (remoteId < 24) {
                     nbr = s_topologyBuilder->findRouterById(remoteId);
                 }
-                if (nbr) {
+                if (nbr && !nbr->isBroken()) {
                     neighbors.push_back(nbr);
                 }
             } else if (!pc.isNull()) {

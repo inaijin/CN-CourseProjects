@@ -114,7 +114,8 @@ void Network::enableRIPOnAllRouters()
     for (auto &asInstance : m_autonomousSystems) {
         const auto &routers = asInstance->getRouters();
         for (auto &router : routers) {
-            router->enableRIP();
+            if (!router->isBroken())
+                router->enableRIP();
         }
     }
     qDebug() << "RIP enabled on all routers.";
@@ -125,7 +126,8 @@ void Network::enableOSPFOnAllRouters()
     for (auto &asInstance : m_autonomousSystems) {
         const auto &routers = asInstance->getRouters();
         for (auto &router : routers) {
-            router->enableOSPF();
+            if (!router->isBroken())
+                router->enableOSPF();
         }
     }
     qDebug() << "OSPF enabled on all routers.";
@@ -147,17 +149,19 @@ void Network::setupDirectRoutesForRouters(RoutingProtocol protocol)
     for (auto &asInstance : m_autonomousSystems) {
         const auto &routers = asInstance->getRouters();
         for (auto &router : routers) {
-            QString routerIP = router->getIPAddress();
-            if (routerIP.isEmpty()) {
-                qWarning() << "Router" << router->getId() << "has no IP assigned yet, skipping direct route setup.";
-                continue;
+            if (!router->isBroken()) {
+                QString routerIP = router->getIPAddress();
+                if (routerIP.isEmpty()) {
+                    qWarning() << "Router" << router->getId() << "has no IP assigned yet, skipping direct route setup.";
+                    continue;
+                }
+
+                QString mask = "255.255.255.255";
+                int metric = 0;
+
+                router->addRoute(routerIP, mask, "", metric, protocol);
+                qDebug() << "Network: Added host route for Router" << router->getId() << ":" << routerIP << "/" << mask << "metric" << metric;
             }
-
-            QString mask = "255.255.255.255";
-            int metric = 0;
-
-            router->addRoute(routerIP, mask, "", metric, protocol);
-            qDebug() << "Network: Added host route for Router" << router->getId() << ":" << routerIP << "/" << mask << "metric" << metric;
         }
     }
 }
@@ -166,7 +170,8 @@ void Network::finalizeRoutesAfterDHCP(RoutingProtocol protocol) {
     for (auto &asInstance : m_autonomousSystems) {
         const auto &routers = asInstance->getRouters();
         for (auto &router : routers) {
-            router->setupDirectNeighborRoutes(protocol);
+            if (!router->isBroken())
+                router->setupDirectNeighborRoutes(protocol);
         }
     }
     qDebug() << "All routers have set direct neighbor routes.";
