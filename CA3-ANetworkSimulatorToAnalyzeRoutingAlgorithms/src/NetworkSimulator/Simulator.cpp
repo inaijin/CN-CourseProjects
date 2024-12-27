@@ -238,6 +238,9 @@ void Simulator::onConvergenceDetected()
     if (bgp) {
         qDebug() << "BGP is enabled. Delaying execution of convergence actions.";
         m_network->startEBGP();
+        QTimer::singleShot(2000, this, [this]() {
+            m_network->startIBGP();
+        });
         QTimer::singleShot(3000, this, executeConvergenceActions);
     }
     else {

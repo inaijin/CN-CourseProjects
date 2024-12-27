@@ -2,6 +2,7 @@
 #include "EventsCoordinator/EventsCoordinator.h"
 #include "../Topology/TopologyBuilder.h"
 #include "../MetricsCollector/MetricsCollector.h"
+#include "../Globals/RouterRegistry.h"
 #include "../Network/PC.h"
 #include <QDebug>
 #include <QThread>
@@ -97,6 +98,8 @@ void Router::initialize()
 
     startTimers();
 }
+
+int Router::IBGPCounter = 0;
 
 void Router::sendHelloPackets()
 {
@@ -309,6 +312,10 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
     else if (payload.startsWith("EBGP_UPDATE")) {
         processEBGPUpdate(packet);
     }
+    // Handle IBGP Updates
+    else if (payload.startsWith("IBGP_UPDATE")) {
+        processIBGPUpdate(packet);
+    }
     // Handle OSPF Updates
     else if (packet->getType() == PacketType::OSPFHello) {
          processOSPFHello(packet);
@@ -410,6 +417,7 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
         if (!vip) {
             if (entry.isDirect && entry.destination == destination && entry.mask == mask) {
                 qDebug() << "Router" << m_id << ": Ignoring learned route to" << destination << "due to direct route.";
+                IBGPCounter += 1;
                 return;
             }
         }
@@ -423,6 +431,7 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
 
             if (entry.holdDownTimer > 0 && metric >= entry.metric) {
                 // qDebug() << "Router" << m_id << ": hold-down active for" << destination << ", ignoring equal or worse route.";
+                IBGPCounter += 1;
                 return;
             }
 
@@ -439,6 +448,7 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
             } else {
                 // qDebug() << "Router" << m_id << ": got equal or worse metric (" << metric << ") for" << destination << ", ignoring update.";
             }
+            IBGPCounter += 1;
             return;
         }
     }
@@ -449,6 +459,7 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
         // qDebug() << "Router" << m_id << "added new learned route to" << destination << "metric" << metric;
         m_routingTable.append(newEntry);
         emit routingTableUpdated(m_id);
+        IBGPCounter = 0;
     }
 }
 
@@ -490,6 +501,7 @@ void Router::printRoutingTable() const
         QString protoStr = (entry.protocol == RoutingProtocol::RIP) ? "RIP" : "OSPF";
         protoStr = (entry.protocol == RoutingProtocol::ITSELF) ? " " : protoStr;
         protoStr = (entry.protocol == RoutingProtocol::EBGP) ? "EBGP" : protoStr;
+        protoStr = (entry.protocol == RoutingProtocol::IBGP) ? "IBGP" : protoStr;
         qDebug() << "Dest:" << entry.destination
                  << "Mask:" << entry.mask
                  << "NextHop:" << entry.nextHop
@@ -1155,6 +1167,41 @@ void Router::startEBGP() {
     }
 }
 
+void Router::startIBGP() {
+    IBGPCounter = 0;
+    qDebug() << "STARTIBGP STARTED";
+    for (auto &port : m_ports) {
+        if (m_ASnum != -1) {
+            Range range = getRange(m_ASnum);
+            int connectedRouterId = port->getConnectedRouterId();
+            if (connectedRouterId != -1) {
+                QSharedPointer<Router> foundRouter = RouterRegistry::findRouterById(connectedRouterId);
+                if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
+                    qDebug() << "It's a PC";
+                } else if (connectedRouterId <= range.max && connectedRouterId >= range.min && !foundRouter->isRouterBorder()) {
+                    if (!port->isConnected()) continue;
+
+                    QString payload = "IBGP_UPDATE:";
+                    int routeCount = 0;
+                    QString destination = (m_ASnum == 1) ? "192.168.200.xx" : "192.168.100.xx";
+                    payload += destination + "," + "255.255.255.255" + "," + QString::number(1) + "#";
+                    routeCount++;
+
+                    payload += m_ipAddress;
+                    if (routeCount == 0) {
+                        payload = "IBGP_UPDATE:" + m_ipAddress;
+                    }
+
+                    auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
+                    updatePacket->setTTL(10);
+                    port->sendPacket(updatePacket);
+                    qDebug() << "Router" << m_id << "sent IBGP update via Port" << port->getPortNumber() << "with" << routeCount << "routes";
+                }
+            }
+        }
+    }
+}
+
 void Router::processEBGPUpdate(const PacketPtr_t &packet)
 {
     if (!packet) return;
@@ -1205,5 +1252,107 @@ void Router::processEBGPUpdate(const PacketPtr_t &packet)
         }
 
         addRoute(dest, mask, senderIP, newMetric, RoutingProtocol::EBGP, incomingPortPtr);
+    }
+}
+
+void Router::processIBGPUpdate(const PacketPtr_t &packet)
+{
+    m_gotIBGP = true;
+
+    if (!packet) return;
+
+    QString payload = packet->getPayload();
+
+    auto parts = payload.split(":");
+    if (parts.size() < 2) {
+        qWarning() << "Router" << m_id << "received malformed IBGP update:" << payload;
+        return;
+    }
+
+    QString data = parts[1];
+    auto routesAndSender = data.split("#");
+    if (routesAndSender.isEmpty()) return;
+
+    QString senderIP = routesAndSender.last();
+    routesAndSender.removeLast();
+
+    // Determine incoming port
+    Port *incomingPort = qobject_cast<Port*>(sender());
+    PortPtr_t incomingPortPtr;
+    if (incomingPort) {
+        for (auto &p : m_ports) {
+            if (p.data() == incomingPort) {
+                incomingPortPtr = p;
+                break;
+            }
+        }
+    }
+
+    for (const auto &routeStr : routesAndSender) {
+        if (routeStr.isEmpty()) continue;
+        auto fields = routeStr.split(",");
+        if (fields.size() < 3) {
+            qWarning() << "Router" << m_id << "IBGP route entry malformed:" << routeStr;
+            continue;
+        }
+
+        QString dest = fields[0];
+        QString mask = fields[1];
+        int recvMetric = fields[2].toInt();
+        int newMetric = recvMetric + 1;
+
+        if (newMetric >= RIP_INFINITY) {
+            qDebug() << "Router" << m_id << "received unreachable route for" << dest << "skipping.";
+            continue;
+        }
+
+        addRoute(dest, mask, senderIP, newMetric, RoutingProtocol::IBGP, incomingPortPtr);
+    }
+
+    if (IBGPCounter < 10) {
+        forwardIBGP();
+    } else {
+        qDebug() << "Tamom Nashod ?";
+    }
+}
+
+void Router::forwardIBGP() {
+    for (auto &port : m_ports) {
+        if (m_ASnum != -1) {
+            Range range = getRange(m_ASnum);
+            int connectedRouterId = port->getConnectedRouterId();
+            if (connectedRouterId != -1) {
+                QSharedPointer<Router> foundRouter = RouterRegistry::findRouterById(connectedRouterId);
+                if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
+                    qDebug() << "It's a PC";
+                } else if (connectedRouterId <= range.max && connectedRouterId >= range.min && !foundRouter->isRouterBorder()) {
+                    if (!port->isConnected()) continue;
+                    QString destination = (m_ASnum == 1) ? "192.168.200.xx" : "192.168.100.xx";
+
+                    QString payload = "IBGP_UPDATE:";
+                    int routeCount = 0;
+                    for (const auto &entry : m_routingTable) {
+                        if (entry.destination == destination) {
+                            int advertisedMetric = entry.metric;
+                            if (entry.learnedFromPort == port && !entry.isDirect) {
+                                advertisedMetric = RIP_INFINITY;
+                            }
+                            payload += entry.destination + "," + entry.mask + "," + QString::number(advertisedMetric) + "#";
+                            routeCount++;
+                        }
+                    }
+
+                    payload += m_ipAddress;
+                    if (routeCount == 0) {
+                        payload = "IBGP_UPDATE:" + m_ipAddress;
+                    }
+
+                    auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
+                    updatePacket->setTTL(10);
+                    port->sendPacket(updatePacket);
+                    qDebug() << "Router" << m_id << "sent IBGP update via Port" << port->getPortNumber() << "with" << routeCount << "routes";
+                }
+            }
+        }
     }
 }

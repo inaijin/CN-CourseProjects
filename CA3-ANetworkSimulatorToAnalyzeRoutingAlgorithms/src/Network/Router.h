@@ -20,6 +20,7 @@ enum class RoutingProtocol {
     RIP,
     OSPF,
     EBGP,
+    IBGP,
     ITSELF
 };
 
@@ -112,6 +113,10 @@ public:
     void setASNum(int num) { m_ASnum = num; }
     bool isRouterBorder();
     void startEBGP();
+    void startIBGP();
+    void forwardIBGP();
+    bool gottenIBGP() { return m_gotIBGP; }
+    void setGotIBGP(bool gotten) { m_gotIBGP = gotten; }
 
 signals:
     void routingTableUpdated(int routerId);
@@ -135,8 +140,11 @@ public Q_SLOTS:
     void onTick();
     void sendRIPUpdate();
     void processRIPUpdate(const PacketPtr_t  &packet);
-    void processEBGPUpdate(const PacketPtr_t  &packet);
     void handleRouteTimeouts();
+
+    // BGP specific methods
+    void processEBGPUpdate(const PacketPtr_t  &packet);
+    void processIBGPUpdate(const PacketPtr_t  &packet);
 
     // OSPF-specific methods
     void enableOSPF();
@@ -193,8 +201,11 @@ private:
     void initializePorts();
     bool hasSeenPacket(const PacketPtr_t  &packet);
     bool m_isBroken;
+    bool m_gotIBGP;
     void markPacketAsSeen(const PacketPtr_t  &packet);
     std::vector<QSharedPointer<PC>> m_connectedPCs;
+
+    static int IBGPCounter;
 
     Range getRange(int ASnum) const {
         Range range = {0, 0, 0, 0};
