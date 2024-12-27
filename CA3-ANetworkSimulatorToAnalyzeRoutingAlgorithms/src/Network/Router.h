@@ -91,8 +91,8 @@ public:
     QString findBestRoute(const QString &destinationIP) const;
     void addDirectRoute(const QString &destination, const QString &mask);
 
-    void setupDirectNeighborRoutes(RoutingProtocol protocol);
-    std::vector<QSharedPointer<Router>> getDirectlyConnectedRouters();
+    void setupDirectNeighborRoutes(RoutingProtocol protocol, int ASId, bool bgp);
+    std::vector<QSharedPointer<Router>> getDirectlyConnectedRouters(int ASId, bool bgp);
     static void setTopologyBuilder(TopologyBuilder *builder);
     void setMetricsCollector(QSharedPointer<MetricsCollector> collector);
     RouteEntry findBestRoutePath(const QString &destinationIP) const;
@@ -101,6 +101,7 @@ public:
     void addConnectedPC(QSharedPointer<PC> pc, PortPtr_t port);
 
     void startTimers();
+    void setASNum(int num) { m_ASnum = num; }
 
 signals:
     void routingTableUpdated(int routerId);
@@ -138,6 +139,7 @@ public Q_SLOTS:
 private:
     std::vector<PortPtr_t> m_ports;
     int m_portCount;
+    int m_ASnum;
     bool m_hasValidIP;
     QSharedPointer<DHCPServer> m_dhcpServer;
     QSharedPointer<UDP> m_udp;

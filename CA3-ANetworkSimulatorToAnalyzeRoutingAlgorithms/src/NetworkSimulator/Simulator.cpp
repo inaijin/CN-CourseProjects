@@ -164,6 +164,10 @@ void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>>
 
 void Simulator::startSimulation()
 {
+    bool bgp = true;
+    RoutingProtocol protocolAS1 = RoutingProtocol::OSPF;
+    RoutingProtocol protocolAS2 = RoutingProtocol::OSPF;
+
     RoutingProtocol protocol = RoutingProtocol::RIP;
     qDebug() << "Simulation initialized. Network topology is set up.";
 
@@ -186,7 +190,7 @@ void Simulator::startSimulation()
     // Now we know all routers have IP addresses assigned, so we can setup direct routes:
     if (m_network) {
         m_network->setupDirectRoutesForRouters(protocol);
-        m_network->finalizeRoutesAfterDHCP(protocol);
+        m_network->finalizeRoutesAfterDHCP(protocol, bgp, protocolAS1, protocolAS2);
     }
 
     // Start the event coordinator clock so RIP ticks can begin
@@ -194,7 +198,9 @@ void Simulator::startSimulation()
 
     // Enable RIP on all routers
     if (m_network) {
-        if (protocol == RoutingProtocol::RIP) {
+        if (bgp) {
+            m_network->startBGP(protocolAS1, protocolAS2);
+        } else if (protocol == RoutingProtocol::RIP) {
             m_network->enableRIPOnAllRouters();
         } else {
             m_network->enableOSPFOnAllRouters();

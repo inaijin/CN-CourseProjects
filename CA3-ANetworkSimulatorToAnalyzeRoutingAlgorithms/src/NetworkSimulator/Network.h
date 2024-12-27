@@ -26,10 +26,11 @@ public:
 
     void enableRIPOnAllRouters();
     void enableOSPFOnAllRouters();
+    void startBGP(RoutingProtocol protocolAS1, RoutingProtocol protocolAS2);
     void printAllRoutingTables();
     void setupDirectRoutesForRouters(RoutingProtocol protocol);
 
-    void finalizeRoutesAfterDHCP(RoutingProtocol protocol);
+    void finalizeRoutesAfterDHCP(RoutingProtocol protocol, bool bgp, RoutingProtocol protocolAS1, RoutingProtocol protocolAS2);
     std::vector<QSharedPointer<Router>> getAllRouters() const;
     std::vector<QSharedPointer<AutonomousSystem>> getAutonomousSystems() const;
 

@@ -133,6 +133,36 @@ void Network::enableOSPFOnAllRouters()
     qDebug() << "OSPF enabled on all routers.";
 }
 
+void Network::startBGP(RoutingProtocol protocolAS1, RoutingProtocol protocolAS2) {
+    for (auto &asInstance : m_autonomousSystems) {
+        int asNum = asInstance->getId();
+        const auto &routers = asInstance->getRouters();
+        if (asNum == 1) {
+            for (auto &router : routers) {
+                if (!router->isBroken()) {
+                    router->setASNum(asNum);
+                    if (protocolAS1 == RoutingProtocol::RIP) {
+                        router->enableRIP();
+                    } else {
+                        router->enableOSPF();
+                    }
+                }
+            }
+        } else if (asNum == 2) {
+            for (auto &router : routers) {
+                if (!router->isBroken()) {
+                    router->setASNum(asNum);
+                    if (protocolAS2 == RoutingProtocol::RIP) {
+                        router->enableRIP();
+                    } else {
+                        router->enableOSPF();
+                    }
+                }
+            }
+        }
+    }
+}
+
 void Network::printAllRoutingTables()
 {
     qDebug() << "Printing all routing tables:";
@@ -166,12 +196,22 @@ void Network::setupDirectRoutesForRouters(RoutingProtocol protocol)
     }
 }
 
-void Network::finalizeRoutesAfterDHCP(RoutingProtocol protocol) {
+void Network::finalizeRoutesAfterDHCP(RoutingProtocol protocol, bool bgp, RoutingProtocol protocolAS1, RoutingProtocol protocolAS2) {
     for (auto &asInstance : m_autonomousSystems) {
         const auto &routers = asInstance->getRouters();
+        int asNum = asInstance->getId();
         for (auto &router : routers) {
-            if (!router->isBroken())
-                router->setupDirectNeighborRoutes(protocol);
+            if (!router->isBroken()) {
+                if (!bgp) {
+                    router->setupDirectNeighborRoutes(protocol, asInstance->getId(), bgp);
+                } else {
+                    if (asNum == 1) {
+                        router->setupDirectNeighborRoutes(protocolAS1, asInstance->getId(), bgp);
+                    } else {
+                        router->setupDirectNeighborRoutes(protocolAS2, asInstance->getId(), bgp);
+                    }
+                }
+            }
         }
     }
     qDebug() << "All routers have set direct neighbor routes.";
