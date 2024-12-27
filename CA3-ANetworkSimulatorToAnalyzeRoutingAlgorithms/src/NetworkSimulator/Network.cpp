@@ -2,6 +2,7 @@
 #include "Topology/TopologyController.h"
 #include <QDebug>
 #include <QJsonArray>
+#include <unordered_map>
 
 Network::Network(const QJsonObject &config, QObject *parent)
     : QObject(parent), m_config(config)
@@ -134,29 +135,37 @@ void Network::enableOSPFOnAllRouters()
 }
 
 void Network::startBGP(RoutingProtocol protocolAS1, RoutingProtocol protocolAS2) {
+    std::unordered_map<int, RoutingProtocol> asProtocolMap = {
+     {1, protocolAS1},
+     {2, protocolAS2}
+    };
+
     for (auto &asInstance : m_autonomousSystems) {
         int asNum = asInstance->getId();
+
+        auto protocolIt = asProtocolMap.find(asNum);
+        if (protocolIt == asProtocolMap.end()) {
+            qWarning() << "No routing protocol configured for AS" << asNum << ". Skipping.";
+            continue;
+        }
+
+        RoutingProtocol currentProtocol = protocolIt->second;
         const auto &routers = asInstance->getRouters();
-        if (asNum == 1) {
-            for (auto &router : routers) {
-                if (!router->isBroken()) {
-                    router->setASNum(asNum);
-                    if (protocolAS1 == RoutingProtocol::RIP) {
+
+        for (auto &router : routers) {
+            if (!router->isBroken()) {
+                router->setASNum(asNum);
+
+                switch (currentProtocol) {
+                    case RoutingProtocol::RIP:
                         router->enableRIP();
-                    } else {
+                        break;
+                    case RoutingProtocol::OSPF:
                         router->enableOSPF();
-                    }
-                }
-            }
-        } else if (asNum == 2) {
-            for (auto &router : routers) {
-                if (!router->isBroken()) {
-                    router->setASNum(asNum);
-                    if (protocolAS2 == RoutingProtocol::RIP) {
-                        router->enableRIP();
-                    } else {
-                        router->enableOSPF();
-                    }
+                        break;
+                    default:
+                        qWarning() << "Unsupported Routing Protocol for AS" << asNum;
+                        break;
                 }
             }
         }

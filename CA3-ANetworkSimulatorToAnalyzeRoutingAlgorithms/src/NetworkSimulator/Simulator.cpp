@@ -165,8 +165,8 @@ void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>>
 void Simulator::startSimulation()
 {
     bool bgp = true;
-    RoutingProtocol protocolAS1 = RoutingProtocol::OSPF;
-    RoutingProtocol protocolAS2 = RoutingProtocol::OSPF;
+    RoutingProtocol protocolAS1 = RoutingProtocol::RIP;
+    RoutingProtocol protocolAS2 = RoutingProtocol::RIP;
 
     RoutingProtocol protocol = RoutingProtocol::RIP;
     qDebug() << "Simulation initialized. Network topology is set up.";

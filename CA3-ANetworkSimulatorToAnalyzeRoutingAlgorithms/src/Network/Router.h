@@ -64,6 +64,13 @@ struct OSPFLSA {
     qint64 age;
 };
 
+struct Range {
+    int min;
+    int max;
+    int pcMin;
+    int pcMax;
+};
+
 constexpr int HELLO_INTERVAL = 1000;
 
 class Router : public Node, public QEnableSharedFromThis<Router>
@@ -184,6 +191,22 @@ private:
     bool m_isBroken;
     void markPacketAsSeen(const PacketPtr_t  &packet);
     std::vector<QSharedPointer<PC>> m_connectedPCs;
+
+    Range getRange(int ASnum) const {
+        Range range = {0, 0, 0, 0};
+        if (ASnum == 1) {
+            range.min = 1;
+            range.max = 16;
+            range.pcMin = 24;
+            range.pcMax = 31;
+        } else if (ASnum == 2) {
+            range.min = 17;
+            range.max = 23;
+            range.pcMin = 32;
+            range.pcMax = 38;
+        }
+        return range;
+    }
 };
 
 #endif // ROUTER_H

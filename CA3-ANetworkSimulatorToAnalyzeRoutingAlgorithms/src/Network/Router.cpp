@@ -516,24 +516,11 @@ void Router::onTick()
 void Router::sendRIPUpdate() {
     for (auto &port : m_ports) {
         if (m_ASnum != -1) {
-            int rangeMin = 0;
-            int rangeMax = 0;
-            int rangePCMin = 0;
-            int rangePCMax = 0;
-            if (m_ASnum == 1) {
-                rangeMin = 1;
-                rangeMax = 16;
-                rangePCMin = 24;
-                rangePCMax = 31;
-            } else if (m_ASnum == 2) {
-                rangeMin = 17;
-                rangeMax = 23;
-                rangePCMin = 32;
-                rangePCMax = 38;
-            }
-            if (port->getConnectedRouterId() <= rangePCMax && port->getConnectedRouterId() >= rangePCMin) {
+            Range range = getRange(m_ASnum);
+            int connectedRouterId = port->getConnectedRouterId();
+            if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
                 qDebug() << "It's a PC";
-            } else if (port->getConnectedRouterId() > rangeMax || port->getConnectedRouterId() < rangeMin) {
+            } else if (connectedRouterId > range.max || connectedRouterId < range.min) {
                 continue;
             }
         }
@@ -723,33 +710,25 @@ void Router::setupDirectNeighborRoutes(RoutingProtocol protocol, int ASId, bool 
 }
 
 std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters(int ASId, bool bgp) {
-    int rangeMin = 0;
-    int rangeMax = 0;
-    int rangePCMin = 0;
-    int rangePCMax = 0;
+    Range range = {0, 0, 0, 0};
     if (bgp) {
-        if (ASId == 1) {
-            rangeMin = 1;
-            rangeMax = 16;
-            rangePCMin = 24;
-            rangePCMax = 31;
-        } else if (ASId == 2) {
-            rangeMin = 17;
-            rangeMax = 23;
-            rangePCMin = 32;
-            rangePCMax = 38;
-        }
+        range = getRange(ASId);
     }
+
     std::vector<QSharedPointer<Router>> neighbors;
     for (auto &port : m_ports) {
         if (port->isConnected()) {
             int remoteId = port->getConnectedRouterId();
             QSharedPointer<PC> pc = port->getConnectedPC();
-            if (bgp && remoteId <= rangePCMax && remoteId >= rangePCMin) {
-                qDebug() << "It's a PC";
-            } else if (bgp && (remoteId > rangeMax || remoteId < rangeMin)) {
-                continue;
+
+            if (bgp) {
+                if (remoteId <= range.pcMax && remoteId >= range.pcMin) {
+                    qDebug() << "It's a PC";
+                } else if (remoteId > range.max || remoteId < range.min) {
+                    continue;
+                }
             }
+
             if (remoteId > 0 && remoteId != m_id && s_topologyBuilder && remoteId < 24) {
                 QSharedPointer<Router> nbr = nullptr;
                 if (remoteId < 24) {
@@ -792,24 +771,11 @@ void Router::sendOSPFHello()
     for (const auto &port : m_ports)
     {
         if (m_ASnum != -1) {
-            int rangeMin = 0;
-            int rangeMax = 0;
-            int rangePCMin = 0;
-            int rangePCMax = 0;
-            if (m_ASnum == 1) {
-                rangeMin = 1;
-                rangeMax = 16;
-                rangePCMin = 24;
-                rangePCMax = 31;
-            } else if (m_ASnum == 2) {
-                rangeMin = 17;
-                rangeMax = 23;
-                rangePCMin = 32;
-                rangePCMax = 38;
-            }
-            if (port->getConnectedRouterId() <= rangePCMax && port->getConnectedRouterId() >= rangePCMin) {
+            Range range = getRange(m_ASnum);
+            int connectedRouterId = port->getConnectedRouterId();
+            if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
                 qDebug() << "It's a PC";
-            } else if (port->getConnectedRouterId() > rangeMax || port->getConnectedRouterId() < rangeMin) {
+            } else if (connectedRouterId > range.max || connectedRouterId < range.min) {
                 continue;
             }
         }
