@@ -166,7 +166,7 @@ void Simulator::startSimulation()
 {
     bool bgp = true;
     RoutingProtocol protocolAS1 = RoutingProtocol::RIP;
-    RoutingProtocol protocolAS2 = RoutingProtocol::RIP;
+    RoutingProtocol protocolAS2 = RoutingProtocol::OSPF;
 
     RoutingProtocol protocol = RoutingProtocol::RIP;
     qDebug() << "Simulation initialized. Network topology is set up.";
@@ -238,10 +238,10 @@ void Simulator::onConvergenceDetected()
     if (bgp) {
         qDebug() << "BGP is enabled. Delaying execution of convergence actions.";
         m_network->startEBGP();
-        QTimer::singleShot(2000, this, [this]() {
+        QTimer::singleShot(3000, this, [this]() {
             m_network->startIBGP();
         });
-        QTimer::singleShot(3000, this, executeConvergenceActions);
+        QTimer::singleShot(5000, this, executeConvergenceActions);
     }
     else {
         executeConvergenceActions();

@@ -481,10 +481,26 @@ QString Router::findBestRoute(const QString &destinationIP) const
 RouteEntry Router::findBestRoutePath(const QString &destinationIP) const {
     RouteEntry bestRoute;
     int minMetric = RIP_INFINITY;
+    QString bgpDest = " III ";
+
+    if(m_ASnum != -1)
+        bgpDest = (m_ASnum == 1) ? "192.168.200.xx" : "192.168.100.xx";
+
+    QString bgpPrefix;
+    if (bgpDest.endsWith(".xx")) {
+        bgpPrefix = bgpDest.left(bgpDest.length() - 3);
+    } else {
+        bgpPrefix = bgpDest;
+    }
 
     for (const auto &route : m_routingTable) {
         if (destinationIP == route.destination) {
             if (route.metric < minMetric) {
+                minMetric = route.metric;
+                bestRoute = route;
+            }
+        } else if (route.destination == bgpDest) {
+            if (destinationIP.startsWith(bgpPrefix + ".")) {
                 minMetric = route.metric;
                 bestRoute = route;
             }
