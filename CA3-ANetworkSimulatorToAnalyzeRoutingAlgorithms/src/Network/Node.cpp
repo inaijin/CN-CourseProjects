@@ -1,10 +1,13 @@
 #include "Node.h"
+#include "../IP/IP.h"
 
 int Node::s_globalNodeId = 0;
 
 Node::Node(int id, const QString &ipAddress, NodeType type, QObject *parent)
-    : QObject(parent), m_id(id), m_ipAddress(ipAddress), m_type(type)
-{ }
+    : QObject(parent), m_id(id), m_ipAddress(QSharedPointer<IP>::create(ipAddress)), m_type(type)
+{
+
+}
 
 Node::~Node() {}
 
@@ -22,7 +25,7 @@ int Node::getId() const
 QString Node::getIPAddress() const
 {
     QMutexLocker locker(&m_mutex);
-    return m_ipAddress;
+    return m_ipAddress->getIp();
 }
 
 NodeType Node::getNodeType() const

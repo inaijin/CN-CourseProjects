@@ -40,6 +40,9 @@ private:
     QSharedPointer<DataGenerator> m_dataGenerator;
     QSharedPointer<MetricsCollector> m_metricsCollector;
     IdAssignment m_idAssignment;
+    std::chrono::milliseconds m_cycleDuration;
+
+    std::chrono::milliseconds parseDuration(const QString &durationStr);
 
     void preAssignIDs();
 };

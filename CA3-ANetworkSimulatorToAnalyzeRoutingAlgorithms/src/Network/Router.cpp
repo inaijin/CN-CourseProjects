@@ -4,6 +4,7 @@
 #include "../MetricsCollector/MetricsCollector.h"
 #include "../Globals/RouterRegistry.h"
 #include "../Network/PC.h"
+#include "../MACAddress/MACADdressGenerator.h"
 #include <QDebug>
 #include <QThread>
 
@@ -13,6 +14,8 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent,
     m_hasValidIP(false),
     m_lsdb(),
     m_lsaSequenceNumber(0),
+    m_bufferSize(10),
+    m_bufferRetentionTime(1000),
     m_lastRIPUpdateTime(0),
     m_currentTime(0),
     m_isBroken(isBroken)
@@ -38,6 +41,13 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent,
         });
     }
 
+    m_bufferTimer = new QTimer(this);
+    connect(m_bufferTimer, &QTimer::timeout, this, &Router::processBuffer);
+    m_bufferTimer->start(1000);
+
+    QSharedPointer<MACAddressGenerator> generator = QSharedPointer<MACAddressGenerator>::create();
+    m_macAddress = generator->generate();
+
     qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress << ", Ports =" << m_portCount;
 }
 
@@ -52,7 +62,7 @@ void Router::initializePorts()
     {
         auto port = PortPtr_t::create(this);
         port->setPortNumber(static_cast<uint8_t>(i + 1));
-        port->setRouterIP(m_ipAddress);
+        port->setRouterIP(m_ipAddress->getIp());
         m_ports.push_back(port);
 
         QSharedPointer<PC> connectedPC = port->getConnectedPC();
@@ -119,6 +129,50 @@ void Router::startTimers()
     // timer->start(HELLO_INTERVAL);
 }
 
+bool Router::enqueuePacketToBuffer(const PacketPtr_t &packet) {
+    QMutexLocker locker(&m_bufferMutex);
+    if (m_buffer.size() >= m_bufferSize) {
+        // qWarning() << "Router" << m_id << ": Buffer full. Dropping packet with payload:" << packet->getPayload();
+        if (m_metricsCollector) {
+            m_metricsCollector->recordPacketDropped();
+        }
+        return false;
+    }
+    BufferedPacket bp;
+    bp.packet = packet;
+    bp.enqueueTime = QDateTime::currentMSecsSinceEpoch();
+    m_buffer.enqueue(bp);
+    // qDebug() << "Router" << m_id << ": Packet enqueued. Current buffer size:" << m_buffer.size();
+    return true;
+}
+
+PacketPtr_t Router::dequeuePacketFromBuffer() {
+    QMutexLocker locker(&m_bufferMutex);
+    if (m_buffer.isEmpty()) {
+        return nullptr;
+    }
+    BufferedPacket bp = m_buffer.dequeue();
+    // qDebug() << "Router" << m_id << ": Packet dequeued. Current buffer size:" << m_buffer.size();
+    return bp.packet;
+}
+
+void Router::processBuffer() {
+    QMutexLocker locker(&m_bufferMutex);
+    qint64 currentTime = QDateTime::currentMSecsSinceEpoch();
+    while (!m_buffer.isEmpty()) {
+        BufferedPacket bp = m_buffer.head();
+        if ((currentTime - bp.enqueueTime) > m_bufferRetentionTime) {
+            m_buffer.dequeue();
+            // qWarning() << "Router" << m_id << ": Packet expired and removed from buffer with payload:" << bp.packet->getPayload();
+            if (m_metricsCollector) {
+                m_metricsCollector->recordPacketDropped();
+            }
+        } else {
+            break;
+        }
+    }
+}
+
 void Router::forwardPacket(const PacketPtr_t &packet) {
     if (!packet) return;
     if (packet->getTTL() <= 0) {
@@ -142,7 +196,7 @@ void Router::addConnectedPC(QSharedPointer<PC> pc, PortPtr_t port)
     QString pcIP = pc->getIpAddress();
     qDebug() << "Router" << m_id << "adding route for connected PC:" << pcIP;
 
-    addRoute(pcIP, "255.255.255.255", m_ipAddress, 1, RoutingProtocol::RIP, port);
+    addRoute(pcIP, "255.255.255.255", m_ipAddress->getIp(), 1, RoutingProtocol::RIP, port);
 }
 
 void Router::logPortStatuses() const
@@ -182,7 +236,7 @@ void Router::processDHCPResponse(const PacketPtr_t &packet)
                 }
                 qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
                 m_assignedIP = offeredIP;
-                m_ipAddress = m_assignedIP;
+                m_ipAddress->setIp(m_assignedIP);
                 m_hasValidIP = true;
                 qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
 
@@ -239,6 +293,8 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
 
     if (!packet) return;
 
+    bool enqueued = enqueuePacketToBuffer(packet);
+
     QString payload = packet->getPayload();
     qDebug() << "Router" << m_id << "processing packet with payload:" << payload;
 
@@ -285,7 +341,7 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
                 }
                 qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
                 m_assignedIP = offeredIP;
-                m_ipAddress = m_assignedIP;
+                m_ipAddress->setIp(m_assignedIP);
                 m_hasValidIP = true;
                 qDebug() << "Router" << m_id << "received and assigned IP:" << m_assignedIP;
 
@@ -331,7 +387,7 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
             QString destinationIP = parts.at(1);
             QString actualPayload = parts.at(2);
 
-            if (destinationIP == m_ipAddress) {
+            if (destinationIP == m_ipAddress->getIp()) {
                 qDebug() << "Router" << m_id << "received packet intended for itself.";
 
                 if (m_metricsCollector) {
@@ -373,10 +429,10 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
                     return;
                 }
 
-                packet->addToPath(m_ipAddress);
+                packet->addToPath(m_ipAddress->getIp());
 
                 if (m_metricsCollector) {
-                    m_metricsCollector->recordRouterUsage(m_ipAddress);
+                    m_metricsCollector->recordRouterUsage(m_ipAddress->getIp());
                 }
 
                 PortPtr_t outPort = bestRoute.learnedFromPort;
@@ -408,6 +464,9 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
             m_metricsCollector->recordPacketDropped();
         }
     }
+
+    if (enqueued)
+        PacketPtr_t nextPacket = dequeuePacketFromBuffer();
 }
 
 void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol, PortPtr_t learnedFromPort, bool vip) {
@@ -571,9 +630,9 @@ void Router::sendRIPUpdate() {
             routeCount++;
         }
 
-        payload += m_ipAddress;
+        payload += m_ipAddress->getIp();
         if (routeCount == 0) {
-            payload = "RIP_UPDATE:" + m_ipAddress;
+            payload = "RIP_UPDATE:" + m_ipAddress->getIp();
         }
 
         auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
@@ -817,7 +876,7 @@ void Router::sendOSPFHello()
 
         if (port->getConnectedRouterIP().isEmpty()) continue;
 
-        QString helloPayload = "OSPF_HELLO:" + m_ipAddress;
+        QString helloPayload = "OSPF_HELLO:" + m_ipAddress->getIp();
         auto helloPacket = QSharedPointer<Packet>::create(PacketType::OSPFHello, helloPayload, 10);
 
         port->sendPacket(helloPacket);
@@ -864,7 +923,7 @@ void Router::sendLSA()
 {
     qDebug() << "Router" << m_id << "sending LSA.";
 
-    QString lsaPayload = "LSA:" + m_ipAddress + ":";
+    QString lsaPayload = "LSA:" + m_ipAddress->getIp() + ":";
 
     for (auto &neighbor : m_neighbors)
     {
@@ -880,12 +939,12 @@ void Router::sendLSA()
     lsaPacket->setSequenceNumber(m_lsaSequenceNumber);
 
     OSPFLSA lsa;
-    lsa.originRouterIP = m_ipAddress;
+    lsa.originRouterIP = m_ipAddress->getIp();
     lsa.links = QVector<QString>::fromList(m_neighbors.keys());
     lsa.sequenceNumber = m_lsaSequenceNumber;
     lsa.age = 0;
 
-    m_lsdb.insert(m_ipAddress, lsa);
+    m_lsdb.insert(m_ipAddress->getIp(), lsa);
 
     for (const auto &port : m_ports)
     {
@@ -962,7 +1021,7 @@ void Router::runDijkstra()
         unvisited.insert(lsa.originRouterIP);
     }
 
-    m_distance[m_ipAddress] = 0;
+    m_distance[m_ipAddress->getIp()] = 0;
 
     while (!unvisited.isEmpty())
     {
@@ -1021,7 +1080,7 @@ void Router::updateRoutingTable()
     {
         const QString &dest = it.key();
 
-        if (dest == m_ipAddress)
+        if (dest == m_ipAddress->getIp())
             continue; // Skip self
 
         QString nextHop = "";
@@ -1030,7 +1089,7 @@ void Router::updateRoutingTable()
         // Traverse the path to find the immediate next hop
         while (m_previous.contains(current))
         {
-            if (m_previous[current] == m_ipAddress)
+            if (m_previous[current] == m_ipAddress->getIp())
             {
                 nextHop = current;
                 break;
@@ -1168,9 +1227,9 @@ void Router::startEBGP() {
                         routeCount++;
                     }
 
-                    payload += m_ipAddress;
+                    payload += m_ipAddress->getIp();
                     if (routeCount == 0) {
-                        payload = "EBGP_UPDATE:" + m_ipAddress;
+                        payload = "EBGP_UPDATE:" + m_ipAddress->getIp();
                     }
 
                     auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
@@ -1203,9 +1262,9 @@ void Router::startIBGP() {
                     payload += destination + "," + "255.255.255.255" + "," + QString::number(1) + "#";
                     routeCount++;
 
-                    payload += m_ipAddress;
+                    payload += m_ipAddress->getIp();
                     if (routeCount == 0) {
-                        payload = "IBGP_UPDATE:" + m_ipAddress;
+                        payload = "IBGP_UPDATE:" + m_ipAddress->getIp();
                     }
 
                     auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
@@ -1358,9 +1417,9 @@ void Router::forwardIBGP() {
                         }
                     }
 
-                    payload += m_ipAddress;
+                    payload += m_ipAddress->getIp();
                     if (routeCount == 0) {
-                        payload = "IBGP_UPDATE:" + m_ipAddress;
+                        payload = "IBGP_UPDATE:" + m_ipAddress->getIp();
                     }
 
                     auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);

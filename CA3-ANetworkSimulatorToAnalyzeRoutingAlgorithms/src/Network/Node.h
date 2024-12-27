@@ -4,6 +4,8 @@
 #include <QObject>
 #include <QString>
 #include <QMutex>
+#include "../MACAddress/MACAddress.h"
+#include "../IP/IP.h"
 
 enum class NodeType
 {
@@ -22,13 +24,16 @@ public:
     int getId() const;
     QString getIPAddress() const;
     NodeType getNodeType() const;
+    void setMacAddress(MACAddress macAddr) { m_macAddress = macAddr; }
 
     static int getNextGlobalId();
 
 protected:
     int m_id;
-    QString m_ipAddress;
+    QSharedPointer<IP> m_ipAddress;
     NodeType m_type;
+    MACAddress m_macAddress;
+
     mutable QMutex m_mutex;
 
     static int s_globalNodeId;

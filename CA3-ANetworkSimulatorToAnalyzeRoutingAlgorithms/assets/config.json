@@ -1,6 +1,6 @@
 {
     "simulation_duration": "60s",
-    "cycle_duration": "10ms",
+    "cycle_duration": "100ms",
     "TTL": 10,
     "packets_per_simulation": 500,
     "statistical_distribution": "Poisson | Pareto",

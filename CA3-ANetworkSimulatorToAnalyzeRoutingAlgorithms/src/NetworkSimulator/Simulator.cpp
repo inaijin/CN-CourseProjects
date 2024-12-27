@@ -7,6 +7,7 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QThread>
+#include <QRegularExpression>
 
 Simulator::Simulator(QObject *parent)
     : QObject(parent)
@@ -37,9 +38,39 @@ bool Simulator::loadConfig(const QString &configFilePath)
 
     m_config = doc.object();
 
+    QString cycleDurationStr = m_config.value("cycle_duration").toString("100ms");
+    m_cycleDuration = parseDuration(cycleDurationStr);
+
     preAssignIDs();
 
     return true;
+}
+
+std::chrono::milliseconds Simulator::parseDuration(const QString &durationStr)
+{
+    static const QRegularExpression regex(R"((\d+)(ms|s|min|h))");
+    QRegularExpressionMatch match = regex.match(durationStr.trimmed());
+
+    if (!match.hasMatch()) {
+        qWarning() << "Invalid duration format:" << durationStr << ". Using default 100ms.";
+        return std::chrono::milliseconds(100);
+    }
+
+    int value = match.captured(1).toInt();
+    QString unit = match.captured(2);
+
+    if (unit == "ms") {
+        return std::chrono::milliseconds(value);
+    } else if (unit == "s") {
+        return std::chrono::milliseconds(value * 1000);
+    } else if (unit == "min") {
+        return std::chrono::milliseconds(value * 60 * 1000);
+    } else if (unit == "h") {
+        return std::chrono::milliseconds(value * 60 * 60 * 1000);
+    } else {
+        qWarning() << "Unknown time unit in duration:" << unit << ". Using default 100ms.";
+        return std::chrono::milliseconds(100);
+    }
 }
 
 void Simulator::preAssignIDs()
@@ -194,7 +225,7 @@ void Simulator::startSimulation()
     }
 
     // Start the event coordinator clock so RIP ticks can begin
-    EventsCoordinator::instance()->startClock(std::chrono::milliseconds(100));
+    EventsCoordinator::instance()->startClock(m_cycleDuration);
 
     // Enable RIP on all routers
     if (m_network) {

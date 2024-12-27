@@ -2,17 +2,21 @@
 #include <QDebug>
 #include <QThread>
 #include "../Packet/Packet.h"
+#include "../MACAddress/MACADdressGenerator.h"
 
 PC::PC(int id, const QString &ipAddress, QObject *parent)
     : Node(id, ipAddress, NodeType::PC, parent)
 {
     m_port = PortPtr_t::create(this);
     m_port->setPortNumber(1);
-    m_port->setRouterIP(m_ipAddress);
+    m_port->setRouterIP(m_ipAddress->getIp());
 
     connect(m_port.data(), &Port::packetReceived, this, &PC::processPacket);
 
-    qDebug() << "PC initialized: ID =" << m_id << ", IP =" << m_ipAddress;
+    QSharedPointer<MACAddressGenerator> generator = QSharedPointer<MACAddressGenerator>::create();
+    m_macAddress = generator->generate();
+
+    qDebug() << "PC initialized: ID =" << m_id << ", IP =" << m_ipAddress->getIp();
 }
 
 PC::~PC()
@@ -27,7 +31,7 @@ PortPtr_t PC::getPort()
 
 void PC::initialize()
 {
-    qDebug() << "PC initialized: ID =" << m_id << ", IP =" << m_ipAddress
+    qDebug() << "PC initialized: ID =" << m_id << ", IP =" << m_ipAddress->getIp()
              << ", running in thread" << (quintptr)QThread::currentThreadId();
 }
 
@@ -62,7 +66,7 @@ void PC::processPacket(const PacketPtr_t &packet)
             QString destinationIP = parts.at(1);
             QString actualPayload = parts.at(2);
 
-            if (destinationIP == m_ipAddress) {
+            if (destinationIP == m_ipAddress->getIp()) {
                 qDebug() << "PC" << m_id << "received data packet intended for itself.";
 
                 // Record packet reception metrics
@@ -97,7 +101,7 @@ void PC::processPacket(const PacketPtr_t &packet)
 
             if (clientId == m_id) {
                 qDebug() << "PC" << m_id << "received DHCP offer:" << offeredIP << "Assigning IP.";
-                m_ipAddress = offeredIP;
+                m_ipAddress->setIp(offeredIP);
                 qDebug() << "PC" << m_id << "assigned IP:" << m_ipAddress;
             }
         } else {
@@ -109,7 +113,7 @@ void PC::processPacket(const PacketPtr_t &packet)
 }
 
 QString PC::getIpAddress() const {
-    return m_ipAddress;
+    return m_ipAddress->getIp();
 }
 
 void PC::setMetricsCollector(QSharedPointer<MetricsCollector> collector) {

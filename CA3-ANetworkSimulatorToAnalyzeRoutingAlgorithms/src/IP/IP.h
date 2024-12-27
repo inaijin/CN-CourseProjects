@@ -11,12 +11,17 @@ class IP : public QObject
 
 public:
     explicit IP(const QSharedPointer<AbstractIPHeader> &header, QObject *parent = nullptr);
+    explicit IP(const QString &ip, QObject *parent = nullptr);
     ~IP();
 
     QSharedPointer<AbstractIPHeader> getHeader() const;
 
+    void setIp(QString IP) { m_ip = IP; }
+    QString getIp() const { return m_ip; }
+
 private:
     QSharedPointer<AbstractIPHeader> m_header;
+    QString m_ip;
 };
 
 #endif // IP_H

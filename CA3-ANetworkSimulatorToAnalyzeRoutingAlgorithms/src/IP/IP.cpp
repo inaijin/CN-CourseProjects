@@ -6,6 +6,12 @@ IP::IP(const QSharedPointer<AbstractIPHeader> &header, QObject *parent) :
 {
 }
 
+IP::IP(const QString &ip, QObject *parent) :
+    QObject(parent),
+    m_ip(ip)
+{
+}
+
 IP::~IP() {}
 
 QSharedPointer<AbstractIPHeader> IP::getHeader() const

@@ -10,11 +10,19 @@
 #include <QSet>
 #include <QDateTime>
 #include <QTimer>
+#include <QQueue>
+#include <QMutex>
+#include <QMutexLocker>
 
 class UDP;
 class TopologyBuilder;
 class MetricsCollector;
 class PC;
+
+struct BufferedPacket {
+    PacketPtr_t packet;
+    qint64 enqueueTime;
+};
 
 enum class RoutingProtocol {
     RIP,
@@ -91,7 +99,7 @@ public:
     void forwardPacket(const PacketPtr_t  &packet);
     void logPortStatuses() const;
     void processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingPort);
-    void setIP(QString IP) { m_ipAddress = IP; }
+    void setIP(QString IP) { m_ipAddress->setIp(IP); }
     QString getAssignedIP();
 
     void setDHCPServer(QSharedPointer<DHCPServer> dhcpServer);
@@ -187,6 +195,18 @@ private:
     // Dijkstra algorithm helpers
     QMap<QString, int> m_distance;
     QMap<QString, QString> m_previous;
+
+    // Buffer-related members
+    QQueue<BufferedPacket> m_buffer;          // Shared buffer queue
+    int m_bufferSize;                         // Maximum buffer size
+    QMutex m_bufferMutex;                     // Mutex for thread safety
+    QTimer *m_bufferTimer;                    // Timer for data retention management
+    int m_bufferRetentionTime;                // Retention time in milliseconds
+
+    // Buffer management methods
+    bool enqueuePacketToBuffer(const PacketPtr_t &packet);
+    PacketPtr_t dequeuePacketFromBuffer();
+    void processBuffer();
 
     const int OSPF_HELLO_INTERVAL = 10;
     const int OSPF_LSA_INTERVAL = 30;
