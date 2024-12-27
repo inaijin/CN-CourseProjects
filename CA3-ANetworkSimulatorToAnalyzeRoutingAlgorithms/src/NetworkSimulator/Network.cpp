@@ -229,3 +229,13 @@ void Network::finalizeRoutesAfterDHCP(RoutingProtocol protocol, bool bgp, Routin
 std::vector<QSharedPointer<AutonomousSystem>> Network::getAutonomousSystems() const {
     return m_autonomousSystems;
 }
+
+void Network::startEBGP() {
+    for (auto &asInstance : m_autonomousSystems) {
+        const auto &routers = asInstance->getRouters();
+        for (auto &router : routers) {
+            if(router->isRouterBorder())
+                router->startEBGP();
+        }
+    }
+}

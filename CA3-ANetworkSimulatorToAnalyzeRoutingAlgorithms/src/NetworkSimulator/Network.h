@@ -29,6 +29,7 @@ public:
     void startBGP(RoutingProtocol protocolAS1, RoutingProtocol protocolAS2);
     void printAllRoutingTables();
     void setupDirectRoutesForRouters(RoutingProtocol protocol);
+    void startEBGP();
 
     void finalizeRoutesAfterDHCP(RoutingProtocol protocol, bool bgp, RoutingProtocol protocolAS1, RoutingProtocol protocolAS2);
     std::vector<QSharedPointer<Router>> getAllRouters() const;

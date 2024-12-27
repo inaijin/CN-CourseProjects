@@ -305,6 +305,10 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
     else if (payload.startsWith("RIP_UPDATE")) {
         processRIPUpdate(packet);
     }
+    // Handle EBGP Updates
+    else if (payload.startsWith("EBGP_UPDATE")) {
+        processEBGPUpdate(packet);
+    }
     // Handle OSPF Updates
     else if (packet->getType() == PacketType::OSPFHello) {
          processOSPFHello(packet);
@@ -485,6 +489,7 @@ void Router::printRoutingTable() const
     for (const auto &entry : m_routingTable) {
         QString protoStr = (entry.protocol == RoutingProtocol::RIP) ? "RIP" : "OSPF";
         protoStr = (entry.protocol == RoutingProtocol::ITSELF) ? " " : protoStr;
+        protoStr = (entry.protocol == RoutingProtocol::EBGP) ? "EBGP" : protoStr;
         qDebug() << "Dest:" << entry.destination
                  << "Mask:" << entry.mask
                  << "NextHop:" << entry.nextHop
@@ -1091,5 +1096,114 @@ void Router::handleLSAExpiration()
         m_lsdb.remove(originIP);
         qDebug() << "Router" << m_id << "removed expired LSA from" << originIP;
         runDijkstra();
+    }
+}
+
+bool Router::isRouterBorder() {
+    bool isBorder = false;
+    for (auto &port : m_ports) {
+        if (m_ASnum != -1) {
+            Range range = getRange(m_ASnum);
+            int connectedRouterId = port->getConnectedRouterId();
+            if (connectedRouterId != -1) {
+                if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
+                    qDebug() << "It's a PC";
+                } else if (connectedRouterId > range.max || connectedRouterId < range.min) {
+                    isBorder = true;
+                }
+            }
+        }
+    }
+    return isBorder;
+}
+
+void Router::startEBGP() {
+    qDebug() << "STARTEGP STARTED";
+    for (auto &port : m_ports) {
+        if (m_ASnum != -1) {
+            Range range = getRange(m_ASnum);
+            int connectedRouterId = port->getConnectedRouterId();
+            if (connectedRouterId != -1) {
+                if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
+                    qDebug() << "It's a PC";
+                } else if (connectedRouterId > range.max || connectedRouterId < range.min) {
+                    if (!port->isConnected()) continue;
+
+                    QString payload = "EBGP_UPDATE:";
+                    int routeCount = 0;
+                    for (const auto &entry : m_routingTable) {
+                        int advertisedMetric = entry.metric;
+                        if (entry.learnedFromPort == port && !entry.isDirect) {
+                            advertisedMetric = RIP_INFINITY;
+                        }
+                        payload += entry.destination + "," + entry.mask + "," + QString::number(advertisedMetric) + "#";
+                        routeCount++;
+                    }
+
+                    payload += m_ipAddress;
+                    if (routeCount == 0) {
+                        payload = "EBGP_UPDATE:" + m_ipAddress;
+                    }
+
+                    auto updatePacket = QSharedPointer<Packet>::create(PacketType::Control, payload);
+                    updatePacket->setTTL(10);
+                    port->sendPacket(updatePacket);
+                    qDebug() << "Router" << m_id << "sent EBGP update via Port" << port->getPortNumber() << "with" << routeCount << "routes";
+                }
+            }
+        }
+    }
+}
+
+void Router::processEBGPUpdate(const PacketPtr_t &packet)
+{
+    if (!packet) return;
+
+    QString payload = packet->getPayload();
+
+    auto parts = payload.split(":");
+    if (parts.size() < 2) {
+        qWarning() << "Router" << m_id << "received malformed EBGP update:" << payload;
+        return;
+    }
+
+    QString data = parts[1];
+    auto routesAndSender = data.split("#");
+    if (routesAndSender.isEmpty()) return;
+
+    QString senderIP = routesAndSender.last();
+    routesAndSender.removeLast();
+
+    // Determine incoming port
+    Port *incomingPort = qobject_cast<Port*>(sender());
+    PortPtr_t incomingPortPtr;
+    if (incomingPort) {
+        for (auto &p : m_ports) {
+            if (p.data() == incomingPort) {
+                incomingPortPtr = p;
+                break;
+            }
+        }
+    }
+
+    for (const auto &routeStr : routesAndSender) {
+        if (routeStr.isEmpty()) continue;
+        auto fields = routeStr.split(",");
+        if (fields.size() < 3) {
+            qWarning() << "Router" << m_id << "EBGP route entry malformed:" << routeStr;
+            continue;
+        }
+
+        QString dest = fields[0];
+        QString mask = fields[1];
+        int recvMetric = fields[2].toInt();
+        int newMetric = recvMetric + 1;
+
+        if (newMetric >= RIP_INFINITY) {
+            qDebug() << "Router" << m_id << "received unreachable route for" << dest << "skipping.";
+            continue;
+        }
+
+        addRoute(dest, mask, senderIP, newMetric, RoutingProtocol::EBGP, incomingPortPtr);
     }
 }

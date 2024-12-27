@@ -210,28 +210,40 @@ void Simulator::startSimulation()
 
 void Simulator::onConvergenceDetected()
 {
-    qDebug() << "Convergence detected. Printing all routing tables:";
-    if (m_network) {
-        m_network->printAllRoutingTables();
-    }
+    bool bgp = true;
+    qDebug() << "Convergence detected. Preparing to print all routing tables:";
 
-    qDebug() << "Proceeding with further steps.";
-
-    auto eventsCoordinator = EventsCoordinator::instance();
-    eventsCoordinator->quit();
-    eventsCoordinator->wait();
-
-    qDebug() << "EventsCoordinator stopped. Ready for next actions.";
-
-    // Now we can proceed with sending packets or other operations
-    initiatePacketSending();
-
-    // Print metrics after some delay to allow packet processing
-    QTimer::singleShot(5000, this, [this]() {
-        if (m_metricsCollector) {
-            m_metricsCollector->printStatistics();
+    auto executeConvergenceActions = [this]() {
+        if (m_network) {
+            m_network->printAllRoutingTables();
         }
-    });
+
+        qDebug() << "Proceeding with further steps.";
+
+        auto eventsCoordinator = EventsCoordinator::instance();
+        eventsCoordinator->quit();
+        eventsCoordinator->wait();
+
+        qDebug() << "EventsCoordinator stopped. Ready for next actions.";
+
+        initiatePacketSending();
+
+        QTimer::singleShot(5000, this, [this]() {
+            if (m_metricsCollector) {
+                m_metricsCollector->printStatistics();
+            }
+        });
+    };
+
+    if (bgp) {
+        qDebug() << "BGP is enabled. Delaying execution of convergence actions.";
+        m_network->startEBGP();
+        QTimer::singleShot(3000, this, executeConvergenceActions);
+    }
+    else {
+        executeConvergenceActions();
+        qDebug() << "BGP is not enabled. Executing convergence actions immediately.";
+    }
 }
 
 void Simulator::initiatePacketSending()

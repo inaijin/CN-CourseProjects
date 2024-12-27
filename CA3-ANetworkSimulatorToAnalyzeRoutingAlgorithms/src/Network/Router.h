@@ -19,6 +19,7 @@ class PC;
 enum class RoutingProtocol {
     RIP,
     OSPF,
+    EBGP,
     ITSELF
 };
 
@@ -109,6 +110,8 @@ public:
 
     void startTimers();
     void setASNum(int num) { m_ASnum = num; }
+    bool isRouterBorder();
+    void startEBGP();
 
 signals:
     void routingTableUpdated(int routerId);
@@ -132,6 +135,7 @@ public Q_SLOTS:
     void onTick();
     void sendRIPUpdate();
     void processRIPUpdate(const PacketPtr_t  &packet);
+    void processEBGPUpdate(const PacketPtr_t  &packet);
     void handleRouteTimeouts();
 
     // OSPF-specific methods
