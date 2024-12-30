@@ -292,8 +292,10 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
     }
 
     if (!packet) return;
+    packet->increamentTotalCycle();
 
     bool enqueued = enqueuePacketToBuffer(packet);
+    packet->increamentWaitCycle();
 
     QString payload = packet->getPayload();
     qDebug() << "Router" << m_id << "processing packet with payload:" << payload;
@@ -415,7 +417,11 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
                         m_metricsCollector->increamentHops();
                     }
 
+                    packet->addToPathTaken(bestRoute.destination);
                     qDebug() << "PC" << destinationIP << "processing payload:" << actualPayload;
+                    qDebug() << "Packet with source" << packet->getPath()[0] << "with destination" << packet->getPath()[1]
+                             << "with total wait cycle" << packet->getWaitingCycle() << "and it's total cycle is"
+                             << packet->getTotalCycle() << "and it's path taken is" << packet->getPathTaken();
 
                     return;
                 }
@@ -440,6 +446,7 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
                     if (m_metricsCollector) {
                         m_metricsCollector->increamentHops();
                     }
+                    packet->addToPathTaken(bestRoute.nextHop);
                     outPort->sendPacket(packet);
                     qDebug() << "Router" << m_id << "forwarded packet to next hop via Port" << outPort->getPortNumber();
                 }

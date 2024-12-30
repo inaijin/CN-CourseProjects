@@ -42,6 +42,14 @@ public:
     void markDropped(bool isDropped);
     bool isDropped() const;
 
+    int getWaitingCycle() { return m_waitingCycle; }
+    int getTotalCycle() { return m_totalCycle; }
+    QString getPathTaken() { return m_pathTaken; }
+
+    void increamentTotalCycle() { m_totalCycle++; }
+    void increamentWaitCycle() { m_waitingCycle++; }
+    void addToPathTaken(QString path) { m_pathTaken.append("-->" + path); }
+
     PacketType getType() const;
 
     // TTL methods
@@ -73,6 +81,9 @@ private:
     TCPHeader m_tcpHeader;
     int m_ttl;
     qint64 m_id;
+    int m_waitingCycle;
+    int m_totalCycle;
+    QString m_pathTaken;
 };
 
 typedef QSharedPointer<Packet> PacketPtr_t;

@@ -72,6 +72,7 @@ void DataGenerator::generatePackets() {
 
             QSharedPointer<Packet> packet = QSharedPointer<Packet>::create(PacketType::Data, payload, 64);
             packet->addToPath(sender->getIpAddress());
+            packet->addToPathTaken(sender->getIpAddress());
             packet->addToPath(destination);
             packets.push_back(packet);
 
