@@ -18,10 +18,16 @@ public:
 
     void setIp(QString IP) { m_ip = IP; }
     QString getIp() const { return m_ip; }
+    void setIPv6() { m_isIPv6 = true; }
+
+    bool convertToIPv6();
+    bool convertToIPv4();
 
 private:
     QSharedPointer<AbstractIPHeader> m_header;
     QString m_ip;
+    bool m_isIPv6;
+
 };
 
 #endif // IP_H

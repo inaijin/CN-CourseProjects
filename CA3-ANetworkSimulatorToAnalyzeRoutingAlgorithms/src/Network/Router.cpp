@@ -48,7 +48,7 @@ Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent,
     QSharedPointer<MACAddressGenerator> generator = QSharedPointer<MACAddressGenerator>::create();
     m_macAddress = generator->generate();
 
-    qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress << ", Ports =" << m_portCount;
+    qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress->getIp() << ", Ports =" << m_portCount;
 }
 
 Router::~Router()
@@ -103,7 +103,7 @@ void Router::setMetricsCollector(QSharedPointer<MetricsCollector> collector) {
 
 void Router::initialize()
 {
-    qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress
+    qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress->getIp()
              << ", running in thread" << (quintptr)QThread::currentThreadId();
 
     startTimers();

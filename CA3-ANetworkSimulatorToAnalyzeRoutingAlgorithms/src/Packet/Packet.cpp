@@ -14,6 +14,7 @@ Packet::Packet(PacketType type, const QString &payload)
     m_ttl(10), // Default TTL for all packets
     m_id(++s_nextId)
 {
+    m_isWantedIpV6 = false;
 }
 
 Packet::Packet(PacketType type, const QString &payload, int ttl)
@@ -28,6 +29,7 @@ Packet::Packet(PacketType type, const QString &payload, int ttl)
     m_ttl(ttl),
     m_id(++s_nextId)
 {
+    m_isWantedIpV6 = false;
 }
 
 void Packet::setPayload(const QString &payload) {

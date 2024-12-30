@@ -50,6 +50,7 @@ public:
     void increamentWaitCycle() { m_waitingCycle++; }
     void addToPathTaken(QString path) { m_pathTaken.append("-->" + path); }
 
+    bool isIPv6() { return m_isWantedIpV6; }
     PacketType getType() const;
 
     // TTL methods
@@ -84,6 +85,8 @@ private:
     int m_waitingCycle;
     int m_totalCycle;
     QString m_pathTaken;
+
+    bool m_isWantedIpV6;
 };
 
 typedef QSharedPointer<Packet> PacketPtr_t;

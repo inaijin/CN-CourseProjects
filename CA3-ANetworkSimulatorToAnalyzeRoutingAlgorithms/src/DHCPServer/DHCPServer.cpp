@@ -1,4 +1,6 @@
 #include "DHCPServer.h"
+#include "../IP/IP.h"
+#include "../IP/IPHeader.h"
 #include "../Network/Router.h"
 #include <QDebug>
 
@@ -71,6 +73,44 @@ void DHCPServer::assignIP(const PacketPtr_t &packet) {
     }
 
     QString ipAddress = QString("%1%2").arg(m_ipPrefix).arg(clientId);
+
+    if (packet->isIPv6()) {
+        QString assignedIpAddress = ipAddress;
+        qDebug() << "Packet indicates IPv6. Converting assigned IPv4 address to IPv6.";
+
+        QSharedPointer<IPv4Header> ipv4Header = QSharedPointer<IPv4Header>::create();
+        ipv4Header->setSourceAddress(ipAddress);
+        ipv4Header->setDestinationAddress("::");
+
+        IP ip{ QSharedPointer<AbstractIPHeader>(ipv4Header), nullptr };
+
+        if (!ip.convertToIPv6()) {
+            qWarning() << "Failed to convert IPv4 address to IPv6 for client" << clientId;
+            return;
+        }
+
+        assignedIpAddress = ip.getIp();
+
+        qDebug() << "Converted IPv6 Address:" << assignedIpAddress;
+
+        for (const auto &lease : m_leases) {
+            if (lease.ipAddress == assignedIpAddress) {
+                qWarning() << "IPv6 address" << assignedIpAddress << "is already assigned. Cannot assign to client" << clientId;
+                return;
+            }
+        }
+
+        DHCPLease newLease;
+        newLease.ipAddress = assignedIpAddress;
+        newLease.clientId = clientId;
+
+        m_leases.append(newLease);
+
+        qDebug() << "New IP assigned:" << newLease.ipAddress << "for client" << clientId;
+
+        sendOffer(newLease);
+        return;
+    }
 
     for (const auto &lease : m_leases) {
         if (lease.ipAddress == ipAddress) {
