@@ -277,7 +277,113 @@ The second phase focuses on implementing the core components required to establi
 - Preliminary DHCP functionality is implemented, enabling IP assignment.
 - The system is ready to simulate basic packet exchanges and prepare for Phase 3.
 
+## **Phase 3: Routing Algorithm Implementation and Simulation**
+
+### **Objective**
+In Phase 3, we focused on implementing and integrating dynamic routing algorithms within the network simulator. The primary goals of this phase were to:
+- **Implement Routing Protocols**: Integrate both **Routing Information Protocol (RIP)** and **Open Shortest Path First (OSPF)** within the router components.
+- **Simulate Network Traffic**: Enable routers to exchange routing information and handle data packet transmissions.
+- **Analyze Routing Behavior**: Observe and evaluate the performance and behavior of RIP and OSPF under various network conditions, including link failures and congestion.
+- **Enhance Metrics Collection**: Extend the metrics collection capabilities to capture routing-specific data such as hop counts and routing table updates.
+
+### **Implementation Details**
+
+#### **1. Routing Protocols Integration**
+
+##### **a. Routing Information Protocol (RIP)**
+- **Purpose**: Implemented RIP as a distance-vector routing protocol to enable routers to exchange routing information periodically.
+- **Key Features**:
+  - **Periodic Updates**: Routers send RIP updates at regular intervals (`RIP_UPDATE_INTERVAL`).
+  - **Route Management**: Handles route additions, updates, and invalidations based on received RIP updates.
+  - **Loop Prevention**: Utilized mechanisms like split horizon and hold-down timers to prevent routing loops.
+
+##### **b. Open Shortest Path First (OSPF)**
+- **Purpose**: Integrated OSPF as a link-state routing protocol for more efficient and scalable route management.
+- **Key Features**:
+  - **Neighbor Discovery**: Implemented OSPF Hello packets to discover and maintain neighbor relationships.
+  - **Link-State Advertisements (LSAs)**: Routers generate and flood LSAs to share network topology information.
+  - **Shortest Path Calculation**: Utilized Dijkstra’s algorithm to compute the shortest path tree based on the LSDB (Link-State Database).
+
+##### **c. Border Gateway Protocol (BGP)**
+- **Purpose**: Incorporated both **External BGP (EBGP)** and **Internal BGP (IBGP)** to facilitate inter-AS and intra-AS routing.
+- **Key Features**:
+  - **Route Advertisement**: Enabled border routers to advertise and exchange routes with other ASes.
+  - **Metric Handling**: Managed route metrics to determine the best paths for data transmission.
+
+#### **2. Packet Processing Enhancements**
+- **Dynamic Packet Handling**: Enhanced the `Router` class to process different types of packets, including RIP updates, OSPF Hello and LSA packets, and BGP updates.
+- **Buffer Management**: Improved packet buffering mechanisms to handle incoming packets efficiently and prevent buffer overflows.
+
+#### **3. Metrics Collection Extension**
+- **Routing Metrics**: Extended the `MetricsCollector` to capture routing-specific metrics such as hop counts, route convergence times, and packet drop rates due to routing issues.
+- **Performance Tracking**: Implemented detailed logging within routing functions to facilitate comprehensive performance analysis.
+
+### **Challenges and Fixes**
+
+1. **Template Specialization in IP Class**:
+   - **Issue**: Initial template-based design for handling IPv4 and IPv6 caused bugs due to shared constructors and methods.
+   - **Fix**: Explicitly specialized methods for IPv4 and IPv6, maintaining a common base class to ensure proper functionality and separation of concerns.
+
+2. **Routing Loop Prevention**:
+   - **Issue**: Potential for routing loops in RIP updates and BGP advertisements, leading to inefficient routing and packet loss.
+   - **Fix**: Implemented split horizon and hold-down timers in RIP, and tracked seen packets in BGP to prevent loops. Additionally, maintained a set of seen packets to avoid processing duplicate routing information.
+
+3. **Thread Management and Concurrency**:
+   - **Issue**: Managing multi-threaded operations in routers led to inconsistent states and potential deadlocks, especially during simultaneous packet processing and routing updates.
+   - **Fix**: Utilized `QMutex` and `QMutexLocker` to ensure thread-safe operations during packet processing and routing table updates. Refactored locking mechanisms to minimize critical sections and prevent deadlocks, particularly during DHCP integration and routing table modifications.
+
+4. **Dijkstra’s Algorithm Implementation**:
+   - **Issue**: Efficiently implementing Dijkstra’s algorithm within the router’s routing logic posed challenges in managing dynamic network topologies.
+   - **Fix**: Carefully managed data structures for distance and previous node mappings, ensuring accurate and efficient computation of the shortest path tree. Optimized the algorithm to handle dynamic updates from LSAs without significant performance overhead.
+
+5. **Dynamic Topology Changes**:
+   - **Issue**: Handling dynamic changes in network topology, such as link failures or router failures, required the routing protocols to adapt in real-time.
+   - **Fix**: Enhanced event handling within `EventsCoordinator` to manage dynamic events, ensuring routers can respond to topology changes by updating routing tables accordingly. Implemented mechanisms to detect and recover from link failures, triggering appropriate routing updates.
+
+6. **BGP Integration Complexity**:
+   - **Issue**: Integrating both EBGP and IBGP introduced complexity in managing inter-AS and intra-AS routing policies.
+   - **Fix**: Structured the BGP implementation to differentiate between external and internal routing updates, applying appropriate metrics and policies based on the type of BGP session. Ensured clear separation of BGP logic from RIP and OSPF to maintain modularity and ease of maintenance.
+
+### **Testing**
+
+- **Tools**: Utilized Qt’s QTest framework alongside custom simulation scripts to validate the functionality and performance of routing algorithms.
+- **Tests Conducted**:
+  - **RIP Functionality**:
+    - Verified periodic RIP updates and routing table convergence across multiple routers.
+    - Tested route invalidation and hold-down timers upon simulated link failures.
+    - Ensured loop prevention mechanisms effectively avoided routing loops.
+  - **OSPF Functionality**:
+    - Ensured proper neighbor discovery and maintenance through OSPF Hello packets.
+    - Validated LSA generation, dissemination, and LSDB updates across the network.
+    - Confirmed accurate routing table updates via Dijkstra’s algorithm based on the LSDB.
+  - **BGP Functionality**:
+    - Tested EBGP and IBGP route exchanges between border and internal routers.
+    - Verified correct route advertisement, metric handling, and route selection policies.
+    - Simulated inter-AS and intra-AS route propagation to ensure proper BGP behavior.
+  - **Metrics Collection**:
+    - Validated accurate recording of routing-specific metrics such as hop counts, route convergence times, and packet drop rates.
+    - Analyzed metrics under various network conditions to assess routing protocol performance.
+  - **Concurrency and Thread Safety**:
+    - Simulated multi-threaded packet processing scenarios to ensure thread-safe operations.
+    - Conducted stress tests to verify the absence of deadlocks and race conditions during high traffic loads and dynamic topology changes.
+
+### **State at the End of Phase 3**
+- **Fully Implemented Routing Protocols**: Both RIP and OSPF are fully integrated and operational within the router components, enabling dynamic route discovery and management.
+- **BGP Functionality**: External and Internal BGP (EBGP and IBGP) are implemented, facilitating inter-AS and intra-AS routing.
+- **Dynamic Routing Tables**: Routers maintain dynamic routing tables that update in real-time based on RIP, OSPF, and BGP protocols, ensuring optimal path selection and network resilience.
+- **Enhanced Metrics Collection**: The system effectively captures detailed routing metrics, providing valuable insights into protocol performance and network behavior.
+- **Ready for Traffic Simulation and Analysis**: The network simulator is now capable of simulating complex routing scenarios, handling dynamic topology changes, and providing comprehensive analysis of routing algorithm performance.
+- **Preparation for Phase 4**: With routing algorithms implemented and metrics collection enhanced, the system is well-prepared to perform detailed analysis and reporting in Phase 4, comparing the performance of RIP and OSPF under various network conditions.
+
+---
+
 ## **Future Phases**
 
-- **Phase 3**: Introduce routing algorithms (e.g., RIP, OSPF), simulate network traffic, and observe behavior under various scenarios.
-- **Phase 4**: Perform a detailed analysis of the simulation results and generate comprehensive reports comparing algorithm performance.
+- **Phase 4 (Analysis and Reporting)**:
+  - **Objective**: Conduct a comprehensive analysis of the simulation results, focusing on metrics such as packet loss, hop count, route convergence times, and waiting cycles.
+  - **Tasks**:
+    - Compare the performance of RIP and OSPF under different network topologies and conditions.
+    - Generate detailed reports and visualizations to illustrate the strengths and weaknesses of each routing protocol.
+    - Provide recommendations for optimizing routing strategies based on the observed data.
+
+We have successfully completed Phase 3, laying a solid foundation for in-depth analysis and performance evaluation of routing algorithms in Phase 4.
