@@ -311,6 +311,9 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
            packet->getType() != PacketType::OSPFLSA) {
             m_metricsCollector->recordPacketDropped();
         }
+        dequeuePacketFromBuffer();
+        if (m_metricsCollector)
+            m_metricsCollector->recordWaitCycle(packet->getWaitingCycle());
         return;
     }
 
@@ -339,6 +342,9 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
             if (clientId == m_id) {
                 if (m_hasValidIP) {
                     qDebug() << "Router" << m_id << "already has a valid IP:" << m_assignedIP;
+                    dequeuePacketFromBuffer();
+                    if (m_metricsCollector)
+                        m_metricsCollector->recordWaitCycle(packet->getWaitingCycle());
                     return;
                 }
                 qDebug() << "Router" << m_id << "received DHCP offer:" << offeredIP << "for itself. Assigning IP.";
@@ -405,6 +411,9 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
                     if (m_metricsCollector) {
                         m_metricsCollector->recordPacketDropped();
                     }
+                    dequeuePacketFromBuffer();
+                    if (m_metricsCollector)
+                        m_metricsCollector->recordWaitCycle(packet->getWaitingCycle());
                     return;
                 }
 
@@ -422,7 +431,9 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
                     qDebug() << "Packet with source" << packet->getPath()[0] << "with destination" << packet->getPath()[1]
                              << "with total wait cycle" << packet->getWaitingCycle() << "and it's total cycle is"
                              << packet->getTotalCycle() << "and it's path taken is" << packet->getPathTaken();
-
+                    dequeuePacketFromBuffer();
+                    if (m_metricsCollector)
+                        m_metricsCollector->recordWaitCycle(packet->getWaitingCycle());
                     return;
                 }
 
@@ -432,6 +443,9 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
                     if (m_metricsCollector) {
                         m_metricsCollector->recordPacketDropped();
                     }
+                    dequeuePacketFromBuffer();
+                    if (m_metricsCollector)
+                        m_metricsCollector->recordWaitCycle(packet->getWaitingCycle());
                     return;
                 }
 
@@ -474,6 +488,8 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
 
     if (enqueued)
         PacketPtr_t nextPacket = dequeuePacketFromBuffer();
+    if (m_metricsCollector)
+        m_metricsCollector->recordWaitCycle(packet->getWaitingCycle());
 }
 
 void Router::addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric, RoutingProtocol protocol, PortPtr_t learnedFromPort, bool vip) {

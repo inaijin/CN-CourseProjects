@@ -20,6 +20,7 @@ public:
 
     void recordRouterUsage(const QString &routerIP);
     void recordHopCount(int hopCount);
+    void recordWaitCycle(int waitCycle);
 
     void printStatistics() const;
     void increamentHops();
@@ -31,6 +32,8 @@ private:
     int m_receivedPackets;
     int m_droppedPackets;
     int m_totalHops;
+    QVector<int> m_waitCyclesBuffer;
+
     QMap<QString, int> m_routerUsage;
 };
 

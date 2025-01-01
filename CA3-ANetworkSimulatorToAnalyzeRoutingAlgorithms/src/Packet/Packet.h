@@ -52,6 +52,7 @@ public:
 
     bool isIPv6() { return m_isWantedIpV6; }
     PacketType getType() const;
+    int* getWaitCyclesPtr();
 
     // TTL methods
     void setTTL(int ttl);

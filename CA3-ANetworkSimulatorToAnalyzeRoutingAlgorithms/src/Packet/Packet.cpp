@@ -72,6 +72,10 @@ int Packet::getSequenceNumber() const {
     return m_sequenceNumber;
 }
 
+int* Packet::getWaitCyclesPtr() {
+    return &m_waitCycles;
+}
+
 void Packet::markDropped(bool isDropped) {
     m_isDropped = isDropped;
 }
