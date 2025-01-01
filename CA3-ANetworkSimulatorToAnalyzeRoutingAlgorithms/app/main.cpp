@@ -20,6 +20,13 @@ int main(int argc, char* argv[])
         return -1;
     }
 
+    QStringList arguments = app.arguments();
+    if (!simulator->configureFromCommandLine(arguments))
+    {
+        qCritical() << "Failed to configure simulator.";
+        return -1;
+    }
+
     simulator->initializeNetwork();
     simulator->startSimulation();
 

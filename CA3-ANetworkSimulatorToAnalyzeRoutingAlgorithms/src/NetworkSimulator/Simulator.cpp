@@ -1,6 +1,7 @@
 #include "Simulator.h"
 #include "EventsCoordinator/EventsCoordinator.h"
 #include <QFile>
+#include <iostream>
 #include <QJsonDocument>
 #include <QCoreApplication>
 #include <QDebug>
@@ -8,6 +9,8 @@
 #include <QJsonObject>
 #include <QThread>
 #include <QRegularExpression>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 
 Simulator::Simulator(QObject *parent)
     : QObject(parent)
@@ -118,10 +121,8 @@ void Simulator::preAssignIDs()
 
 void Simulator::initializeNetwork()
 {
-    bool torus = false;
-
     m_network = QSharedPointer<Network>::create(m_config);
-    m_network->initialize(m_idAssignment, torus);
+    m_network->initialize(m_idAssignment, addTorus);
 
     m_metricsCollector = QSharedPointer<MetricsCollector>::create();
 
@@ -195,11 +196,10 @@ void Simulator::handleGeneratedPackets(const std::vector<QSharedPointer<Packet>>
 
 void Simulator::startSimulation()
 {
-    bool bgp = true;
-    RoutingProtocol protocolAS1 = RoutingProtocol::RIP;
-    RoutingProtocol protocolAS2 = RoutingProtocol::OSPF;
+    RoutingProtocol protocolAS1 = (firstASAlgo == 1) ? RoutingProtocol::RIP : RoutingProtocol::OSPF;
+    RoutingProtocol protocolAS2 = (secondASAlgo == 1) ? RoutingProtocol::RIP : RoutingProtocol::OSPF;
 
-    RoutingProtocol protocol = RoutingProtocol::RIP;
+    RoutingProtocol protocol = (mainAlgo == 1) ? RoutingProtocol::RIP : RoutingProtocol::OSPF;
     qDebug() << "Simulation initialized. Network topology is set up.";
 
     // Initiate DHCP Phase for routers
@@ -221,7 +221,7 @@ void Simulator::startSimulation()
     // Now we know all routers have IP addresses assigned, so we can setup direct routes:
     if (m_network) {
         m_network->setupDirectRoutesForRouters(protocol);
-        m_network->finalizeRoutesAfterDHCP(protocol, bgp, protocolAS1, protocolAS2);
+        m_network->finalizeRoutesAfterDHCP(protocol, useBGP, protocolAS1, protocolAS2);
     }
 
     // Start the event coordinator clock so RIP ticks can begin
@@ -229,7 +229,7 @@ void Simulator::startSimulation()
 
     // Enable RIP on all routers
     if (m_network) {
-        if (bgp) {
+        if (useBGP) {
             m_network->startBGP(protocolAS1, protocolAS2);
         } else if (protocol == RoutingProtocol::RIP) {
             m_network->enableRIPOnAllRouters();
@@ -241,7 +241,6 @@ void Simulator::startSimulation()
 
 void Simulator::onConvergenceDetected()
 {
-    bool bgp = true;
     qDebug() << "Convergence detected. Preparing to print all routing tables:";
 
     auto executeConvergenceActions = [this]() {
@@ -266,7 +265,7 @@ void Simulator::onConvergenceDetected()
         });
     };
 
-    if (bgp) {
+    if (useBGP) {
         qDebug() << "BGP is enabled. Delaying execution of convergence actions.";
         m_network->startEBGP();
         QTimer::singleShot(3000, this, [this]() {
@@ -316,3 +315,182 @@ void Simulator::checkAssignedIPPC() {
         qWarning() << "Failed to check IP: Network not initialized.";
     }
 }
+
+bool Simulator::configureFromCommandLine(const QStringList& arguments)
+{
+    QCommandLineParser parser;
+    parser.setApplicationDescription("UT Network Simulator");
+    parser.addHelpOption();
+
+    QCommandLineOption bgpOption(QStringList() << "b" << "bgp",
+                                 "Enable BGP (yes/no).",
+                                 "bgp");
+    QCommandLineOption firstASAlgoOption(QStringList() << "f" << "first-as-algo",
+                                         "First AS algorithm (1 for RIP, 2 for OSPF).",
+                                         "first-as-algo");
+    QCommandLineOption secondASAlgoOption(QStringList() << "s" << "second-as-algo",
+                                          "Second AS algorithm (1 for RIP, 2 for OSPF).",
+                                          "second-as-algo");
+    QCommandLineOption mainAlgoOption(QStringList() << "m" << "main-algo",
+                                      "Main routing algorithm (1 for RIP, 2 for OSPF).",
+                                      "main-algo");
+    QCommandLineOption torusOption(QStringList() << "t" << "torus",
+                                   "Add torus topology (yes/no).",
+                                   "torus");
+
+    parser.addOption(bgpOption);
+    parser.addOption(firstASAlgoOption);
+    parser.addOption(secondASAlgoOption);
+    parser.addOption(mainAlgoOption);
+    parser.addOption(torusOption);
+
+    parser.process(arguments);
+
+    bool argumentsProvided = false;
+
+    if (parser.isSet(bgpOption) || parser.isSet(firstASAlgoOption) ||
+       parser.isSet(secondASAlgoOption) || parser.isSet(mainAlgoOption) ||
+       parser.isSet(torusOption)) {
+        argumentsProvided = true;
+
+        if (parser.isSet(bgpOption)) {
+            QString bgpValue = parser.value(bgpOption).toLower();
+            if (bgpValue == "yes" || bgpValue == "y") {
+                setUseBGP(true);
+            } else if (bgpValue == "no" || bgpValue == "n") {
+                setUseBGP(false);
+            } else {
+                qWarning() << "Invalid value for BGP option. Expected 'yes' or 'no'. Using default 'no'.";
+                setUseBGP(false);
+            }
+        } else {
+            setUseBGP(false);
+        }
+
+        if (useBGP) {
+            if (parser.isSet(firstASAlgoOption)) {
+                bool ok;
+                int algo = parser.value(firstASAlgoOption).toInt(&ok);
+                if (ok && (algo == 1 || algo == 2)) {
+                    setFirstASAlgo(algo);
+                } else {
+                    qWarning() << "Invalid value for first AS algorithm. Expected 1 or 2. Using default 0.";
+                    setFirstASAlgo(0);
+                }
+            } else {
+                qWarning() << "First AS algorithm not provided. Using default 0.";
+                setFirstASAlgo(0);
+            }
+
+            if (parser.isSet(secondASAlgoOption)) {
+                bool ok;
+                int algo = parser.value(secondASAlgoOption).toInt(&ok);
+                if (ok && (algo == 1 || algo == 2)) {
+                    setSecondASAlgo(algo);
+                } else {
+                    qWarning() << "Invalid value for second AS algorithm. Expected 1 or 2. Using default 0.";
+                    setSecondASAlgo(0);
+                }
+            } else {
+                qWarning() << "Second AS algorithm not provided. Using default 0.";
+                setSecondASAlgo(0);
+            }
+        } else {
+            if (parser.isSet(mainAlgoOption)) {
+                bool ok;
+                int algo = parser.value(mainAlgoOption).toInt(&ok);
+                if (ok && (algo == 1 || algo == 2)) {
+                    setMainAlgo(algo);
+                } else {
+                    qWarning() << "Invalid value for main algorithm. Expected 1 or 2. Using default 0.";
+                    setMainAlgo(0);
+                }
+            } else {
+                qWarning() << "Main routing algorithm not provided. Using default 0.";
+                setMainAlgo(0);
+            }
+        }
+
+        if (parser.isSet(torusOption)) {
+            QString torusValue = parser.value(torusOption).toLower();
+            if (torusValue == "yes" || torusValue == "y") {
+                setAddTorus(true);
+            } else if (torusValue == "no" || torusValue == "n") {
+                setAddTorus(false);
+            } else {
+                qWarning() << "Invalid value for torus option. Expected 'yes' or 'no'. Using default 'no'.";
+                setAddTorus(false);
+            }
+        } else {
+            setAddTorus(false);
+        }
+    }
+
+    if (!argumentsProvided) {
+        std::cout << "Welcome To Our UT Network Simulator !!!" << std::endl;
+
+        bool bgp = promptYesNo("Do you want BGP? (yes/no): ");
+        setUseBGP(bgp);
+
+        if (bgp) {
+            int algo1 = promptForAlgorithm("Enter the first AS algorithm (1 for RIP, 2 for OSPF): ");
+            setFirstASAlgo(algo1);
+
+            int algo2 = promptForAlgorithm("Enter the second AS algorithm (1 for RIP, 2 for OSPF): ");
+            setSecondASAlgo(algo2);
+        } else {
+            int mainAlgoInput = promptForAlgorithm("Enter the main routing algorithm you want (1 for RIP, 2 for OSPF): ");
+            setMainAlgo(mainAlgoInput);
+        }
+
+        bool torus = promptYesNo("Do you want to add a torus topology? (yes/no): ");
+        setAddTorus(torus);
+    }
+
+    return true;
+}
+
+bool Simulator::promptYesNo(const QString& prompt)
+{
+    std::string input;
+    while (true) {
+        std::cout << prompt.toStdString();
+        std::getline(std::cin, input);
+        if (input.empty()) continue;
+
+        std::string lowerInput = input;
+        for (auto & c: lowerInput) c = tolower(c);
+        if (lowerInput == "yes" || lowerInput == "y") {
+            return true;
+        } else if (lowerInput == "no" || lowerInput == "n") {
+            return false;
+        } else {
+            std::cerr << "Please enter 'yes' or 'no'." << std::endl;
+        }
+    }
+}
+
+int Simulator::promptForAlgorithm(const QString& prompt)
+{
+    std::string input;
+    while (true) {
+        std::cout << prompt.toStdString();
+        std::getline(std::cin, input);
+        try {
+            int algo = std::stoi(input);
+            if (algo == 1 || algo == 2) {
+                return algo;
+            } else {
+                std::cerr << "Invalid input. Please enter 1 for RIP or 2 for OSPF." << std::endl;
+            }
+        } catch (...) {
+            std::cerr << "Invalid input. Please enter a number (1 for RIP, 2 for OSPF)." << std::endl;
+        }
+    }
+}
+
+void Simulator::setUseBGP(bool bgp) { useBGP = bgp; }
+void Simulator::setFirstASAlgo(int algo) { firstASAlgo = algo; }
+void Simulator::setSecondASAlgo(int algo) { secondASAlgo = algo; }
+void Simulator::setMainAlgo(int algo) { mainAlgo = algo; }
+void Simulator::setAddTorus(bool torus) { addTorus = torus; }

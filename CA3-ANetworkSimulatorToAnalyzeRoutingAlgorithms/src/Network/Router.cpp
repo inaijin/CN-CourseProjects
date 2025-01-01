@@ -103,8 +103,8 @@ void Router::setMetricsCollector(QSharedPointer<MetricsCollector> collector) {
 
 void Router::initialize()
 {
-    qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress->getIp()
-             << ", running in thread" << (quintptr)QThread::currentThreadId();
+    // qDebug() << "Router initialized: ID =" << m_id << ", IP =" << m_ipAddress->getIp()
+    //          << ", running in thread" << (quintptr)QThread::currentThreadId();
 
     startTimers();
 }

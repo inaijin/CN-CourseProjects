@@ -27,6 +27,8 @@ public:
     void initiatePacketSending();
     QSharedPointer<Network> getNetwork() { return m_network; }
 
+    bool configureFromCommandLine(const QStringList& arguments);
+
 public slots:
     void onConvergenceDetected();
     void handleGeneratedPackets(const std::vector<QSharedPointer<Packet>> &packets);
@@ -45,6 +47,22 @@ private:
     std::chrono::milliseconds parseDuration(const QString &durationStr);
 
     void preAssignIDs();
+
+    // Configuration variables
+    bool useBGP;
+    int firstASAlgo;
+    int secondASAlgo;
+    int mainAlgo;
+    bool addTorus;
+
+    void setUseBGP(bool bgp);
+    void setFirstASAlgo(int algo);
+    void setSecondASAlgo(int algo);
+    void setMainAlgo(int algo);
+    void setAddTorus(bool torus);
+
+    bool promptYesNo(const QString& prompt);
+    int promptForAlgorithm(const QString& prompt);
 };
 
 #endif // SIMULATOR_H
