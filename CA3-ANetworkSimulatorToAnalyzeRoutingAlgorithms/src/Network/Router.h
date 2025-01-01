@@ -242,6 +242,8 @@ private:
         }
         return range;
     }
+
+    mutable QMutex m_logMutex;
 };
 
 #endif // ROUTER_H

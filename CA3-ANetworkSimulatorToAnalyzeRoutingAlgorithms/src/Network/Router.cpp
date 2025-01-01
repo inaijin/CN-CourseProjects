@@ -7,6 +7,11 @@
 #include "../MACAddress/MACADdressGenerator.h"
 #include <QDebug>
 #include <QThread>
+#include <QFile>
+#include <QFileInfo>
+#include <QDir>
+#include <QTextStream>
+#include <QDateTime>
 
 Router::Router(int id, const QString &ipAddress, int portCount, QObject *parent, bool isBroken)
     : Node(id, ipAddress, NodeType::Router, parent),
@@ -594,18 +599,94 @@ RouteEntry Router::findBestRoutePath(const QString &destinationIP) const {
 
 void Router::printRoutingTable() const
 {
+    // Optional: Lock the mutex if the function can be called from multiple threads
+    QMutexLocker locker(&m_logMutex);
+
+    // Log to console
     qDebug() << "Routing Table for Router" << m_id << ":";
-    for (const auto &entry : m_routingTable) {
-        QString protoStr = (entry.protocol == RoutingProtocol::RIP) ? "RIP" : "OSPF";
-        protoStr = (entry.protocol == RoutingProtocol::ITSELF) ? " " : protoStr;
-        protoStr = (entry.protocol == RoutingProtocol::EBGP) ? "EBGP" : protoStr;
-        protoStr = (entry.protocol == RoutingProtocol::IBGP) ? "IBGP" : protoStr;
-        qDebug() << "Dest:" << entry.destination
-                 << "Mask:" << entry.mask
-                 << "NextHop:" << entry.nextHop
-                 << "Metric:" << entry.metric
-                 << "Protocol:" << protoStr;
+
+    // **1. Create a Unique Log File Name Using m_id**
+
+    QString routerIdStr;
+
+    // Determine the type of m_id and convert accordingly
+    // Example assumes m_id is an integer. Adjust if m_id is of a different type.
+    routerIdStr = QString::number(m_id);
+
+    // Construct the log file path with m_id in the filename
+    QString logFilePath = QString("D:/QTProjects/GitHub/CN-CourseProjects/CA3-ANetworkSimulatorToAnalyzeRoutingAlgorithms/logs/routingTableRouter%1.txt")
+                            .arg(routerIdStr);
+
+    // **2. Ensure the Logs Directory Exists**
+
+    QFileInfo fileInfo(logFilePath);
+    QDir logDir = fileInfo.dir();
+    if (!logDir.exists()) {
+        // Attempt to create the directory
+        if (!logDir.mkpath(".")) {
+            qWarning() << "Failed to create log directory:" << logDir.absolutePath();
+            return;
+        }
     }
+
+    // **3. Open the Log File in Write-Only and Truncate Mode**
+
+    QFile logFile(logFilePath);
+    if (!logFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
+        qWarning() << "Cannot open log file:" << logFilePath;
+        return;
+    }
+
+    QTextStream out(&logFile);
+
+    // **4. Write Header with Timestamp to Log File**
+
+    QString headerTimeStamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+    out << headerTimeStamp << " Routing Table for Router " << m_id << ":\n";
+
+    // **5. Iterate Through the Routing Table and Log Each Entry**
+
+    for (const auto &entry : m_routingTable) {
+        QString protoStr;
+        switch (entry.protocol) {
+            case RoutingProtocol::RIP:
+                protoStr = "RIP";
+                break;
+            case RoutingProtocol::OSPF:
+                protoStr = "OSPF";
+                break;
+            case RoutingProtocol::ITSELF:
+                protoStr = "ITSELF";
+                break;
+            case RoutingProtocol::EBGP:
+                protoStr = "EBGP";
+                break;
+            case RoutingProtocol::IBGP:
+                protoStr = "IBGP";
+                break;
+            default:
+                protoStr = "UNKNOWN";
+                break;
+        }
+
+        // Build the log entry string using QTextStream
+        QString logEntry;
+        QTextStream(&logEntry) << "Dest: " << entry.destination
+                               << " Mask: " << entry.mask
+                               << " NextHop: " << entry.nextHop
+                               << " Metric: " << entry.metric
+                               << " Protocol: " << protoStr;
+
+        // Output to console
+        qDebug() << logEntry;
+
+        // Write to log file with timestamp
+        QString entryTimeStamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+        out << entryTimeStamp << " " << logEntry << "\n";
+    }
+
+    // **6. Close the Log File**
+    logFile.close();
 }
 
 void Router::enableRIP()
