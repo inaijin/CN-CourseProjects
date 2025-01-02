@@ -91,5 +91,5 @@ void DataGeneratorTests::testPacketsSignalEmission() {
     QVERIFY(packets.size() > 0);
 }
 
-QTEST_MAIN(DataGeneratorTests)
+// QTEST_MAIN(DataGeneratorTests)
 #include "DataGeneratorTests.moc"

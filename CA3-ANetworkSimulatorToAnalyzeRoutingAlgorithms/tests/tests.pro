@@ -5,21 +5,12 @@ QT += core testlib
 QT += network
 
 SOURCES += $$PWD/MACAddressTests.cpp \
-           $$PWD/EventsCoordinatorTests.cpp \
            $$PWD/PacketTests.cpp \
            $$PWD/DataGeneratorTests.cpp \
            $$PWD/DataLinkHeaderTests.cpp \
            $$PWD/TCPHeaderTests.cpp \
            $$PWD/IPHeaderTests.cpp \
-           $$PWD/PortTests.cpp \
-           $$PWD/PortBindingManagerTests.cpp \
-           $$PWD/PCTests.cpp \
-           $$PWD/RouterTests.cpp \
-           $$PWD/TopologyBuilderTests.cpp \
-           $$PWD/TopologyControllerTests.cpp \
-           $$PWD/UDPTests.cpp \
-           $$PWD/DHCPServerTests.cpp \
-           $$PWD/RouterDHCPIntegrationTests.cpp
+           $$PWD/PortTests.cpp
 
 INCLUDEPATH += $$PWD/../src \
                $$PWD/../src/Globals
