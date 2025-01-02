@@ -11,6 +11,7 @@
 #include <QRegularExpression>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
+#include <RouterRegistry.h>
 
 Simulator::Simulator(QObject *parent)
     : QObject(parent)
@@ -217,6 +218,8 @@ void Simulator::startSimulation()
 
     // Check the assigned IP's for PCs
     checkAssignedIPPC();
+
+    printTopologyVisualization();
 
     // Now we know all routers have IP addresses assigned, so we can setup direct routes:
     if (m_network) {
@@ -494,3 +497,203 @@ void Simulator::setFirstASAlgo(int algo) { firstASAlgo = algo; }
 void Simulator::setSecondASAlgo(int algo) { secondASAlgo = algo; }
 void Simulator::setMainAlgo(int algo) { mainAlgo = algo; }
 void Simulator::setAddTorus(bool torus) { addTorus = torus; }
+
+void Simulator::printTopologyVisualization()
+{
+    auto asList = m_network->getAutonomousSystems();
+
+    std::cout << "\n=============== NETWORK TOPOLOGY VISUALIZATION ===============\n";
+
+    for (const auto &asInstance : asList)
+    {
+        int asId = asInstance->getId();
+        std::cout << "Autonomous System: AS" << asId << "\n";
+
+        // --- Print routers ---
+        auto routers = asInstance->getRouters();
+        if (!routers.empty())
+        {
+            std::cout << "  -- Routers --\n";
+            for (const auto &router : routers)
+            {
+                int rid      = router->getId();
+                QString ip   = router->getIPAddress();
+                bool broken  = router->isBroken();
+
+                std::cout << "     * Router ID: " << rid
+                          << ", IP: " << ip.toStdString();
+
+                // Indicate broken routers
+                if (broken)
+                    std::cout << " [BROKEN!]";
+
+                std::cout << "\n";
+            }
+        }
+
+        // --- Print PCs ---
+        auto pcs = asInstance->getPCs();
+        if (!pcs.empty())
+        {
+            std::cout << "  -- PCs --\n";
+            for (const auto &pc : pcs)
+            {
+                int pid    = pc->getId();
+                QString ip = pc->getIpAddress();
+
+                std::cout << "     - PC ID: " << pid
+                          << ", IP: " << ip.toStdString() << "\n";
+            }
+        }
+
+        std::cout << "\n";
+    }
+
+    std::cout << "==============================================================\n\n";
+
+    std::cout << std::flush;
+
+    printAsciiDiagram(addTorus);
+}
+
+static inline void printRouter(int id, bool broken)
+{
+    if (broken)
+        std::cout << "(X)" << id;
+    else
+        std::cout << "(R)" << id;
+}
+
+static inline void printPC(int id)
+{
+    std::cout << "[P]" << id;
+}
+
+void Simulator::printAsciiDiagram(bool addTorus)
+{
+    std::cout << "========= DETAILED ASCII TOPOLOGY DIAGRAM =========\n\n";
+
+    auto asList = m_network->getAutonomousSystems();
+
+    for (auto &asInstance : asList)
+    {
+        int asId = asInstance->getId();
+
+        // Print the AS label
+        std::cout << "   +------------------------------------+\n";
+        std::cout << "   |       Autonomous System AS" << asId << "        |\n";
+        std::cout << "   +------------------------------------+\n\n";
+
+        if (asId == 1)
+        {
+            //--- AS1 Diagram ---
+            if (addTorus)
+            {
+                //--- The standard 4×4 mesh with PCs across the top plus the torus addition. ---
+                auto r = [&](int rid){
+                    auto router = RouterRegistry::findRouterById(rid);
+                    if (router)
+                        printRouter(rid, router->isBroken());
+                    else
+                        std::cout << "(?)" << rid;
+                };
+                auto p = [&](int pcid){ printPC(pcid); };
+
+                // Top row of PCs
+                std::cout << "      ";
+                p(24); std::cout << "  "; p(25); std::cout << "   ";
+                p(26); std::cout << "  "; p(27); std::cout << "   ";
+                p(28); std::cout << "  "; p(29); std::cout << "   ";
+                p(30); std::cout << "  "; p(31);
+                std::cout << "\n";
+                std::cout << "          ^               ^               ^               ^  \n";
+                std::cout << "        \\ | /           \\ | /           \\ | /           \\ | /\n";
+
+                // First router row
+                std::cout << "       (-"; r(1);  std::cout << " ---------- "; r(2);
+                std::cout << " ---------- "; r(3);  std::cout << " --------- "; r(4);  std::cout << "-)\n";
+
+                // Second row
+                std::cout << "          |               |               |               |\n";
+                std::cout << "       (-"; r(5);  std::cout << " ---------- "; r(6);  std::cout << " ---------- "; r(7);  std::cout << " --------- "; r(8);  std::cout << "-)\n";
+
+                // Third row
+                std::cout << "          |               |               |               |\n";
+                std::cout << "       (-"; r(9);  std::cout << " --------- ";  r(10); std::cout << " --------- ";  r(11); std::cout << " -------- ";  r(12); std::cout << "-)\n";
+
+                // Fourth row
+                std::cout << "          |               |               |               |\n";
+                std::cout << "       (-"; r(13); std::cout << " -------- "; r(14); std::cout << " --------- "; r(15); std::cout << " -------- "; r(16);
+                std::cout << "-)\n";
+                std::cout << "          |               |               |               |\n";
+                std::cout << "          v               v               v               v\n\n";
+            }
+            else
+            {
+                //--- The standard 4×4 mesh with PCs across the top. ---
+                auto r = [&](int rid){
+                    auto router = RouterRegistry::findRouterById(rid);
+                    if (router)
+                        printRouter(rid, router->isBroken());
+                    else
+                        std::cout << "(?)" << rid;
+                };
+                auto p = [&](int pcid){ printPC(pcid); };
+
+                // Top row of PCs
+                std::cout << "      ";
+                p(24); std::cout << "  "; p(25); std::cout << "   ";
+                p(26); std::cout << "  "; p(27); std::cout << "   ";
+                p(28); std::cout << "  "; p(29); std::cout << "   ";
+                p(30); std::cout << "  "; p(31);
+                std::cout << "\n";
+                std::cout << "        \\   /           \\   /           \\   /           \\   /\n";
+
+                // First router row
+                std::cout << "         "; r(1);  std::cout << " ---------- "; r(2);
+                std::cout << " ---------- "; r(3);  std::cout << " --------- "; r(4);  std::cout << "\n";
+
+                // Second row
+                std::cout << "          |               |               |               |\n";
+                std::cout << "         "; r(5);  std::cout << " ---------- "; r(6);  std::cout << " ---------- "; r(7);  std::cout << " --------- "; r(8);  std::cout << "\n";
+
+                // Third row
+                std::cout << "          |               |               |               |\n";
+                std::cout << "         "; r(9);  std::cout << " --------- ";  r(10); std::cout << " --------- ";  r(11); std::cout << " -------- ";  r(12); std::cout << "\n";
+
+                // Fourth row
+                std::cout << "          |               |               |               |\n";
+                std::cout << "         "; r(13); std::cout << " -------- "; r(14); std::cout << " --------- "; r(15); std::cout << " -------- "; r(16);
+                std::cout << "\n\n";
+            }
+        }
+        else if (asId == 2)
+        {
+            auto r = [&](int rid){
+                auto router = RouterRegistry::findRouterById(rid);
+                if (router)
+                    printRouter(rid, router->isBroken());
+                else
+                    std::cout << "(?)" << rid;
+            };
+            auto p = [&](int pcid){ printPC(pcid); };
+
+            // Top row
+            std::cout << "         "; r(17);  std::cout << " ---------- "; r(18);
+            std::cout << " ---------- "; r(19); std::cout << "\n";
+
+            // Middle row
+            std::cout << "          |              \\     /            |                \n";
+            std::cout << "  "; p(37); std::cout<< "-"; r(22);  std::cout << "            "; r(23);  std::cout << "            "; r(20); std::cout << "-"; p(34); p(35);  std::cout << "\n";
+
+            std::cout << "          |        \\        |        /       |        \n";
+            std::cout << "       "; p(38); std::cout << " "; std::cout << "             "; r(21);  std::cout << "            "; p(36); std::cout << "\n";
+
+            std::cout << "                           /  \\  \n";
+            std::cout << "                      "; p(32); std::cout << "    "; p(33);
+            std::cout << "\n\n";
+        }
+    }
+
+    std::cout << "===========================================================\n\n" << std::flush;
+}

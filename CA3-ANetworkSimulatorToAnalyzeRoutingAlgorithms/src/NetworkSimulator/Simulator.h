@@ -28,6 +28,8 @@ public:
     QSharedPointer<Network> getNetwork() { return m_network; }
 
     bool configureFromCommandLine(const QStringList& arguments);
+    void printTopologyVisualization();
+    void printAsciiDiagram(bool addTorus);
 
 public slots:
     void onConvergenceDetected();
