@@ -1,67 +1,95 @@
-// #include <QtTest/QtTest>
-// #include "../src/DataGenerator/DataGenerator.h"
-// #include "../src/Packet/Packet.h"
+#include <QtTest/QtTest>
+#include <QSignalSpy>
+#include <QSharedPointer>
+#include "../src/DataGenerator/DataGenerator.h"
+#include "../src/Network/PC.h"
+#include "../src/Packet/Packet.h"
 
-// class DataGeneratorTests : public QObject {
-//     Q_OBJECT
+class DataGeneratorTests : public QObject {
+    Q_OBJECT
 
-// private Q_SLOTS:
-//     void testLambdaSetting();
-//     void testDestinationSetting();
-//     void testPacketGeneration();
-// };
+private Q_SLOTS:
+    void testDefaultLambda();
+    void testSetLambda();
+    void testSetSenders();
+    void testGeneratePoissonLoads();
+    void testGeneratePackets();
+    void testPacketsSignalEmission();
+};
 
-// void DataGeneratorTests::testLambdaSetting() {
-//     DataGenerator generator;
-//     generator.setLambda(5.0);
+void DataGeneratorTests::testDefaultLambda() {
+    DataGenerator generator;
+    QCOMPARE(generator.getSenders().size(), 0);
+}
 
-//     std::vector<QString> destinations = {"192.168.1.1", "192.168.1.2"};
-//     generator.setDestinations(destinations);
+void DataGeneratorTests::testSetLambda() {
+    DataGenerator generator;
+    generator.setLambda(5.0);
+    QVERIFY(true); // If no crash happens, test passes.
+}
 
-//     QSignalSpy spy(&generator, &DataGenerator::packetsGenerated);
-//     generator.generatePackets();
+void DataGeneratorTests::testSetSenders() {
+    DataGenerator generator;
+    QSharedPointer<PC> pc1 = QSharedPointer<PC>::create(1, "192.168.0.1");
+    QSharedPointer<PC> pc2 = QSharedPointer<PC>::create(2, "192.168.0.2");
 
-//     QTest::qWait(100);
-//     QVERIFY(spy.count() > 0);
-// }
+    std::vector<QSharedPointer<PC>> senders = {pc1, pc2};
+    generator.setSenders(senders);
 
-// void DataGeneratorTests::testDestinationSetting() {
-//     DataGenerator generator;
+    QCOMPARE(generator.getSenders().size(), 2);
+    QCOMPARE(generator.getSenders()[0]->getId(), 1);
+    QCOMPARE(generator.getSenders()[1]->getId(), 2);
+}
 
-//     std::vector<QString> destinations = {"192.168.1.1", "192.168.1.2", "192.168.1.3"};
-//     generator.setDestinations(destinations);
+void DataGeneratorTests::testGeneratePoissonLoads() {
+    DataGenerator generator;
+    generator.setLambda(2.0);
 
-//     QSignalSpy spy(&generator, &DataGenerator::packetsGenerated);
-//     generator.generatePackets();
+    std::vector<int> loads = generator.generatePoissonLoads(100, 10);
+    QCOMPARE(loads.size(), 10);
+    int totalPackets = 0;
+    for (int load : loads) {
+        QVERIFY(load >= 0); // Ensure no negative loads
+        totalPackets += load;
+    }
+    QVERIFY(totalPackets > 0); // Some packets should have been generated
+}
 
-//     QVERIFY(spy.count() > 0);
+void DataGeneratorTests::testGeneratePackets() {
+    DataGenerator generator;
+    QSharedPointer<PC> pc1 = QSharedPointer<PC>::create(1, "192.168.0.1");
+    QSharedPointer<PC> pc2 = QSharedPointer<PC>::create(2, "192.168.0.2");
 
-//     auto packets = qvariant_cast<std::vector<QSharedPointer<Packet>>>(spy.takeFirst().at(0));
-//     for (const auto &packet : packets) {
-//         QString path = packet->getPath().last();
-//         QVERIFY(std::find(destinations.begin(), destinations.end(), path) != destinations.end());
-//     }
-// }
+    generator.setSenders({pc1, pc2});
+    QSignalSpy spy(&generator, &DataGenerator::packetsGenerated);
 
-// void DataGeneratorTests::testPacketGeneration() {
-//     DataGenerator generator;
-//     generator.setLambda(3.0);
+    generator.generatePackets();
 
-//     std::vector<QString> destinations = {"10.0.0.1", "10.0.0.2"};
-//     generator.setDestinations(destinations);
+    QCOMPARE(spy.count(), 1);
 
-//     QSignalSpy spy(&generator, &DataGenerator::packetsGenerated);
-//     generator.generatePackets();
+    QList<QVariant> arguments = spy.takeFirst();
+    auto packets = arguments.at(0).value<std::vector<QSharedPointer<Packet>>>();
 
-//     QVERIFY(spy.count() > 0);
-//     auto packets = qvariant_cast<std::vector<QSharedPointer<Packet>>>(spy.takeFirst().at(0));
+    QVERIFY(packets.size() > 0); // Ensure packets are generated
+    for (const auto &packet : packets) {
+        QVERIFY(packet->getPayload().contains("Hello from PC"));
+    }
+}
 
-//     QVERIFY(!packets.empty());
-//     for (const auto &packet : packets) {
-//         QVERIFY(!packet->getPath().isEmpty());
-//         QVERIFY(packet->getPayload() == "GeneratedPayload");
-//     }
-// }
+void DataGeneratorTests::testPacketsSignalEmission() {
+    DataGenerator generator;
+    QSharedPointer<PC> pc1 = QSharedPointer<PC>::create(1, "192.168.0.1");
+    QSharedPointer<PC> pc2 = QSharedPointer<PC>::create(2, "192.168.0.2");
 
-// // QTEST_MAIN(DataGeneratorTests)
-// #include "DataGeneratorTests.moc"
+    generator.setSenders({pc1, pc2});
+    QSignalSpy spy(&generator, &DataGenerator::packetsGenerated);
+
+    generator.generatePackets();
+
+    QCOMPARE(spy.count(), 1);
+    auto packets = spy.takeFirst().at(0).value<std::vector<QSharedPointer<Packet>>>();
+    QVERIFY(packets.size() > 0);
+}
+
+QTEST_MAIN(DataGeneratorTests)
+#include "DataGeneratorTests.moc"

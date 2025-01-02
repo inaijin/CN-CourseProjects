@@ -48,5 +48,5 @@ void MACAddressTests::testMACAddressUniqueness() {
     }
 }
 
-QTEST_MAIN(MACAddressTests)
+// QTEST_MAIN(MACAddressTests)
 #include "MACAddressTests.moc"

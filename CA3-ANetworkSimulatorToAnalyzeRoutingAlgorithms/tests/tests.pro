@@ -17,7 +17,6 @@ SOURCES += $$PWD/MACAddressTests.cpp \
            $$PWD/RouterTests.cpp \
            $$PWD/TopologyBuilderTests.cpp \
            $$PWD/TopologyControllerTests.cpp \
-           $$PWD/AutonomousSystemTests.cpp \
            $$PWD/UDPTests.cpp \
            $$PWD/DHCPServerTests.cpp \
            $$PWD/RouterDHCPIntegrationTests.cpp

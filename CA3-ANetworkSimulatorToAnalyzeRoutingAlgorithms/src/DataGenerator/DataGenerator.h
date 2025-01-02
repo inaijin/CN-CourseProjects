@@ -22,6 +22,7 @@ public:
     void generatePackets();
 
     std::vector<QSharedPointer<PC>> getSenders() const;
+    std::vector<int> generatePoissonLoads(int numSamples, int timeScale);
 
 Q_SIGNALS:
     void packetsGenerated(const std::vector<QSharedPointer<Packet>> &packets);
@@ -31,8 +32,6 @@ private:
     std::default_random_engine m_generator;
     std::poisson_distribution<int> m_distribution;
     std::vector<QSharedPointer<PC>> m_senders;
-
-    std::vector<int> generatePoissonLoads(int numSamples, int timeScale);
 };
 
 #endif // DATAGENERATOR_H
