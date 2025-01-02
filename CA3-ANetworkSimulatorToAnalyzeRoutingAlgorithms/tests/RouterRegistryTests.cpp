@@ -68,5 +68,5 @@ void RouterRegistryTests::testDuplicateRouterIds() {
     QCOMPARE(foundRouter->getIPAddress(), QString("192.168.1.1")); // First added router should remain
 }
 
-QTEST_MAIN(RouterRegistryTests)
+// QTEST_MAIN(RouterRegistryTests)
 #include "RouterRegistryTests.moc"

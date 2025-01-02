@@ -4,7 +4,8 @@ CONFIG += console c++20
 QT += core testlib
 QT += network
 
-SOURCES += $$PWD/MACAddressTests.cpp \
+SOURCES += $$PWD/TestManager.cpp \
+           $$PWD/MACAddressTests.cpp \
            $$PWD/PacketTests.cpp \
            $$PWD/DataGeneratorTests.cpp \
            $$PWD/DataLinkHeaderTests.cpp \

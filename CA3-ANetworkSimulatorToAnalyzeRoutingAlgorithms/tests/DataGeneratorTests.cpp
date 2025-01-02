@@ -19,7 +19,7 @@ private Q_SLOTS:
 
 void DataGeneratorTests::testDefaultLambda() {
     DataGenerator generator;
-    QCOMPARE(generator.getSenders().size(), 0);
+    QCOMPARE(static_cast<int>(generator.getSenders().size()), 0);
 }
 
 void DataGeneratorTests::testSetLambda() {
@@ -36,9 +36,9 @@ void DataGeneratorTests::testSetSenders() {
     std::vector<QSharedPointer<PC>> senders = {pc1, pc2};
     generator.setSenders(senders);
 
-    QCOMPARE(generator.getSenders().size(), 2);
-    QCOMPARE(generator.getSenders()[0]->getId(), 1);
-    QCOMPARE(generator.getSenders()[1]->getId(), 2);
+    QCOMPARE(static_cast<int>(generator.getSenders().size()), 2);
+    QCOMPARE(static_cast<int>(generator.getSenders()[0]->getId()), 1);
+    QCOMPARE(static_cast<int>(generator.getSenders()[1]->getId()), 2);
 }
 
 void DataGeneratorTests::testGeneratePoissonLoads() {
@@ -46,7 +46,7 @@ void DataGeneratorTests::testGeneratePoissonLoads() {
     generator.setLambda(2.0);
 
     std::vector<int> loads = generator.generatePoissonLoads(100, 10);
-    QCOMPARE(loads.size(), 10);
+    QCOMPARE(static_cast<int>(loads.size()), 10);
     int totalPackets = 0;
     for (int load : loads) {
         QVERIFY(load >= 0); // Ensure no negative loads
