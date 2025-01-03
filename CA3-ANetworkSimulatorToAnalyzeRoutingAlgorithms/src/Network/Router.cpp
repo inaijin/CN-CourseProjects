@@ -300,6 +300,9 @@ void Router::processPacket(const PacketPtr_t &packet, const PortPtr_t &incomingP
     packet->increamentTotalCycle();
 
     bool enqueued = enqueuePacketToBuffer(packet);
+
+    // -----> Handle Congestion Using The Boolean Of Enqueue <-----
+
     packet->increamentWaitCycle();
 
     QString payload = packet->getPayload();
