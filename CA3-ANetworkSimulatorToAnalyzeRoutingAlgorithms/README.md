@@ -1,389 +1,358 @@
-# **Network Simulator to Analyze Routing Algorithms**
+# Qt Network Simulator
 
-## **Introduction**
+**A modular, extensible network simulation framework built with Qt 6 (tested on Windows).**  
+This project provides an environment to model **Autonomous Systems (AS)**, **routers**, **PCs**, and **routing protocols** (RIP, OSPF, BGP), along with **DHCP** for IP assignment. It also demonstrates **packet queuing**, allowing you to observe basic congestion behavior.
 
-Welcome to our **Network Simulator to Analyze Routing Algorithms** project! This project aims to build a network simulation environment that mimics real-world network behavior. The simulator is designed to study and analyze various routing algorithms, including RIP and OSPF, under different network conditions and topologies.
-
-The core of our simulation is built using **C++ with the Qt Framework**, utilizing modular, object-oriented programming principles. This ensures scalability, maintainability, and efficient handling of components such as routers, PCs, and Autonomous Systems (AS). The simulator supports dynamic configurations via JSON files, enabling the creation of custom topologies and simulation parameters.
-
----
-
-## **Phases of the Project**
-
-Our project is divided into multiple phases, each focusing on a specific aspect of the simulation:
-
-1. **Phase 1 (Point Zero Phase)**: 
-   - Initialize the network by constructing the topology based on the configuration file.
-   - Set up components such as PCs, routers, ports, and Autonomous Systems (AS).
-   - Ensure all nodes are connected but remain inactive.
-
-2. **Phase 2 (Component Implementation)**:
-   - Implement foundational classes necessary for the network to function, including:
-     - **IP**
-     - **IPHeader**
-     - **Port**
-     - **PortBindingManager**
-     - **Node**
-     - **PC**
-     - **Router** (without routing algorithms)
-     - **TopologyBuilder**
-     - **TopologyController**
-     - **AutonomousSystem**
-   - By the end of this phase, the topology should be fully constructed and operational, capable of simulating packet exchanges.
-   - Some DHCP functionality may also be included to enable dynamic IP assignment.
-
-3. **Phase 3 (Execution Phase)**:
-   - Simulate network traffic by generating and transmitting data packets.
-   - Implement and test routing algorithms such as RIP and OSPF.
-   - Observe the behavior of these algorithms under various conditions, including link failures and congestion.
-
-4. **Phase 4 (Analysis and Reporting)**:
-   - Analyze the simulation results, including metrics like packet loss, hop count, and waiting cycles.
-   - Compare the performance of routing algorithms and generate comprehensive reports.
+## Table of Contents
+1. [Overview](#overview)  
+2. [Features](#features)  
+3. [Getting Started](#getting-started)  
+   - [Prerequisites](#prerequisites)  
+   - [Building the Project](#building-the-project)  
+   - [Running the Simulator](#running-the-simulator)  
+4. [Project Structure](#project-structure)  
+5. [How It Works (High-Level)](#how-it-works-high-level)  
+6. [Router Internals & Protocols](#router-internals--protocols)  
+   - [Queue & Congestion Control](#queue--congestion-control)  
+   - [Routing Table & Route Entries](#routing-table--route-entries)  
+   - [RIP Implementation](#rip-implementation)  
+   - [OSPF Implementation](#ospf-implementation)  
+   - [BGP Implementation](#bgp-implementation)  
+   - [DHCP Server/Client Logic](#dhcp-serverclient-logic)  
+7. [Supporting Classes](#supporting-classes)  
+   - [Packet (`Packet.h/.cpp`)](#packet-packethcpp)  
+   - [Port (`Port.h/.cpp`)](#port-porthcpp)  
+   - [PortBindingManager (`PortBindingManager.h/.cpp`)](#portbindingmanager-portbindingmanagerhcpp)  
+   - [TopologyBuilder (`TopologyBuilder.h/.cpp`)](#topologybuilder-topologybuilderhcpp)  
+   - [TopologyController (If Present)](#topologycontroller-if-present) 
 
 ---
 
-## **Phase 1: Point Zero Phase**
+## Overview
 
-### **Objective**
-In this phase, we aim to initialize the network environment by:
-- Setting up the topology based on the configuration file.
-- Creating and connecting essential components such as PCs, routers, and ASes.
-- Leaving the nodes in an inactive state for further setup in Phase 2.
+This simulator models:
+- **Autonomous Systems (AS)**, each containing multiple **routers** (and optionally PCs).
+- **Routing protocols** within and between ASes:
+  - **RIP** or **OSPF** for intra-AS routing.
+  - **BGP** (EBGP/IBGP) for inter-AS routing.
+- **DHCP** for dynamic IP assignment (to routers and PCs).
+- **Queue-based congestion control**: each router has a buffer where packets can be dropped if the buffer is full.
+- **Metrics** to track packet drops, route convergence, packet hops, waiting cycles, etc.
 
-### **Implementation Details**
-
-#### **Key Components**
-
-1. **MACAddress & MACAddressGenerator**
-   - **Purpose**: Provides a unique MAC address for each network node.
-   - **Challenge**: Ensuring uniqueness and validating address formats.
-   - **Solution**: `MACAddressGenerator` uses a `QSet` to track generated addresses, preventing duplicates. Address validation leverages `QRegularExpression`.
-
-   **Code Details**:
-   - `MACAddress::isValid`: Validates the format using a regex pattern.
-   - `MACAddressGenerator::generate`: Generates a random, unique MAC address.
-
-2. **IP Class**
-   - **Purpose**: Abstracts IPv4 and IPv6 functionality into a single template-based class.
-   - **Challenges**:
-     1. Ensuring template reusability for both IP versions.
-     2. Handling `QString`-based input and converting it to numeric values for simulation.
-   - **Solutions**:
-     - Used templates to specialize IP handling for IPv4 and IPv6.
-     - Integrated `QHostAddress` for seamless conversion between string representations and raw address formats.
-
-   **Key Features**:
-   - `toString` converts numeric IP to its human-readable form.
-   - `fromString` validates and parses IP strings using `QHostAddress`.
-   - **Fix**: Addressed template specialization bugs by carefully separating shared and specific functionality for IPv4 and IPv6.
-
-3. **EventsCoordinator**
-   - **Purpose**: Centralized event management for time-based simulations.
-   - **Challenges**:
-     - Integrating with `DataGenerator` to synchronize packet generation and emission.
-     - Managing event-driven triggers for tick-based simulation.
-   - **Solution**:
-     - Used `QTimer` for periodic event emission.
-     - Connected `EventsCoordinator` with `DataGenerator` to preload and emit packets dynamically.
-
-   **Key Features**:
-   - `startClock`: Starts the simulation timer.
-   - `setDataGenerator`: Links the packet generator for dynamic event handling.
-   - **Fix**: Resolved integration issues by explicitly managing `QSharedPointer` lifetimes for packets.
-
-4. **DataGenerator**
-   - **Purpose**: Generates network packets using a Poisson distribution.
-   - **Challenges**:
-     - Ensuring the distribution was correctly spread over time.
-     - Generating packets with valid destinations and payloads.
-   - **Solution**:
-     - Used a custom Poisson distribution generator to model traffic.
-     - Validated and randomized destinations to avoid empty queues.
-
-   **Key Features**:
-   - `generatePackets`: Generates packets dynamically based on configured destinations.
-   - **Fix**: Adjusted time-scaling logic to ensure proper temporal distribution of packets.
-
-5. **Headers (DataLinkHeader & TCPHeader)**
-   - **Purpose**: Encapsulate packet data with network and transport layer headers.
-   - **Challenges**:
-     - Ensuring compatibility with the `Packet` class.
-     - Managing header updates dynamically during routing.
-   - **Solutions**:
-     - Designed flexible setters and getters for seamless integration.
-     - Added validation for source and destination addresses in headers.
-
-6. **Packet**
-   - **Purpose**: Represents a data unit in the network.
-   - **Challenges**:
-     - Integrating with headers while maintaining encapsulation.
-   - **Solution**:
-     - Used composition to include `DataLinkHeader` and `TCPHeader` in `Packet`.
-
-   **Key Features**:
-   - `addToPath`: Tracks routing path for analysis.
-   - `markDropped`: Flags packets dropped due to network conditions.
-
-#### **Topology Construction**
-- **Tool**: `Simulator` reads and parses the JSON configuration file then gives it to `AutonomousSystem` to initialize nodes and links.
-- Nodes (PCs, routers) are assigned unique MAC addresses and prepared for activation in later phases.
+**Goal**: Provide a flexible environment for learning, testing, and prototyping network protocols and topologies.
 
 ---
 
-### **Challenges and Fixes**
+## Features
 
-1. **Template Specialization in IP Class**:
-   - Template-based design was initially buggy due to shared constructors and methods.
-   - **Fix**: Explicitly specialized methods for IPv4 and IPv6 while keeping a common base.
-
-2. **Packet Integration with Headers**:
-   - Initial design overlooked seamless header inclusion.
-   - **Fix**: Refactored `Packet` class to include setters/getters for `DataLinkHeader` and `TCPHeader`.
-
-3. **DataGenerator Timing Distribution**:
-   - Packet generation wasn't evenly distributed across the timeline.
-   - **Fix**: Adjusted Poisson logic to factor in time scaling and rebalanced packet intervals.
-
----
-
-### **Testing**
-- **Tools**: Qt’s QTest framework.
-- **Tests**:
-  - **MACAddressGenerator**: Validated uniqueness and format compliance.
-  - **IP**: Checked string-to-value conversions and template specialization.
-  - **EventsCoordinator**: Verified timer triggers and packet queue management.
-  - **DataGenerator**: Confirmed Poisson distribution accuracy.
+1. **DHCP Phase** for assigning IP addresses to routers and PCs.  
+2. **Routing Protocols**:  
+   - **RIP** (distance-vector, hop count metric)  
+   - **OSPF** (link-state, LSAs, Dijkstra)  
+   - **BGP** (optional for inter-AS routing)  
+3. **Congestion Control** via **fixed-size router queues** (packets dropped on overflow).  
+4. **Topology**: mesh, ring-star, or **torus** (wraparound).  
+5. **Command-Line Integration** to specify protocol choices (enable BGP, choose RIP or OSPF, enable torus, etc.).  
+6. **Visualization**: ASCII diagrams of the topology, logs of routing tables, and DHCP assignments.  
+7. **Metrics Collection**: Tracks packet drops, wait cycles, route usage, etc.
 
 ---
 
-### **State at the End of Phase 1**
-- Topology is fully constructed and connected.
-- Nodes remain inactive for Phase 2 activation and IP assignment.
+## Getting Started
+
+### Prerequisites
+
+- **Qt 6** (or higher)  
+- A **C++17**-capable compiler (MSVC, Clang, or GCC)  
+- **CMake** or **qmake** (depending on your Qt project setup)  
+
+*(Tested primarily on Windows with Qt 6.)*
+
+### Building the Project
+
+1. **Clone** the repository:
+   ```bash
+   git clone https://github.com/YourUsername/QtNetworkSimulator.git
+   cd QtNetworkSimulator
+   ```
+
+2. **Configure & Build** (example with CMake):
+   ```bash
+   mkdir build && cd build
+   cmake ..
+   cmake --build .
+   ```
+   Or open in **Qt Creator** (using the `.pro` or CMake files) and build directly.
+
+### Running the Simulator
+
+After a successful build, an executable (e.g., `QtNetworkSimulator.exe`) is created. Run it via:
+
+```bash
+./QtNetworkSimulator.exe --bgp yes --first-as-algo 1 --second-as-algo 2 --torus yes
+```
+- This example **enables BGP**, sets **AS1** to use **RIP** (`1`), **AS2** to use **OSPF** (`2`), and **enables a torus** topology.  
+- If no arguments are provided, the simulator **prompts** interactively for protocol settings.
+
+*(Or if in QT environment it's already been adjusted in the run configs)*
 
 ---
 
-## **Phase 2: Component Implementation**
+## Project Structure
 
-### **Objective**
-The second phase focuses on implementing the core components required to establish a functional network topology. The primary goal is to ensure that nodes such as PCs and routers can communicate over a constructed network. This phase includes integrating DHCP functionality to assign dynamic IP addresses and ensuring seamless communication between all network entities.
+```
+QtNetworkSimulator/
+├── src/
+│   ├── NetworkSimulator/
+│   │   ├── Simulator.h/.cpp
+│   │   ├── ApplicationContext.h/.cpp
+│   │   ├── Network.h/.cpp
+│   │   ├── Router.h/.cpp        <-- Router logic, routing protocols, queue
+│   │   ├── ...
+│   ├── MetricsCollector/
+│   ├── Globals/
+│   ├── Packet/
+│   │   ├── Packet.h/.cpp        <-- Packet structure & headers
+│   ├── Port/
+│   │   ├── Port.h/.cpp          <-- Port connections for router/PC
+│   ├── PortBindingManager/
+│   │   ├── PortBindingManager.h/.cpp
+│   ├── Network/
+│   │   ├── PC.h/.cpp            <-- PC logic (sending/receiving data)
+│   ├── Topology/
+│   │   ├── TopologyBuilder.h/.cpp  <-- Building network topologies
+│   │   ├── TopologyController.h/.cpp (if present)
+│   ├── main.cpp                 <-- Entry point
+├── configs/
+│   └── mainConfig/
+│       └── config.json          <-- Default config
+└── README.md
+```
 
-### **Implementation Details**
-
-#### **Key Components**
-
-1. **IP & IPHeader**
-   - **Purpose**: Provides abstraction for handling IPv4 and IPv6 headers, encapsulating details like source and destination addresses.
-   - **Challenges**:
-     - Refactoring the existing `IP` implementation into `IP` and `IPHeader` components.
-     - Managing template specialization for IPv4 and IPv6 headers.
-   - **Solutions**:
-     - Separated common functionality into an abstract base class `AbstractIPHeader`.
-     - Implemented specialized `IPv4Header` and `IPv6Header` classes for handling respective protocols.
-     - Integrated `QHostAddress` to validate and parse IP strings seamlessly.
-   - **Code Highlights**:
-     - `toBytes` and `fromBytes` methods serialize and deserialize headers for packet exchange.
-     - Template-based IP handling ensures reusability for both IPv4 and IPv6.
-   - **Fixes**:
-     - Addressed template specialization bugs by carefully segregating shared functionality for IPv4 and IPv6.
-
-2. **Port & PortBindingManager**
-   - **Purpose**: Facilitates packet transmission and manages dynamic connections between network nodes.
-   - **Challenges**:
-     - Handling thread safety during packet exchange without introducing deadlocks.
-     - Ensuring the `PortBindingManager` handles concurrent bindings efficiently.
-   - **Solutions**:
-     - Implemented `QMutex` in `Port` to ensure thread-safe operations for packet counters and connection states.
-     - Used `Qt::QueuedConnection` in `PortBindingManager` to avoid direct cross-thread calls.
-   - **Code Highlights**:
-     - `Port::sendPacket` emits packets while incrementing counters atomically.
-     - `PortBindingManager::bind` establishes bi-directional connections dynamically.
-   - **Fixes**:
-     - Resolved deadlock issues in DHCP by restructuring mutex usage and avoiding unnecessary locking during packet forwarding.
-
-3. **Node, PC & Router**
-   - **Purpose**: Represent core network entities with shared attributes and unique functionalities.
-   - **Challenges**:
-     - Implementing multi-threading for routers and PCs using `QThread` while maintaining consistent state.
-     - Forwarding packets in routers with proper TTL management to avoid infinite loops.
-   - **Solutions**:
-     - Designed `Node` as a base class with shared properties like `id` and `ipAddress`.
-     - `PC` and `Router` inherit from `Node`, implementing distinct features like packet generation and forwarding.
-     - Ensured that routers track seen packets to prevent loops and validate TTL before forwarding.
-   - **Code Highlights**:
-     - `Router::forwardPacket` decrements TTL and retransmits packets on all connected ports.
-     - `PC::generatePacket` simulates data generation and transmission through its port.
-   - **Fixes**:
-     - Used `moveToThread` during initialization to ensure proper thread handling for nodes.
-     - Prevented packet duplication and looping by maintaining a set of processed packets.
-
-4. **TopologyBuilder & TopologyController**
-   - **Purpose**: Construct and manage the network topology dynamically based on JSON configurations.
-   - **Challenges**:
-     - Parsing complex JSON configurations to build custom topologies like Ring-Star.
-     - Dynamically binding ports between routers and PCs while maintaining thread safety.
-   - **Solutions**:
-     - `TopologyBuilder` handles topology creation, node instantiation, and DHCP server configuration.
-     - `TopologyController` validates the constructed topology and initiates phases like DHCP assignment.
-   - **Code Highlights**:
-     - `TopologyBuilder::setupTopology` creates Ring-Star and Mesh topologies dynamically, validating connections.
-     - `TopologyController::initiateDHCPPhase` initiates IP assignment by coordinating DHCP servers and clients.
-   - **Fixes**:
-     - Resolved port availability issues during Ring-Star configuration by revalidating port connections after each bind.
-
-5. **Autonomous System (AS)**
-   - **Purpose**: Encapsulates routers and PCs within a single logical domain, supporting modular network construction.
-   - **Challenges**:
-     - Splitting logic between `TopologyBuilder` and `AutonomousSystem` for better modularity.
-     - Establishing inter-AS connections while avoiding configuration conflicts.
-   - **Solutions**:
-     - `AutonomousSystem` integrates `TopologyBuilder` and `TopologyController` for topology construction and runtime management.
-     - Connections between ASes are managed dynamically by `TopologyController::connectToOtherAS`.
-   - **Code Highlights**:
-     - Modular design allows independent initialization and runtime control of each AS.
+**Key Components**:
+- **`main.cpp`**: Starts `QCoreApplication`, loads `Simulator`, and runs the event loop.  
+- **`Simulator.*`**: Central logic to build the network, enable protocols, and coordinate the run.  
+- **`Network.*`**: Manages creation of Autonomous Systems, their routers, and optional torus.  
+- **`Router.*`**: The heart of routing, including **RIP**, **OSPF**, **BGP** handlers, **DHCP** phases, and **queue-based congestion**.  
+- **`MetricsCollector.*`**: Records simulation data (packet drops, wait cycles, route changes, etc.).
 
 ---
 
-### **Challenges and Fixes**
+## How It Works (High-Level)
 
-1. **Thread Management in Nodes**:
-   - **Issue**: Incorrect thread assignment led to inconsistent behavior in `PC` and `Router` instances.
-   - **Fix**: Used `moveToThread` during node initialization to ensure proper thread ownership.
+1. **Initialization**  
+   - **Config**: The simulator reads `config.json` or uses command-line overrides.  
+   - **Network**: The simulator spawns each AS with the specified number of routers and PCs. Optional **torus** links are created if requested.
 
-2. **Port Binding Deadlocks**:
-   - **Issue**: Mutex deadlocks occurred during packet forwarding with DHCP integration.
-   - **Fix**: Reorganized locking mechanisms and minimized critical sections during packet operations.
+2. **DHCP Assignment**  
+   - First, **routers** request IPs from a DHCP server router.  
+   - Then, **PCs** also send DHCP requests.  
+   - Once assigned, each node logs its IP and configures local routes.
 
-3. **Custom Topology Parsing**:
-   - **Issue**: Errors in Ring-Star configuration due to JSON parsing and incorrect port bindings.
-   - **Fix**: Enhanced JSON validation and added debug logging to trace configuration issues.
+3. **Routing Protocols**  
+   - Within each AS, you can choose **RIP** or **OSPF**.  
+   - If BGP is **enabled**, border routers in different ASes exchange **EBGP** messages, and inside each AS, internal routers use **IBGP** updates to learn external routes.
 
----
+4. **Simulation Loop**  
+   - **EventsCoordinator** or a QTimer triggers “ticks” for RIP updates, OSPF Hello/LSA, BGP route advertisements.  
+   - Routers update their routing tables until the network converges.
 
-### **Testing**
-- **Tools**: Qt’s QTest framework and custom simulation scripts.
-- **Tests**:
-  - **IP & IPHeader**: Validated serialization/deserialization and IPv4/IPv6 compatibility.
-  - **Port & PortBindingManager**: Verified dynamic port bindings and packet exchange using multi-threaded scenarios.
-  - **Node, PC & Router**: Tested node initialization, packet generation, and forwarding with various TTL values.
-  - **TopologyBuilder**: Checked topology creation against JSON configurations, focusing on custom topologies like Ring-Star.
-  - **AutonomousSystem**: Simulated multi-AS connections and validated inter-AS communication.
+5. **Data Generation**  
+   - PCs then generate data packets. Routers forward them according to the best route.  
+   - If a router’s queue is full, the packet is dropped (congestion). If TTL is 0, the packet is also dropped.
 
----
-
-### **State at the End of Phase 2**
-- The network topology is fully constructed and validated.
-- All nodes (PCs and routers) are initialized and connected.
-- Preliminary DHCP functionality is implemented, enabling IP assignment.
-- The system is ready to simulate basic packet exchanges and prepare for Phase 3.
-
-## **Phase 3: Routing Algorithm Implementation and Simulation**
-
-### **Objective**
-In Phase 3, we focused on implementing and integrating dynamic routing algorithms within the network simulator. The primary goals of this phase were to:
-- **Implement Routing Protocols**: Integrate both **Routing Information Protocol (RIP)** and **Open Shortest Path First (OSPF)** within the router components.
-- **Simulate Network Traffic**: Enable routers to exchange routing information and handle data packet transmissions.
-- **Analyze Routing Behavior**: Observe and evaluate the performance and behavior of RIP and OSPF under various network conditions, including link failures and congestion.
-- **Enhance Metrics Collection**: Extend the metrics collection capabilities to capture routing-specific data such as hop counts and routing table updates.
-
-### **Implementation Details**
-
-#### **1. Routing Protocols Integration**
-
-##### **a. Routing Information Protocol (RIP)**
-- **Purpose**: Implemented RIP as a distance-vector routing protocol to enable routers to exchange routing information periodically.
-- **Key Features**:
-  - **Periodic Updates**: Routers send RIP updates at regular intervals (`RIP_UPDATE_INTERVAL`).
-  - **Route Management**: Handles route additions, updates, and invalidations based on received RIP updates.
-  - **Loop Prevention**: Utilized mechanisms like split horizon and hold-down timers to prevent routing loops.
-
-##### **b. Open Shortest Path First (OSPF)**
-- **Purpose**: Integrated OSPF as a link-state routing protocol for more efficient and scalable route management.
-- **Key Features**:
-  - **Neighbor Discovery**: Implemented OSPF Hello packets to discover and maintain neighbor relationships.
-  - **Link-State Advertisements (LSAs)**: Routers generate and flood LSAs to share network topology information.
-  - **Shortest Path Calculation**: Utilized Dijkstra’s algorithm to compute the shortest path tree based on the LSDB (Link-State Database).
-
-##### **c. Border Gateway Protocol (BGP)**
-- **Purpose**: Incorporated both **External BGP (EBGP)** and **Internal BGP (IBGP)** to facilitate inter-AS and intra-AS routing.
-- **Key Features**:
-  - **Route Advertisement**: Enabled border routers to advertise and exchange routes with other ASes.
-  - **Metric Handling**: Managed route metrics to determine the best paths for data transmission.
-
-#### **2. Packet Processing Enhancements**
-- **Dynamic Packet Handling**: Enhanced the `Router` class to process different types of packets, including RIP updates, OSPF Hello and LSA packets, and BGP updates.
-- **Buffer Management**: Improved packet buffering mechanisms to handle incoming packets efficiently and prevent buffer overflows.
-
-#### **3. Metrics Collection Extension**
-- **Routing Metrics**: Extended the `MetricsCollector` to capture routing-specific metrics such as hop counts, route convergence times, and packet drop rates due to routing issues.
-- **Performance Tracking**: Implemented detailed logging within routing functions to facilitate comprehensive performance analysis.
-
-### **Challenges and Fixes**
-
-1. **Template Specialization in IP Class**:
-   - **Issue**: Initial template-based design for handling IPv4 and IPv6 caused bugs due to shared constructors and methods.
-   - **Fix**: Explicitly specialized methods for IPv4 and IPv6, maintaining a common base class to ensure proper functionality and separation of concerns.
-
-2. **Routing Loop Prevention**:
-   - **Issue**: Potential for routing loops in RIP updates and BGP advertisements, leading to inefficient routing and packet loss.
-   - **Fix**: Implemented split horizon and hold-down timers in RIP, and tracked seen packets in BGP to prevent loops. Additionally, maintained a set of seen packets to avoid processing duplicate routing information.
-
-3. **Thread Management and Concurrency**:
-   - **Issue**: Managing multi-threaded operations in routers led to inconsistent states and potential deadlocks, especially during simultaneous packet processing and routing updates.
-   - **Fix**: Utilized `QMutex` and `QMutexLocker` to ensure thread-safe operations during packet processing and routing table updates. Refactored locking mechanisms to minimize critical sections and prevent deadlocks, particularly during DHCP integration and routing table modifications.
-
-4. **Dijkstra’s Algorithm Implementation**:
-   - **Issue**: Efficiently implementing Dijkstra’s algorithm within the router’s routing logic posed challenges in managing dynamic network topologies.
-   - **Fix**: Carefully managed data structures for distance and previous node mappings, ensuring accurate and efficient computation of the shortest path tree. Optimized the algorithm to handle dynamic updates from LSAs without significant performance overhead.
-
-5. **Dynamic Topology Changes**:
-   - **Issue**: Handling dynamic changes in network topology, such as link failures or router failures, required the routing protocols to adapt in real-time.
-   - **Fix**: Enhanced event handling within `EventsCoordinator` to manage dynamic events, ensuring routers can respond to topology changes by updating routing tables accordingly. Implemented mechanisms to detect and recover from link failures, triggering appropriate routing updates.
-
-6. **BGP Integration Complexity**:
-   - **Issue**: Integrating both EBGP and IBGP introduced complexity in managing inter-AS and intra-AS routing policies.
-   - **Fix**: Structured the BGP implementation to differentiate between external and internal routing updates, applying appropriate metrics and policies based on the type of BGP session. Ensured clear separation of BGP logic from RIP and OSPF to maintain modularity and ease of maintenance.
-
-### **Testing**
-
-- **Tools**: Utilized Qt’s QTest framework alongside custom simulation scripts to validate the functionality and performance of routing algorithms.
-- **Tests Conducted**:
-  - **RIP Functionality**:
-    - Verified periodic RIP updates and routing table convergence across multiple routers.
-    - Tested route invalidation and hold-down timers upon simulated link failures.
-    - Ensured loop prevention mechanisms effectively avoided routing loops.
-  - **OSPF Functionality**:
-    - Ensured proper neighbor discovery and maintenance through OSPF Hello packets.
-    - Validated LSA generation, dissemination, and LSDB updates across the network.
-    - Confirmed accurate routing table updates via Dijkstra’s algorithm based on the LSDB.
-  - **BGP Functionality**:
-    - Tested EBGP and IBGP route exchanges between border and internal routers.
-    - Verified correct route advertisement, metric handling, and route selection policies.
-    - Simulated inter-AS and intra-AS route propagation to ensure proper BGP behavior.
-  - **Metrics Collection**:
-    - Validated accurate recording of routing-specific metrics such as hop counts, route convergence times, and packet drop rates.
-    - Analyzed metrics under various network conditions to assess routing protocol performance.
-  - **Concurrency and Thread Safety**:
-    - Simulated multi-threaded packet processing scenarios to ensure thread-safe operations.
-    - Conducted stress tests to verify the absence of deadlocks and race conditions during high traffic loads and dynamic topology changes.
-
-### **State at the End of Phase 3**
-- **Fully Implemented Routing Protocols**: Both RIP and OSPF are fully integrated and operational within the router components, enabling dynamic route discovery and management.
-- **BGP Functionality**: External and Internal BGP (EBGP and IBGP) are implemented, facilitating inter-AS and intra-AS routing.
-- **Dynamic Routing Tables**: Routers maintain dynamic routing tables that update in real-time based on RIP, OSPF, and BGP protocols, ensuring optimal path selection and network resilience.
-- **Enhanced Metrics Collection**: The system effectively captures detailed routing metrics, providing valuable insights into protocol performance and network behavior.
-- **Ready for Traffic Simulation and Analysis**: The network simulator is now capable of simulating complex routing scenarios, handling dynamic topology changes, and providing comprehensive analysis of routing algorithm performance.
-- **Preparation for Phase 4**: With routing algorithms implemented and metrics collection enhanced, the system is well-prepared to perform detailed analysis and reporting in Phase 4, comparing the performance of RIP and OSPF under various network conditions.
+6. **Visualization & Metrics**  
+   - The simulator can print an ASCII diagram of the network.  
+   - Each router logs its **routing table**.  
+   - **Metrics** record how many packets were sent, dropped, or successfully received, along with waiting cycles, total hops, etc.
 
 ---
 
-## **Future Phases**
+## Router Internals & Protocols
 
-- **Phase 4 (Analysis and Reporting)**:
-  - **Objective**: Conduct a comprehensive analysis of the simulation results, focusing on metrics such as packet loss, hop count, route convergence times, and waiting cycles.
-  - **Tasks**:
-    - Compare the performance of RIP and OSPF under different network topologies and conditions.
-    - Generate detailed reports and visualizations to illustrate the strengths and weaknesses of each routing protocol.
-    - Provide recommendations for optimizing routing strategies based on the observed data.
+The **`Router`** class is where most network behaviors are defined:
+- **`processPacket()`**: Receives an incoming packet and decides to enqueue it, handle it (RIP, OSPF, DHCP, etc.), or forward it.
+- **Timers & Handlers** for **RIP** (distance vector), **OSPF** (link state), and **BGP** messages.
 
-We have successfully completed Phase 3, laying a solid foundation for in-depth analysis and performance evaluation of routing algorithms in Phase 4.
+### Queue & Congestion Control
+
+Each router has a **buffer** (`m_buffer`) for incoming packets:
+```cpp
+QQueue<BufferedPacket> m_buffer;
+int m_bufferSize;  // Maximum size
+QTimer *m_bufferTimer;
+```
+- **`enqueuePacketToBuffer(...)`** checks if the buffer is full:
+  ```cpp
+  bool Router::enqueuePacketToBuffer(const PacketPtr_t &packet) {
+      QMutexLocker locker(&m_bufferMutex);
+      if (m_buffer.size() >= m_bufferSize) {
+          // Congestion => drop packet
+          if (m_metricsCollector) m_metricsCollector->recordPacketDropped();
+          return false;
+      }
+      // Otherwise enqueue
+      BufferedPacket bp;
+      bp.packet = packet;
+      bp.enqueueTime = QDateTime::currentMSecsSinceEpoch();
+      m_buffer.enqueue(bp);
+      return true;
+  }
+  ```
+- **`processBuffer()`** (called periodically by `m_bufferTimer`):
+  - Removes packets that have spent too long in the queue (`m_bufferRetentionTime`).  
+  - If a packet is too old, it’s dropped (timed out in queue).
+
+### Routing Table & Route Entries
+
+Each router stores routes in a **routing table** (`m_routingTable`), a list of `RouteEntry` structs:
+```cpp
+struct RouteEntry {
+    QString destination;
+    QString mask;
+    QString nextHop;
+    int metric;
+    RoutingProtocol protocol;
+    qint64 lastUpdateTime;
+    PortPtr_t learnedFromPort;
+
+    bool isDirect;
+    bool vip;
+    int invalidTimer;
+    int holdDownTimer;
+    int flushTimer;
+    // ...
+};
+```
+- **`destination`** & **`mask`**: The IP address/network the route covers.  
+- **`nextHop`**: Where to forward packets for this destination. If `nextHop == destination`, it may be a local PC or direct interface.  
+- **`metric`**: RIP or OSPF cost, or BGP metric.  
+- **`isDirect`**: Indicates a directly connected interface (e.g., router’s own IP or a PC behind it).  
+- **Timers** (`invalidTimer`, `holdDownTimer`, etc.) used by RIP to age out stale routes.
+
+**Finding the Best Route** (`findBestRoutePath(destinationIP)`):
+1. **Iterate** over the table, matching the `destinationIP` (or relevant network prefix).  
+2. **Select** the route with the **lowest metric**.  
+3. If multiple matches exist, the route with the best (lowest) metric is chosen.  
+4. If **no** route is found, the packet is dropped.  
+
+When forwarding data packets:
+- If `nextHop` matches the router’s own IP or a directly connected IP, the router delivers the packet to the local PC (or to itself).  
+- Otherwise, it decrements **TTL** and sends the packet out through the port that leads to `nextHop`.
+
+### RIP Implementation
+
+- **Distance-vector** approach:
+  - **`sendRIPUpdate()`** periodically broadcasts the router’s routing table.  
+  - **`processRIPUpdate()`** handles incoming RIP packets, updating metrics if the new route is better.  
+  - **Timers**:  
+    - `RIP_UPDATE_INTERVAL`: Send updates every few seconds.  
+    - `RIP_INVALID_TIMER`, `RIP_HOLDOWN_TIMER`, `RIP_FLUSH_TIMER` handle stale routes.  
+  - **RIP_INFINITY = 16**: Metric 16 means “unreachable.”
+
+### OSPF Implementation
+
+- **Link-state** approach:
+  - **Hello Packets** (`sendOSPFHello()`) to discover neighbors.  
+  - **LSAs** (`sendLSA()`) flooded to exchange topology info.  
+  - **Dijkstra** (`runDijkstra()`) run locally to compute shortest paths from the Link-State Database (`m_lsdb`).  
+
+### BGP Implementation
+
+- **Border Gateway Protocol** for inter-AS routing:
+  - **EBGP**: Exchanged between routers in **different** ASes.  
+  - **IBGP**: Shared within a single AS so internal routers learn routes from the border router.  
+- **Border Routers**: Identified if a router has a port connected to an ID outside its AS range.  
+- **`processEBGPUpdate()`** and **`processIBGPUpdate()`** parse BGP route advertisements and update the routing table accordingly.
+
+### DHCP Server/Client Logic
+
+- **DHCP Requests** (`DHCP_REQUEST`) and **Offers** (`DHCP_OFFER`):
+  - Some routers are configured as **DHCP servers**.  
+  - Routers or PCs that need an IP send a DHCP request.  
+  - The DHCP server replies with an offer containing an available IP.  
+- **`processDHCPResponse()`** assigns the IP to the router, which sets a direct route for that IP in its routing table.
+
+---
+
+## Supporting Classes
+
+### Packet (`Packet.h/.cpp`)
+
+Represents **packets** traveling through the network:
+- **`PacketType`** enum: Data, Control, RIPUpdate, OSPFHello, OSPFLSA, DHCPRequest, DHCPOffer, etc.  
+- **`m_payload`**: The main string-based content (e.g., “RIP_UPDATE:192.168.1.0,255.255.255.0,1#...”).  
+- **`m_ttl`**: Decremented each hop. If it hits 0, the router drops the packet.  
+- **`m_path`**: A record of which routers the packet visited.  
+- **`m_waitingCycle`** & **`m_totalCycle`** track waiting times and total journey length for metrics.
+
+Example snippet:
+```cpp
+void Packet::decrementTTL() {
+    m_ttl--;
+    if (m_ttl < 0) {
+        // Drop condition handled by router
+    }
+}
+```
+
+### Port (`Port.h/.cpp`)
+
+- Each **router** or **PC** has one or more **ports** to connect them to other nodes.  
+- A `Port` can be **bound** to another `Port` so that a call to `sendPacket()` on one triggers `receivePacket()` on the other (via Qt signals/slots).  
+- Tracks sent/received packet counts, plus connected device info.
+
+```cpp
+void Port::sendPacket(const PacketPtr_t &data) {
+    QMutexLocker locker(&m_mutex);
+    ++m_numberOfPacketsSent;
+    emit packetSent(data);
+}
+```
+
+### PortBindingManager (`PortBindingManager.h/.cpp`)
+
+- Handles the **binding** of two ports:
+  ```cpp
+  void PortBindingManager::bind(
+      const QSharedPointer<Port> &port1,
+      const QSharedPointer<Port> &port2,
+      int router1Id, int router2Id)
+  {
+      // Connect port1->packetSent to port2->receivePacket, and vice versa
+      // Mark them as connected, store them in m_bindings, etc.
+  }
+  ```
+- If a port is connected to a PC, it sets up direct PC-to-router links.  
+
+### TopologyBuilder (`TopologyBuilder.h/.cpp`)
+
+- Creates **routers** and **PCs** based on the config.  
+- Connects them in a specified **topology** (mesh, ring-star, or **torus**).  
+- **`makeMeshTorus()`** specifically handles wraparound connections in a 4×4 grid.  
+- Assigns DHCP servers if specified.
+
+```cpp
+void TopologyBuilder::buildTopology(bool torus) {
+    createRouters();
+    setupTopology();
+    if (torus) makeMeshTorus();
+    createPCs();
+    configureDHCPServers();
+}
+```
+
+### TopologyController (If Present)
+
+- May handle advanced tasks like coordinating **DHCP** phases or bridging multiple ASes.  
+- Not always required—some logic might be integrated directly into `TopologyBuilder` or `Network`.
+
+---
+
+## Final Notes
+
+- **Router** is the project’s core, managing **routing protocols**, **DHCP**, and **queue-based congestion**.  
+- **Routing Table** entries are updated via RIP, OSPF, or BGP, then used by `findBestRoutePath()` to forward data packets.  
+- **Packet** objects carry data or protocol messages. **Ports** connect routers/PCs, while **PortBindingManager** links them.  
+- **TopologyBuilder** orchestrates the creation of routers/PCs and their interconnections.  
+- **Metrics** track packet drops, wait cycles, route usage, etc., providing insights into simulation performance.
