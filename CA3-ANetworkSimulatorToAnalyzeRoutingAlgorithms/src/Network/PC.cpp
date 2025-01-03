@@ -1,6 +1,7 @@
-#include "PC.h"
 #include <QDebug>
 #include <QThread>
+
+#include "PC.h"
 #include "../Packet/Packet.h"
 #include "../MACAddress/MACADdressGenerator.h"
 
@@ -93,7 +94,6 @@ void PC::processPacket(const PacketPtr_t &packet)
         }
     }
     else if (payload.contains("DHCP_OFFER")) {
-        // DHCP_OFFER handling logic
         QStringList parts = payload.split(":");
         if (parts.size() == 3) {
             QString offeredIP = parts.at(1);

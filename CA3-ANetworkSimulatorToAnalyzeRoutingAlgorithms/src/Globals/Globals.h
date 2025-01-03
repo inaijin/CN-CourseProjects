@@ -43,6 +43,7 @@ enum class TopologyType
     RingStar,
     Torus
 };
+
 }    // namespace UT
 
 #endif    // GLOBALS_H

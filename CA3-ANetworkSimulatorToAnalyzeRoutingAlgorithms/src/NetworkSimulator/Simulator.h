@@ -2,9 +2,10 @@
 #define SIMULATOR_H
 
 #include <QObject>
-#include <QSharedPointer>
-#include <QJsonObject>
 #include <QString>
+#include <QJsonObject>
+#include <QSharedPointer>
+
 #include "Network.h"
 #include "IdAssignment.h"
 #include "DataGenerator/DataGenerator.h"

@@ -1,13 +1,14 @@
 #ifndef DATAGENERATOR_H
 #define DATAGENERATOR_H
 
-#include <QObject>
-#include <QSharedPointer>
 #include <random>
 #include <vector>
 #include <QString>
-#include "../Packet/Packet.h"
+#include <QObject>
+#include <QSharedPointer>
+
 #include "../Network/PC.h"
+#include "../Packet/Packet.h"
 
 class DataGenerator : public QObject
 {
@@ -20,6 +21,7 @@ public:
     void setLambda(double lambda);
     void setSenders(const std::vector<QSharedPointer<PC>> &senders);
     void generatePackets();
+    void loadConfig(const QString &configFilePath);
 
     std::vector<QSharedPointer<PC>> getSenders() const;
     std::vector<int> generatePoissonLoads(int numSamples, int timeScale);
@@ -29,6 +31,8 @@ Q_SIGNALS:
 
 private:
     double m_lambda;
+    int m_packetsPerSimulation = 150;
+
     std::default_random_engine m_generator;
     std::poisson_distribution<int> m_distribution;
     std::vector<QSharedPointer<PC>> m_senders;

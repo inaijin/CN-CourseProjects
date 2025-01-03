@@ -4,8 +4,9 @@
 #include <QString>
 #include <QVector>
 #include <QSharedPointer>
-#include "../Header/DataLinkHeader.h"
+
 #include "../Header/TCPHeader.h"
+#include "../Header/DataLinkHeader.h"
 
 enum class PacketType {
     Data,
@@ -67,11 +68,10 @@ public:
     void setTCPHeader(const TCPHeader &header);
     TCPHeader getTCPHeader() const;
 
-    qint64 getId() const; // Unique packet identifier
+    qint64 getId() const;
 
 private:
     static qint64 s_nextId;
-
     PacketType m_type;
     QString m_payload;
     QVector<QString> m_path;
@@ -86,7 +86,6 @@ private:
     int m_waitingCycle;
     int m_totalCycle;
     QString m_pathTaken;
-
     bool m_isWantedIpV6;
 };
 

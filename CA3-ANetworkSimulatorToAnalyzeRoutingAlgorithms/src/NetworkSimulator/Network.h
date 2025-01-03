@@ -1,10 +1,11 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-#include <QObject>
-#include <QSharedPointer>
-#include <QJsonObject>
 #include <vector>
+#include <QObject>
+#include <QJsonObject>
+#include <QSharedPointer>
+
 #include "../Network/AutonomousSystem.h"
 #include "../Globals/IdAssignment.h"
 #include "../Network/Router.h"

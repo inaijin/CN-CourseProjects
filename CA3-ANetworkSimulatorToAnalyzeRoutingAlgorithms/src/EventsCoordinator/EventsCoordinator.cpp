@@ -1,7 +1,8 @@
+#include <QDebug>
+
+#include "QCoreApplication"
 #include "EventsCoordinator.h"
 #include "DataGenerator/DataGenerator.h"
-#include "QCoreApplication"
-#include <QDebug>
 
 EventsCoordinator::EventsCoordinator(QThread *parent) :
     QThread {parent},
@@ -21,7 +22,6 @@ EventsCoordinator::~EventsCoordinator() {
             m_timer = nullptr;
         }
     });
-
     quit();
     wait();
 }
@@ -84,10 +84,8 @@ void EventsCoordinator::setDataGenerator(DataGenerator *generator)
 void EventsCoordinator::onTick() {
     ++m_currentTime;
     emit tick();
-    // qDebug() << "Tick emitted. Current time:" << m_currentTime;
 
     if (m_packetQueue.empty()) {
-        // qDebug() << "No packets left to emit.";
     } else {
         auto packet = m_packetQueue.front();
         m_packetQueue.erase(m_packetQueue.begin());
@@ -95,14 +93,12 @@ void EventsCoordinator::onTick() {
         qDebug() << "Packet emitted from the queue.";
     }
 
-    // Check for convergence
     if (!m_routingChangedThisTick) {
         m_convergenceTickCounter++;
         qDebug() << "No routing table changes detected this tick. Convergence counter:" << m_convergenceTickCounter;
         if (m_convergenceTickCounter >= REQUIRED_STABLE_TICKS) {
             qDebug() << "Network has converged. Notifying simulation.";
             emit convergenceDetected();
-            // Stop the clock to prevent further ticks
             stopClock();
         }
     } else {
@@ -110,7 +106,6 @@ void EventsCoordinator::onTick() {
         m_convergenceTickCounter = 0;
     }
 
-    // Reset the flag for the next tick
     m_routingChangedThisTick = false;
 }
 

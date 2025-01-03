@@ -1,22 +1,22 @@
-#include "Simulator.h"
-#include "EventsCoordinator/EventsCoordinator.h"
 #include <QFile>
-#include <iostream>
-#include <QJsonDocument>
-#include <QCoreApplication>
 #include <QDebug>
+#include <QThread>
+#include <iostream>
 #include <QJsonArray>
 #include <QJsonObject>
-#include <QThread>
+#include <QJsonDocument>
+#include <QCoreApplication>
+#include <RouterRegistry.h>
 #include <QRegularExpression>
 #include <QCommandLineParser>
 #include <QCommandLineOption>
-#include <RouterRegistry.h>
+
+#include "Simulator.h"
+#include "EventsCoordinator/EventsCoordinator.h"
 
 Simulator::Simulator(QObject *parent)
     : QObject(parent)
-{
-}
+{}
 
 Simulator::~Simulator()
 {
@@ -147,6 +147,8 @@ void Simulator::initializeNetwork()
     }
 
     m_dataGenerator->setSenders(allPCs);
+    QString filePath = ":/configs/mainConfig/config.json";
+    m_dataGenerator->loadConfig(filePath);
 
     for (const auto &pc : allPCs) {
         pc->setMetricsCollector(m_metricsCollector);
@@ -640,7 +642,6 @@ void Simulator::printAsciiDiagram(bool addTorus)
                 };
                 auto p = [&](int pcid){ printPC(pcid); };
 
-                // Top row of PCs
                 std::cout << "      ";
                 p(24); std::cout << "  "; p(25); std::cout << "   ";
                 p(26); std::cout << "  "; p(27); std::cout << "   ";

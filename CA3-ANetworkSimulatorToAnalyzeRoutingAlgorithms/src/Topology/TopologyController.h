@@ -1,9 +1,10 @@
 #ifndef TOPOLOGYCONTROLLER_H
 #define TOPOLOGYCONTROLLER_H
 
+#include <vector>
 #include <QObject>
 #include <QSharedPointer>
-#include <vector>
+
 #include <../Network/Router.h>
 
 class TopologyBuilder;

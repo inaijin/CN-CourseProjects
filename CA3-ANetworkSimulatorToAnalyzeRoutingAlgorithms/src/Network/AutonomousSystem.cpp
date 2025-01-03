@@ -1,9 +1,10 @@
+#include <QDebug>
+
+#include "../Network/PC.h"
 #include "AutonomousSystem.h"
+#include "../Network/Router.h"
 #include "../Topology/TopologyBuilder.h"
 #include "../Topology/TopologyController.h"
-#include "../Network/Router.h"
-#include "../Network/PC.h"
-#include <QDebug>
 
 AutonomousSystem::AutonomousSystem(const QJsonObject &config, const IdAssignment &idAssignment, const bool torus, QObject *parent)
     : QObject(parent), m_config(config)

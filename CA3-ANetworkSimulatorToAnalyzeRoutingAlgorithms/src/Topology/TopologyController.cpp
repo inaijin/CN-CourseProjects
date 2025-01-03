@@ -1,11 +1,12 @@
-#include "TopologyController.h"
-#include "TopologyBuilder.h"
-#include "../Network/Router.h"
-#include "../Network/AutonomousSystem.h"
-#include "../Globals/RouterRegistry.h"
-#include "../PortBindingManager/PortBindingManager.h"
 #include <QDebug>
 #include <QJsonArray>
+
+#include "TopologyBuilder.h"
+#include "../Network/Router.h"
+#include "TopologyController.h"
+#include "../Globals/RouterRegistry.h"
+#include "../Network/AutonomousSystem.h"
+#include "../PortBindingManager/PortBindingManager.h"
 
 TopologyController::TopologyController(const QSharedPointer<TopologyBuilder> &builder, QObject *parent)
     : QObject(parent), m_builder(builder)

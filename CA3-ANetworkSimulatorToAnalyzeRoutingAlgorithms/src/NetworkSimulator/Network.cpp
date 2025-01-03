@@ -1,18 +1,16 @@
-#include "Network.h"
-#include "Topology/TopologyController.h"
 #include <QDebug>
 #include <QJsonArray>
 #include <unordered_map>
 
+#include "Network.h"
+#include "Topology/TopologyController.h"
+
 Network::Network(const QJsonObject &config, QObject *parent)
     : QObject(parent), m_config(config)
-{
-}
+{}
 
 Network::~Network()
-{
-    // Cleanup if necessary
-}
+{}
 
 void Network::initialize(const IdAssignment &idAssignment, const bool torus)
 {

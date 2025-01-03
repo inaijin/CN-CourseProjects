@@ -1,8 +1,9 @@
 #ifndef PC_H
 #define PC_H
 
-#include "Node.h"
 #include <QSharedPointer>
+
+#include "Node.h"
 #include "../Port/Port.h"
 #include "../MetricsCollector/MetricsCollector.h"
 

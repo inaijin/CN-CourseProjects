@@ -1,12 +1,13 @@
+#include <QDebug>
+#include <QThread>
+#include <algorithm>
+#include <stdexcept>
+#include <QJsonArray>
+
 #include "TopologyBuilder.h"
 #include "../PortBindingManager/PortBindingManager.h"
 #include "../DHCPServer/DHCPServer.h"
 #include "../Globals/RouterRegistry.h"
-#include <QDebug>
-#include <stdexcept>
-#include <QJsonArray>
-#include <QThread>
-#include <algorithm>
 
 TopologyBuilder::TopologyBuilder(const QJsonObject &config, const IdAssignment &idAssignment, QObject *parent)
     : QObject(parent), m_config(config), m_idAssignment(idAssignment)
@@ -139,7 +140,7 @@ void TopologyBuilder::createPCs()
                 continue;
             }
 
-            auto pc = QSharedPointer<PC>::create(pcId, " ", nullptr); // Removed Pre DHCP IP Assignment
+            auto pc = QSharedPointer<PC>::create(pcId, " ", nullptr);
             QThread *pcThread = new QThread(this);
             pc->moveToThread(pcThread);
 
@@ -312,17 +313,14 @@ void TopologyBuilder::makeMeshTorus()
         return;
     }
 
-    // Assuming routers are ordered row-major starting from index 0
     for (int row = 0; row < rows; ++row) {
         for (int col = 0; col < columns; ++col) {
             int currentIndex = row * columns + col;
             int currentRouterId = m_routers[currentIndex]->getId();
 
-            // Calculate wrap-around neighbors
-            int wrapRow = (row + rows - 1) % rows; // Up neighbor (wrap around)
-            int wrapCol = (col + columns - 1) % columns; // Left neighbor (wrap around)
+            int wrapRow = (row + rows - 1) % rows;
+            int wrapCol = (col + columns - 1) % columns;
 
-            // Neighbor in the previous row (wrap vertically)
             int neighborRow = wrapRow;
             int neighborCol = col;
             int neighborIndex = neighborRow * columns + neighborCol;
@@ -330,7 +328,6 @@ void TopologyBuilder::makeMeshTorus()
 
             QPair<int, int> pair1 = qMakePair(qMin(currentRouterId, neighborRouterId), qMax(currentRouterId, neighborRouterId));
             if (!m_connectedPairs.contains(pair1)) {
-                // Bind ports between currentRouter and neighborRouter
                 PortBindingManager bindingManager;
                 auto portA = m_routers[currentIndex]->getAvailablePort();
                 auto portB = m_routers[neighborIndex]->getAvailablePort();
@@ -344,7 +341,6 @@ void TopologyBuilder::makeMeshTorus()
                 }
             }
 
-            // Neighbor in the previous column (wrap horizontally)
             neighborRow = row;
             neighborCol = wrapCol;
             neighborIndex = neighborRow * columns + neighborCol;
@@ -352,7 +348,6 @@ void TopologyBuilder::makeMeshTorus()
 
             QPair<int, int> pair2 = qMakePair(qMin(currentRouterId, neighborRouterId), qMax(currentRouterId, neighborRouterId));
             if (!m_connectedPairs.contains(pair2)) {
-                // Bind ports between currentRouter and neighborRouter
                 PortBindingManager bindingManager;
                 auto portA = m_routers[currentIndex]->getAvailablePort();
                 auto portB = m_routers[neighborIndex]->getAvailablePort();

@@ -1,5 +1,6 @@
-#include "ApplicationContext.h"
 #include <QDebug>
+
+#include "ApplicationContext.h"
 
 ApplicationContext& ApplicationContext::instance()
 {

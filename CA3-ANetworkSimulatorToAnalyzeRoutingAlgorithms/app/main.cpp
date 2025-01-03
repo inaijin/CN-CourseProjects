@@ -1,6 +1,7 @@
-#include <QCoreApplication>
 #include <QDir>
 #include <QString>
+#include <QCoreApplication>
+
 #include "../src/NetworkSimulator/Simulator.h"
 #include "../src/NetworkSimulator/ApplicationContext.h"
 
@@ -8,7 +9,7 @@ int main(int argc, char* argv[])
 {
     QCoreApplication app(argc, argv);
 
-    QString filePath = "../../../../GitHub/CN-CourseProjects/CA3-ANetworkSimulatorToAnalyzeRoutingAlgorithms/assets/config.json";
+    QString filePath = ":/configs/mainConfig/config.json";
 
     QSharedPointer<Simulator> simulator = QSharedPointer<Simulator>::create();
 

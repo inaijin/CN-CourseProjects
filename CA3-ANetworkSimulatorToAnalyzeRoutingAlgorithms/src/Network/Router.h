@@ -1,18 +1,19 @@
 #ifndef ROUTER_H
 #define ROUTER_H
 
-#include "Node.h"
-#include <vector>
-#include <QSharedPointer>
-#include <QEnableSharedFromThis>
-#include "../Port/Port.h"
-#include "../DHCPServer/DHCPServer.h"
 #include <QSet>
-#include <QDateTime>
 #include <QTimer>
 #include <QQueue>
 #include <QMutex>
+#include <vector>
+#include <QDateTime>
 #include <QMutexLocker>
+#include <QSharedPointer>
+#include <QEnableSharedFromThis>
+
+#include "Node.h"
+#include "../Port/Port.h"
+#include "../DHCPServer/DHCPServer.h"
 
 class UDP;
 class TopologyBuilder;
@@ -138,7 +139,6 @@ public Q_SLOTS:
     void initialize();
     void processDHCPResponse(const PacketPtr_t  &packet);
 
-    // Routing table methods
     void addRoute(const QString &destination, const QString &mask, const QString &nextHop, int metric,
                   RoutingProtocol protocol, PortPtr_t learnedFromPort = nullptr, bool vip = false);
     void printRoutingTable() const;

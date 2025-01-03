@@ -8,6 +8,9 @@ DESTDIR = $$PWD/../lib
 
 INCLUDEPATH += $$PWD/Globals
 
+RESOURCES += \
+    $$PWD/../app/resources.qrc
+
 SOURCES += \
     $$PWD/DHCPServer/DHCPServer.cpp \
     $$PWD/EventsCoordinator/EventsCoordinator.cpp \

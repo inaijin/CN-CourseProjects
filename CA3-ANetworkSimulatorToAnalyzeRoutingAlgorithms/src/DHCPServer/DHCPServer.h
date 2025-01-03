@@ -1,10 +1,13 @@
 #ifndef DHCPSERVER_H
 #define DHCPSERVER_H
 
+#include <QFile>
 #include <QObject>
+#include <QTextStream>
 #include <QSharedPointer>
-#include "../Packet/Packet.h"
+
 #include "../Port/Port.h"
+#include "../Packet/Packet.h"
 
 class Router;
 
@@ -38,8 +41,12 @@ private:
     QSharedPointer<Router> m_router;
     QVector<DHCPLease> m_leases;
     QString m_ipPrefix;
+
     int m_nextAvailableId;
     int m_currentTime;
+    QFile m_logFile;
+    QTextStream m_logStream;
+    void writeLog(const QString &message);
 
     static const int LEASE_DURATION = 300; // Lease duration in seconds
 };

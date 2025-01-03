@@ -1,11 +1,11 @@
 #ifndef PORTBINDINGMANAGER_H
 #define PORTBINDINGMANAGER_H
 
-#include "../Port/Port.h"
-
 #include <QMap>
 #include <QMutex>
 #include <QObject>
+
+#include "../Port/Port.h"
 
 class PortBindingManager : public QObject
 {

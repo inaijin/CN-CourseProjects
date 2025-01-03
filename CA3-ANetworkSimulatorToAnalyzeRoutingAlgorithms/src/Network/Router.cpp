@@ -550,21 +550,6 @@ void Router::addRoute(const QString &destination, const QString &mask, const QSt
     }
 }
 
-QString Router::findBestRoute(const QString &destinationIP) const
-{
-    int bestMetric = INT_MAX;
-    QString bestNextHop = "";
-
-    for (const auto &route : m_routingTable) {
-        if (route.destination == destinationIP && route.metric < bestMetric) {
-            bestMetric = route.metric;
-            bestNextHop = route.nextHop;
-        }
-    }
-
-    return bestNextHop;
-}
-
 RouteEntry Router::findBestRoutePath(const QString &destinationIP) const {
     RouteEntry bestRoute;
     int minMetric = RIP_INFINITY;
@@ -599,37 +584,25 @@ RouteEntry Router::findBestRoutePath(const QString &destinationIP) const {
 
 void Router::printRoutingTable() const
 {
-    // Optional: Lock the mutex if the function can be called from multiple threads
     QMutexLocker locker(&m_logMutex);
 
-    // Log to console
     qDebug() << "Routing Table for Router" << m_id << ":";
-
-    // **1. Create a Unique Log File Name Using m_id**
 
     QString routerIdStr;
 
-    // Determine the type of m_id and convert accordingly
-    // Example assumes m_id is an integer. Adjust if m_id is of a different type.
     routerIdStr = QString::number(m_id);
 
-    // Construct the log file path with m_id in the filename
     QString logFilePath = QString("D:/QTProjects/GitHub/CN-CourseProjects/CA3-ANetworkSimulatorToAnalyzeRoutingAlgorithms/logs/routingTableRouter%1.txt")
                             .arg(routerIdStr);
-
-    // **2. Ensure the Logs Directory Exists**
 
     QFileInfo fileInfo(logFilePath);
     QDir logDir = fileInfo.dir();
     if (!logDir.exists()) {
-        // Attempt to create the directory
         if (!logDir.mkpath(".")) {
             qWarning() << "Failed to create log directory:" << logDir.absolutePath();
             return;
         }
     }
-
-    // **3. Open the Log File in Write-Only and Truncate Mode**
 
     QFile logFile(logFilePath);
     if (!logFile.open(QIODevice::WriteOnly | QIODevice::Truncate | QIODevice::Text)) {
@@ -639,12 +612,8 @@ void Router::printRoutingTable() const
 
     QTextStream out(&logFile);
 
-    // **4. Write Header with Timestamp to Log File**
-
     QString headerTimeStamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
     out << headerTimeStamp << " Routing Table for Router " << m_id << ":\n";
-
-    // **5. Iterate Through the Routing Table and Log Each Entry**
 
     for (const auto &entry : m_routingTable) {
         QString protoStr;
@@ -669,7 +638,6 @@ void Router::printRoutingTable() const
                 break;
         }
 
-        // Build the log entry string using QTextStream
         QString logEntry;
         QTextStream(&logEntry) << "Dest: " << entry.destination
                                << " Mask: " << entry.mask
@@ -677,15 +645,12 @@ void Router::printRoutingTable() const
                                << " Metric: " << entry.metric
                                << " Protocol: " << protoStr;
 
-        // Output to console
         qDebug() << logEntry;
 
-        // Write to log file with timestamp
         QString entryTimeStamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
         out << entryTimeStamp << " " << logEntry << "\n";
     }
 
-    // **6. Close the Log File**
     logFile.close();
 }
 
@@ -715,7 +680,7 @@ void Router::sendRIPUpdate() {
             Range range = getRange(m_ASnum);
             int connectedRouterId = port->getConnectedRouterId();
             if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
-                qDebug() << "It's a PC";
+
             } else if (connectedRouterId > range.max || connectedRouterId < range.min) {
                 continue;
             }
@@ -891,7 +856,6 @@ void Router::setupDirectNeighborRoutes(RoutingProtocol protocol, int ASId, bool 
                     if (port->getConnectedPC() != nullptr && port->getConnectedPC()->getIpAddress() == pcIP)
                         learnedFromPort = port;
                 }
-                qDebug() << "MEOW MEOW OMAD FOR ROUTER: " << m_id << "PC IP : " << pcIP;
                 addRoute(pcIP, "255.255.255.255", pcIP, 1, RoutingProtocol::OSPF, learnedFromPort, true);
                 RouteEntry directRoute(pcIP, "255.255.255.255", pcIP, 1, RoutingProtocol::OSPF, m_currentTime, nullptr, true, true);
                 for (int i = m_routingTable.size() - 1; i >= 0; i--) {
@@ -919,7 +883,6 @@ std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters(int ASId
 
             if (bgp) {
                 if (remoteId <= range.pcMax && remoteId >= range.pcMin) {
-                    qDebug() << "It's a PC";
                 } else if (remoteId > range.max || remoteId < range.min) {
                     continue;
                 }
@@ -934,7 +897,6 @@ std::vector<QSharedPointer<Router>> Router::getDirectlyConnectedRouters(int ASId
                     neighbors.push_back(nbr);
                 }
             } else if (!pc.isNull()) {
-                qDebug() << "check e raftan UWUOWO";
                 port->setConnectedRouterIP(pc->getIpAddress());
                 neighbors.push_back(QSharedPointer<Router>::create(pc->getId(), pc->getIpAddress()));
             }
@@ -970,7 +932,6 @@ void Router::sendOSPFHello()
             Range range = getRange(m_ASnum);
             int connectedRouterId = port->getConnectedRouterId();
             if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
-                qDebug() << "It's a PC";
             } else if (connectedRouterId > range.max || connectedRouterId < range.min) {
                 continue;
             }
@@ -1170,7 +1131,6 @@ void Router::updateRoutingTable()
 {
     qDebug() << "Router" << m_id << "updating routing table based on Dijkstra results.";
 
-    // Remove existing OSPF routes
     for (int i = m_routingTable.size() - 1; i >= 0; i--)
     {
         if (m_routingTable[i].protocol == RoutingProtocol::OSPF && !m_routingTable[i].vip)
@@ -1185,12 +1145,11 @@ void Router::updateRoutingTable()
         const QString &dest = it.key();
 
         if (dest == m_ipAddress->getIp())
-            continue; // Skip self
+            continue;
 
         QString nextHop = "";
         QString current = dest;
 
-        // Traverse the path to find the immediate next hop
         while (m_previous.contains(current))
         {
             if (m_previous[current] == m_ipAddress->getIp())
@@ -1201,25 +1160,21 @@ void Router::updateRoutingTable()
             current = m_previous[current];
         }
 
-        qDebug() << "UWU OWO Next Hop Is " << nextHop;
-
         if (nextHop.isEmpty())
         {
             qDebug() << "Router" << m_id << "could not determine nextHop for destination" << dest;
-            continue; // Cannot determine next hop, skip adding this route
+            continue;
         }
 
         // Find the port connected to nextHop
         PortPtr_t outPort = nullptr;
         for (const auto &port : m_ports)
         {
-            // Check if the port is connected to a router with the nextHop IP
             if (port->getConnectedRouterIP() == nextHop)
             {
                 outPort = port;
                 break;
             }
-            // Additionally, check if the port is connected to a PC with the nextHop IP
             else
             {
                 QSharedPointer<PC> connectedPC = port->getConnectedPC();
@@ -1245,7 +1200,6 @@ void Router::updateRoutingTable()
                 id = match1.captured(1);
                 qDebug() << "Extracted ID from Dest: " << id;
             } else {
-                qDebug() << "No ID found !!!";
             }
 
             QSharedPointer<Router> destRouter = s_topologyBuilder->findRouterById(id.toInt(&ok));
@@ -1298,7 +1252,6 @@ bool Router::isRouterBorder() {
             int connectedRouterId = port->getConnectedRouterId();
             if (connectedRouterId != -1) {
                 if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
-                    qDebug() << "It's a PC";
                 } else if (connectedRouterId > range.max || connectedRouterId < range.min) {
                     isBorder = true;
                 }
@@ -1309,14 +1262,12 @@ bool Router::isRouterBorder() {
 }
 
 void Router::startEBGP() {
-    qDebug() << "STARTEGP STARTED";
     for (auto &port : m_ports) {
         if (m_ASnum != -1) {
             Range range = getRange(m_ASnum);
             int connectedRouterId = port->getConnectedRouterId();
             if (connectedRouterId != -1) {
                 if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
-                    qDebug() << "It's a PC";
                 } else if (connectedRouterId > range.max || connectedRouterId < range.min) {
                     if (!port->isConnected()) continue;
 
@@ -1348,7 +1299,6 @@ void Router::startEBGP() {
 
 void Router::startIBGP() {
     IBGPCounter = 0;
-    qDebug() << "STARTIBGP STARTED";
     for (auto &port : m_ports) {
         if (m_ASnum != -1) {
             Range range = getRange(m_ASnum);
@@ -1356,7 +1306,6 @@ void Router::startIBGP() {
             if (connectedRouterId != -1) {
                 QSharedPointer<Router> foundRouter = RouterRegistry::findRouterById(connectedRouterId);
                 if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
-                    qDebug() << "It's a PC";
                 } else if (connectedRouterId <= range.max && connectedRouterId >= range.min && !foundRouter->isRouterBorder()) {
                     if (!port->isConnected()) continue;
 
@@ -1477,6 +1426,7 @@ void Router::processIBGPUpdate(const PacketPtr_t &packet)
 
         QString dest = fields[0];
         QString mask = fields[1];
+
         int recvMetric = fields[2].toInt();
         int newMetric = recvMetric + 1;
 
@@ -1490,8 +1440,6 @@ void Router::processIBGPUpdate(const PacketPtr_t &packet)
 
     if (IBGPCounter < 10) {
         forwardIBGP();
-    } else {
-        qDebug() << "Tamom Nashod ?";
     }
 }
 
@@ -1503,7 +1451,6 @@ void Router::forwardIBGP() {
             if (connectedRouterId != -1) {
                 QSharedPointer<Router> foundRouter = RouterRegistry::findRouterById(connectedRouterId);
                 if (connectedRouterId <= range.pcMax && connectedRouterId >= range.pcMin) {
-                    qDebug() << "It's a PC";
                 } else if (connectedRouterId <= range.max && connectedRouterId >= range.min && !foundRouter->isRouterBorder()) {
                     if (!port->isConnected()) continue;
                     QString destination = (m_ASnum == 1) ? "192.168.200.xx" : "192.168.100.xx";

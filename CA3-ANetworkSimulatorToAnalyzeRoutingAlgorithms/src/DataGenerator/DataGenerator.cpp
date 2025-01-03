@@ -1,6 +1,10 @@
-#include "DataGenerator.h"
+#include <QFile>
 #include <QTimer>
 #include <QDebug>
+#include <QJsonObject>
+#include <QJsonDocument>
+
+#include "DataGenerator.h"
 
 DataGenerator::DataGenerator(QObject *parent) :
     QObject(parent),
@@ -38,7 +42,7 @@ void DataGenerator::generatePackets() {
         return;
     }
 
-    const int numSamples = 150;
+    const int numSamples = m_packetsPerSimulation;
     const int timeScale = 100;
     std::vector<int> loads = generatePoissonLoads(numSamples, timeScale);
     std::vector<QSharedPointer<Packet>> packets;
@@ -100,4 +104,31 @@ void DataGenerator::generatePackets() {
 
 std::vector<QSharedPointer<PC>> DataGenerator::getSenders() const {
     return m_senders;
+}
+
+void DataGenerator::loadConfig(const QString &configFilePath)
+{
+    QFile file(configFilePath);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning() << "DataGenerator: Could not open config file:" << configFilePath;
+        return;
+    }
+
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+    file.close();
+
+    if (doc.isNull() || !doc.isObject()) {
+        qWarning() << "DataGenerator: Invalid JSON in config file.";
+        return;
+    }
+
+    QJsonObject rootObj = doc.object();
+
+    if (rootObj.contains("packets_per_simulation") && rootObj["packets_per_simulation"].isDouble()) {
+        m_packetsPerSimulation = rootObj["packets_per_simulation"].toInt();
+        qDebug() << "DataGenerator: Loaded packets_per_simulation =" << m_packetsPerSimulation;
+    } else {
+        qWarning() << "DataGenerator: 'packets_per_simulation' not found or invalid in config file. Using default value."
+                   << m_packetsPerSimulation;
+    }
 }

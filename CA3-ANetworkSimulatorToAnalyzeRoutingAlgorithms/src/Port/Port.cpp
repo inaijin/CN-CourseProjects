@@ -1,8 +1,9 @@
+#include <QDebug>
+
 #include "Port.h"
 #include "../Network/PC.h"
 #include "../Network/Router.h"
 #include "../NetworkSimulator/Simulator.h"
-#include <QDebug>
 #include "../NetworkSimulator/ApplicationContext.h"
 
 Port::Port(QObject *parent) :
@@ -103,17 +104,14 @@ void Port::connectToPC(QSharedPointer<PC> pc)
     }
 
     m_connectedPC = pc;
-    m_isConnected = true; // Mark as connected
+    m_isConnected = true;
 
     qDebug() << "Port" << m_number << "connected to PC with IP" << pc->getIpAddress();
 
-    // Connect signals: When the port receives a packet, send it to the PC
     connect(this, &Port::packetReceived, pc.data(), &PC::processPacket);
-    // If PC needs to send packets through the port, connect PC's send signal to port's sendPacket slot
     connect(pc.data(), &PC::packetSent, this, &Port::sendPacket);
 }
 
-// New method to get connected PC
 QSharedPointer<PC> Port::getConnectedPC() const
 {
     QMutexLocker locker(&m_mutex);

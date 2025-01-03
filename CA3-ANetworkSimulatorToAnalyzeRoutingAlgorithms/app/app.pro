@@ -9,3 +9,6 @@ INCLUDEPATH += $$PWD/../src \
                $$PWD/../src/Globals
 
 LIBS += -L$$PWD/../lib -lcnca3lib
+
+RESOURCES += \
+    resources.qrc

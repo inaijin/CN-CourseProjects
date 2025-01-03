@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <QSharedPointer>
+
 #include <../Network/Router.h>
 
 class RouterRegistry {

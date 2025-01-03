@@ -1,10 +1,10 @@
 #ifndef METRICSCOLLECTOR_H
 #define METRICSCOLLECTOR_H
 
-#include <QObject>
 #include <QMap>
 #include <QMutex>
 #include <QString>
+#include <QObject>
 
 class MetricsCollector : public QObject
 {
@@ -33,7 +33,6 @@ private:
     int m_droppedPackets;
     int m_totalHops;
     QVector<int> m_waitCyclesBuffer;
-
     QMap<QString, int> m_routerUsage;
 };
 

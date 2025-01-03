@@ -1,5 +1,5 @@
-#include "PortBindingManager.h"
 #include <QDebug>
+#include "PortBindingManager.h"
 
 PortBindingManager::PortBindingManager(QObject *parent) : QObject(parent) {}
 

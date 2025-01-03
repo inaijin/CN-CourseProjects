@@ -4,8 +4,9 @@
 #include <QObject>
 #include <QString>
 #include <QMutex>
-#include "../MACAddress/MACAddress.h"
+
 #include "../IP/IP.h"
+#include "../MACAddress/MACAddress.h"
 
 enum class NodeType
 {

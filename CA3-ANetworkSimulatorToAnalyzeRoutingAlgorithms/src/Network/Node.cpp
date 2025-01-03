@@ -6,7 +6,6 @@ int Node::s_globalNodeId = 0;
 Node::Node(int id, const QString &ipAddress, NodeType type, QObject *parent)
     : QObject(parent), m_id(id), m_ipAddress(QSharedPointer<IP>::create(ipAddress)), m_type(type)
 {
-
 }
 
 Node::~Node() {}

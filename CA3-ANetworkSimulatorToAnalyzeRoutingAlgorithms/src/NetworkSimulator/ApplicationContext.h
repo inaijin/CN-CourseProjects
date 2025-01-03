@@ -1,12 +1,13 @@
 #ifndef APPLICATIONCONTEXT_H
 #define APPLICATIONCONTEXT_H
 
-#include <QObject>
-#include <QReadWriteLock>
 #include <QMutex>
-#include <QSharedPointer>
-#include <QVariantMap>
+#include <QObject>
 #include <QString>
+#include <QVariantMap>
+#include <QSharedPointer>
+#include <QReadWriteLock>
+
 #include "../NetworkSimulator/Simulator.h"
 
 class ApplicationContext : public QObject
@@ -21,7 +22,6 @@ public:
 
     void setSimulator(QSharedPointer<Simulator> simulator);
     QSharedPointer<Simulator> getSimulator() const;
-
     static void reset();
 
 private:

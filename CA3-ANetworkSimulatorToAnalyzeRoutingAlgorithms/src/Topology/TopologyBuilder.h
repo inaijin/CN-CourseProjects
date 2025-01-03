@@ -1,12 +1,13 @@
 #ifndef TOPOLOGYBUILDER_H
 #define TOPOLOGYBUILDER_H
 
+#include <vector>
 #include <QObject>
 #include <QJsonObject>
 #include <QSharedPointer>
-#include <vector>
-#include "../Network/Router.h"
+
 #include "../Network/PC.h"
+#include "../Network/Router.h"
 #include "../Globals/IdAssignment.h"
 
 class TopologyBuilder : public QObject

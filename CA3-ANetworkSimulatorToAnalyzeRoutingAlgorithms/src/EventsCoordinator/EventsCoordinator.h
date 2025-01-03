@@ -1,12 +1,13 @@
 #ifndef EVENTSCOORDINATOR_H
 #define EVENTSCOORDINATOR_H
 
+#include <QTimer>
+#include <vector>
 #include <chrono>
 #include <QObject>
 #include <QThread>
-#include <QTimer>
 #include <QSharedPointer>
-#include <vector>
+
 #include "../Network/Router.h"
 #include "../Network/PC.h"
 

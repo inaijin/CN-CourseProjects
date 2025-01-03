@@ -1,10 +1,11 @@
 #ifndef AUTONOMOUSSYSTEM_H
 #define AUTONOMOUSSYSTEM_H
 
-#include <QObject>
-#include <QSharedPointer>
-#include <QJsonObject>
 #include <vector>
+#include <QObject>
+#include <QJsonObject>
+#include <QSharedPointer>
+
 #include "../Globals/IdAssignment.h"
 
 class Router;

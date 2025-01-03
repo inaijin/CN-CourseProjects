@@ -1,5 +1,5 @@
-#include "MetricsCollector.h"
 #include <QDebug>
+#include "MetricsCollector.h"
 
 MetricsCollector::MetricsCollector(QObject *parent)
     : QObject(parent),
