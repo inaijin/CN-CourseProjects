@@ -137,7 +137,7 @@ void Router::startTimers()
 bool Router::enqueuePacketToBuffer(const PacketPtr_t &packet) {
     QMutexLocker locker(&m_bufferMutex);
     if (m_buffer.size() >= m_bufferSize) {
-        // qWarning() << "Router" << m_id << ": Buffer full. Dropping packet with payload:" << packet->getPayload();
+        qWarning() << "Router" << m_id << ": Buffer full. Dropping packet with payload:" << packet->getPayload();
         if (m_metricsCollector) {
             m_metricsCollector->recordPacketDropped();
         }
