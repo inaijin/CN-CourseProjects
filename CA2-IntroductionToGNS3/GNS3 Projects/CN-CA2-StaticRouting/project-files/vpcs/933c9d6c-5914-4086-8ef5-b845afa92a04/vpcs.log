@@ -1,0 +1,6 @@
+Cygwin WARNING:
+  Couldn't compute FAST_CWD pointer.  This typically occurs if you're using
+  an older Cygwin version on a newer Windows.  Please update to the latest
+  available Cygwin version from https://cygwin.com/.  If the problem persists,
+  please see https://cygwin.com/problems.html
+
