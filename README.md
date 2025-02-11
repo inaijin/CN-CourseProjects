@@ -12,7 +12,7 @@ This repository contains the projects completed as part of the **Computer Networ
 
 ---
 
-### [CA1: Distributed Voice Call Using WebRTC](https://github.com/inaijin/ComputerNetworkProjects/tree/main/CA1_DistributedVoiceCallUsingWebRTC)
+### [CA1: Distributed Voice Call Using WebRTC](https://github.com/inaijin/CN-CourseProjects/tree/main/CA1-SocketProgramming)
 
 **Description**:  
 This project involves the implementation of a **distributed live voice call system** using **WebRTC** and **Socket Programming**. The goal is to create a peer-to-peer communication system that allows two devices to exchange audio data in real-time without relying on a central server. The project focuses on understanding the fundamentals of **real-time communication protocols**, **data encoding/decoding**, and **distributed systems**.
@@ -36,7 +36,7 @@ The project successfully demonstrates real-time voice communication between two 
 
 ---
 
-### [CA2: Introduction to GNS3](https://github.com/inaijin/ComputerNetworkProjects/tree/main/CA2_IntroductionToGNS3)
+### [CA2: Introduction to GNS3](https://github.com/inaijin/CN-CourseProjects/tree/main/CA2-IntroductionToGNS3)
 
 **Description**:  
 This project introduces **GNS3**, a network simulation tool used to emulate real-world network devices such as routers and switches. The goal is to gain hands-on experience with **network topology design**, **device configuration**, and **basic networking concepts** such as **VLANs**, **static routing**, and **dynamic routing** using **OSPF**.
@@ -58,7 +58,7 @@ The project includes detailed documentation of the network topologies created in
 
 ---
 
-### [CA3: Network Simulator for Routing Algorithms](https://github.com/inaijin/ComputerNetworkProjects/tree/main/CA3_NetworkSimulatorForRoutingAlgorithms)
+### [CA3: Network Simulator for Routing Algorithms](https://github.com/inaijin/CN-CourseProjects/tree/main/CA3-ANetworkSimulatorToAnalyzeRoutingAlgorithms)
 
 **Description**:  
 This project involves the development of a **network simulator** to analyze and compare different **routing algorithms**, such as **RIP** and **OSPF**. The simulator is designed to emulate a network environment where routers dynamically exchange routing information and adapt to changes in network topology. The project also explores the impact of **network load**, **link failures**, and **traffic distribution** on routing performance.
